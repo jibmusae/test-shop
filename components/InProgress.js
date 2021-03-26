@@ -20,6 +20,9 @@ import {
 import { EditIcon } from "@chakra-ui/icons";
 
 export default function InProgress() {
+  const startDate = "2021년 3월 1일";
+  const endDate = "2021년 12월 31일";
+
   return (
     <>
       <Flex>
@@ -56,6 +59,9 @@ export default function InProgress() {
         <TabPanels>
           {/* CPU */}
           <TabPanel>
+            <Text ml="16px">
+              {startDate} ~ {endDate}
+            </Text>
             <Flex
               h="220px"
               m="1rem"
@@ -132,6 +138,9 @@ export default function InProgress() {
                 </Button>
               </Flex>
             </Flex>
+            <Text ml="16px">
+              {startDate} ~ {endDate}
+            </Text>
             <Flex
               h="220px"
               m="1rem"
@@ -212,6 +221,9 @@ export default function InProgress() {
 
           {/* 메인보드 */}
           <TabPanel>
+            <Text ml="16px">
+              {startDate} ~ {endDate}
+            </Text>
             <Flex
               h="220px"
               m="1rem"
@@ -294,6 +306,9 @@ export default function InProgress() {
                 </Button>
               </Flex>
             </Flex>
+            <Text ml="16px">
+              {startDate} ~ {endDate}
+            </Text>
             <Flex
               h="220px"
               m="1rem"
@@ -380,6 +395,9 @@ export default function InProgress() {
 
           {/* 그래픽카드 */}
           <TabPanel>
+            <Text ml="16px">
+              {startDate} ~ {endDate}
+            </Text>
             <Flex
               h="220px"
               m="1rem"
