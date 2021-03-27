@@ -3,9 +3,10 @@ import Link from "next/link";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import {
+  FormControl,
+  FormLabel,
   Input,
   InputGroup,
-  InputLeftElement,
   InputRightElement,
   Box,
   Stack,
@@ -14,14 +15,8 @@ import {
   Button,
   Divider,
 } from "@chakra-ui/react";
-import { RiUserFill } from "react-icons/ri";
-import {
-  EmailIcon,
-  LockIcon,
-  ViewIcon,
-  ViewOffIcon,
-  PhoneIcon,
-} from "@chakra-ui/icons";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import DaumPostcode from "react-daum-postcode";
 import SignLayout from "../components/SignLayout";
 import ModalButton from "../components/Modal";
 
@@ -78,23 +73,33 @@ export default function signup() {
 
   const validationSchema = useMemo(() =>
     yup.object({
-      email: yup
+      id: yup
         .string()
-        .email("이메일 주소 형식이 아닙니다")
-        .required("이메일 주소를 입력해주세요"),
+        .min(6, "아이디는 최소 6문자, 최대 20문자로 입력해주세요")
+        .max(20, "아이디는 최소 6문자, 최대 20문자로 입력해주세요")
+        .required("아이디를 입력해주세요"),
       password: yup
         .string()
-        .min(8, "비밀번호는 최소 8문자, 최대 16문자로 입력해 주세요")
-        .max(16, "비밀번호는 최소 8문자, 최대 16문자로 입력해 주세요")
+        .min(8, "비밀번호는 최소 8문자, 최대 16문자로 입력해주세요")
+        .max(16, "비밀번호는 최소 8문자, 최대 16문자로 입력해주세요")
         .required("비밀번호를 입력해주세요"),
       passwordConfirm: yup
         .string()
         .oneOf([yup.ref("password"), null], "비밀번호가 일치하지 않습니다")
         .required("비밀번호를 입력해주세요"),
+      corporateName: yup.string().required("업체명을 입력해주세요"),
       name: yup
         .string()
-        .min(2, "이름은 최소 2문자로 입력해주세요")
-        .required("이름을 입력해주세요"),
+        .min(2, "대표자명은 최소 2문자로 입력해주세요")
+        .required("대표자명을 입력해주세요"),
+      corporateId: yup.string().required("사업자 등록번호를 입력해주세요"),
+      zipCode: yup.string().required("우편번호를 입력해주세요"),
+      address: yup.string().required("주소를 입력해주세요"),
+      addressDetail: yup.string().required("상세주소를 입력해주세요"),
+      email: yup
+        .string()
+        .email("이메일 주소 형식이 아닙니다")
+        .required("이메일 주소를 입력해주세요"),
       tel: yup.string().required("휴대폰 번호를 입력해주세요"),
       termsCheck: yup
         .boolean()
@@ -109,111 +114,184 @@ export default function signup() {
     <>
       <SignLayout>
         <form onSubmit={handleSubmit((data) => console.log(data))}>
-          {/* 이메일 */}
-          <InputGroup mt={3}>
-            <InputLeftElement
-              pointerEvents="none"
-              children={<EmailIcon color="gray.400" />}
+          {/* 아이디 */}
+          <FormControl isInvalid={errors.id}>
+            <FormLabel>아이디</FormLabel>
+            <Input
+              id="id"
+              name="id"
+              type="text"
+              placeholder="아이디"
+              ref={register}
+            />
+            <Box pl={2} color="red" fontSize="0.85rem">
+              {errors.id?.message}
+            </Box>
+          </FormControl>
+
+          {/* 비밀번호 */}
+          <FormControl isInvalid={errors.password}>
+            <FormLabel>비밀번호</FormLabel>
+            <InputGroup>
+              <Input
+                id="password"
+                name="password"
+                type={showPassword[0] ? "text" : "password"}
+                placeholder="비밀번호"
+                ref={register}
+              />
+              <InputRightElement
+                children={
+                  showPassword[0] ? (
+                    <ViewIcon color="gray.400" />
+                  ) : (
+                    <ViewOffIcon color="gray.400" />
+                  )
+                }
+                onClick={(e) => {
+                  clickShowButton(0, e);
+                }}
+                cursor="pointer"
+              />
+            </InputGroup>
+            <Box pl={2} color="red" fontSize="0.85rem">
+              {errors.password?.message}
+            </Box>
+          </FormControl>
+
+          {/* 비밀번호 확인 */}
+          <FormControl isInvalid={errors.passwordConfirm}>
+            <FormLabel>비밀번호 확인</FormLabel>
+            <InputGroup>
+              <Input
+                id="passwordConfirm"
+                name="passwordConfirm"
+                type={showPassword[1] ? "text" : "password"}
+                placeholder="비밀번호 확인"
+                ref={register}
+              />
+              <InputRightElement
+                children={
+                  showPassword[1] ? (
+                    <ViewIcon color="gray.400" />
+                  ) : (
+                    <ViewOffIcon color="gray.400" />
+                  )
+                }
+                onClick={(e) => {
+                  clickShowButton(1, e);
+                }}
+                cursor="pointer"
+              />
+            </InputGroup>
+            <Box pl={2} color="red" fontSize="0.85rem">
+              {errors.passwordConfirm?.message}
+            </Box>
+          </FormControl>
+
+          {/* 업체명 */}
+          <FormControl isInvalid={errors.corporateName}>
+            <FormLabel>업체명</FormLabel>
+            <Input
+              id="corporateName"
+              name="corporateName"
+              type="text"
+              placeholder="업체명"
+              ref={register}
+            />
+            <Box pl={2} color="red" fontSize="0.85rem">
+              {errors.corporateName?.message}
+            </Box>
+          </FormControl>
+
+          {/* 대표자명 */}
+          <FormControl isInvalid={errors.name}>
+            <FormLabel>대표자명</FormLabel>
+            <Input
+              id="name"
+              name="name"
+              type="text"
+              placeholder="대표자명"
+              ref={register}
+            />
+            <Box pl={2} color="red" fontSize="0.85rem">
+              {errors.name?.message}
+            </Box>
+          </FormControl>
+
+          {/* 사업자 등록번호 */}
+          <FormControl isInvalid={errors.corporateId}>
+            <FormLabel>사업자 등록번호</FormLabel>
+            <Input
+              id="corporateId"
+              name="corporateId"
+              type="text"
+              placeholder="사업자 등록번호(숫자만)"
+              ref={register}
+            />
+            <Box pl={2} color="red" fontSize="0.85rem">
+              {errors.corporateId?.message}
+            </Box>
+          </FormControl>
+
+          {/* 주소 */}
+          <FormControl>
+            <FormLabel>주소</FormLabel>
+            <Input
+              id="zipCode"
+              name="zipCode"
+              type="text"
+              placeholder="우편번호"
+              ref={register}
+            />
+            <Button size="md" variant="outline" color="gray" isFullWidth>
+              우편번호 검색
+            </Button>
+            <Input
+              id="address"
+              name="address"
+              type="text"
+              placeholder="주소"
+              ref={register}
             />
             <Input
+              id="addressDetail"
+              name="addressDetail"
+              type="text"
+              placeholder="상세주소"
+              ref={register}
+            />
+          </FormControl>
+
+          {/* 이메일 */}
+          <FormControl isInvalid={errors.email}>
+            <FormLabel>이메일</FormLabel>
+            <Input
+              id="email"
               name="email"
               type="text"
               placeholder="이메일"
               ref={register}
             />
-          </InputGroup>
-          <Box pl={2} color="red" fontSize="0.85rem">
-            {errors.email?.message}
-          </Box>
-
-          {/* 비밀번호 */}
-          <InputGroup mt={3}>
-            <InputLeftElement
-              pointerEvents="none"
-              children={<LockIcon color="gray.400" />}
-            />
-            <Input
-              name="password"
-              type={showPassword[0] ? "text" : "password"}
-              placeholder="비밀번호"
-              ref={register}
-            />
-            <InputRightElement
-              children={
-                showPassword[0] ? (
-                  <ViewIcon color="gray.400" />
-                ) : (
-                  <ViewOffIcon color="gray.400" />
-                )
-              }
-              onClick={(e) => {
-                clickShowButton(0, e);
-              }}
-              cursor="pointer"
-            />
-          </InputGroup>
-          <Box pl={2} color="red" fontSize="0.85rem">
-            {errors.password?.message}
-          </Box>
-
-          {/* 비밀번호 확인 */}
-          <InputGroup mt={3}>
-            <InputLeftElement
-              pointerEvents="none"
-              children={<LockIcon color="gray.400" />}
-            />
-            <Input
-              name="passwordConfirm"
-              type={showPassword[1] ? "text" : "password"}
-              placeholder="비밀번호 확인"
-              ref={register}
-            />
-            <InputRightElement
-              children={
-                showPassword[1] ? (
-                  <ViewIcon color="gray.400" />
-                ) : (
-                  <ViewOffIcon color="gray.400" />
-                )
-              }
-              onClick={(e) => {
-                clickShowButton(1, e);
-              }}
-              cursor="pointer"
-            />
-          </InputGroup>
-          <Box pl={2} color="red" fontSize="0.85rem">
-            {errors.passwordConfirm?.message}
-          </Box>
-
-          {/* 이름 */}
-          <InputGroup mt={3}>
-            <InputLeftElement
-              pointerEvents="none"
-              children={<RiUserFill color="#A0AEC0" />}
-            />
-            <Input name="name" type="text" placeholder="이름" ref={register} />
-          </InputGroup>
-          <Box pl={2} color="red" fontSize="0.85rem">
-            {errors.name?.message}
-          </Box>
+            <Box pl={2} color="red" fontSize="0.85rem">
+              {errors.email?.message}
+            </Box>
+          </FormControl>
 
           {/* 휴대폰 번호 */}
-          <InputGroup mt={3}>
-            <InputLeftElement
-              pointerEvents="none"
-              children={<PhoneIcon color="gray.400" />}
-            />
+          <FormControl isInvalid={errors.tel}>
+            <FormLabel>휴대폰 번호</FormLabel>
             <Input
+              id="tel"
               name="tel"
               type="text"
               placeholder="휴대폰 번호"
               ref={register}
             />
-          </InputGroup>
-          <Box pl={2} color="red" fontSize="0.85rem">
-            {errors.tel?.message}
-          </Box>
+            <Box pl={2} color="red" fontSize="0.85rem">
+              {errors.tel?.message}
+            </Box>
+          </FormControl>
 
           {/* 이용약관 */}
           <Stack
@@ -225,6 +303,7 @@ export default function signup() {
             borderRadius="md"
           >
             <Checkbox
+              id="termsCheck"
               name="termsCheck"
               isChecked={allChecked}
               isIndeterminate={isIndeterminate}

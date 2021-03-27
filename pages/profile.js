@@ -7,6 +7,11 @@ import {
   Tab,
   TabPanel,
   Heading,
+  Table,
+  Tbody,
+  Tr,
+  Th,
+  Td,
   Text,
   Button,
 } from "@chakra-ui/react";
@@ -32,8 +37,35 @@ export default function profile() {
             <Heading as="h1" size="md">
               개인정보 설정
             </Heading>
-            {/* <Table>
-              <Tr>
+            <Table my={5} size="sm" borderTop="1px">
+              <Tbody>
+                <Tr>
+                  <Th w="200px" bgColor="gray.200">
+                    이름
+                  </Th>
+                  <Td>윤재원</Td>
+                </Tr>
+                <Tr>
+                  <Th w="200px" bgColor="gray.200">
+                    이메일
+                  </Th>
+                  <Td>ydconnectcorp@gmail.com</Td>
+                </Tr>
+                <Tr>
+                  <Th w="200px" bgColor="gray.200">
+                    사업자 등록번호
+                  </Th>
+                  <Td>421-01-02162</Td>
+                </Tr>
+                <Tr>
+                  <Th w="200px" bgColor="gray.200">
+                    이름
+                  </Th>
+                  <Td>윤재원</Td>
+                </Tr>
+              </Tbody>
+            </Table>
+            {/*   <Tr>
                 <Th>이름</Th>
                 <Td>
                   윤재원
