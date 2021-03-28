@@ -5,8 +5,8 @@ import { useForm } from "react-hook-form";
 import {
   FormControl,
   FormLabel,
-  Input,
   InputGroup,
+  Input,
   InputRightElement,
   Box,
   Stack,
@@ -16,9 +16,8 @@ import {
   Divider,
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-import DaumPostcode from "react-daum-postcode";
 import SignLayout from "../components/SignLayout";
-import ModalButton from "../components/Modal";
+import ModalButton from "../components/ModalButton";
 
 const useYupValidationResolver = (validationSchema) =>
   useCallback(
@@ -53,6 +52,11 @@ const useYupValidationResolver = (validationSchema) =>
 
 export default function signup() {
   const [showPassword, setShowPassword] = useState([false, false]);
+  const [checkedItems, setCheckedItems] = useState([false, false]);
+
+  const allChecked = checkedItems.every(Boolean);
+  const isIndeterminate = checkedItems.some(Boolean) && !allChecked;
+
   const clickShowButton = (index, e) => {
     const value = showPassword[index];
 
@@ -66,10 +70,6 @@ export default function signup() {
       console.log(`showPassword Button Click Error!`);
     }
   };
-
-  const [checkedItems, setCheckedItems] = useState([false, false]);
-  const allChecked = checkedItems.every(Boolean);
-  const isIndeterminate = checkedItems.some(Boolean) && !allChecked;
 
   const validationSchema = useMemo(() =>
     yup.object({
@@ -101,9 +101,7 @@ export default function signup() {
         .email("이메일 주소 형식이 아닙니다")
         .required("이메일 주소를 입력해주세요"),
       tel: yup.string().required("휴대폰 번호를 입력해주세요"),
-      termsCheck: yup
-        .boolean()
-        .oneOf([true], "전체 이용약관에 동의하지 않았습니다"),
+      termsCheck: yup.boolean().oneOf([true], "전체 이용약관에 동의해주세요"),
     })
   );
 
@@ -115,8 +113,8 @@ export default function signup() {
       <SignLayout>
         <form onSubmit={handleSubmit((data) => console.log(data))}>
           {/* 아이디 */}
-          <FormControl isInvalid={errors.id}>
-            <FormLabel>아이디</FormLabel>
+          <FormControl mb={3} isInvalid={errors.id}>
+            <FormLabel mb={1}>아이디</FormLabel>
             <Input
               id="id"
               name="id"
@@ -130,8 +128,8 @@ export default function signup() {
           </FormControl>
 
           {/* 비밀번호 */}
-          <FormControl isInvalid={errors.password}>
-            <FormLabel>비밀번호</FormLabel>
+          <FormControl mb={3} isInvalid={errors.password}>
+            <FormLabel mb={1}>비밀번호</FormLabel>
             <InputGroup>
               <Input
                 id="password"
@@ -160,8 +158,8 @@ export default function signup() {
           </FormControl>
 
           {/* 비밀번호 확인 */}
-          <FormControl isInvalid={errors.passwordConfirm}>
-            <FormLabel>비밀번호 확인</FormLabel>
+          <FormControl mb={3} isInvalid={errors.passwordConfirm}>
+            <FormLabel mb={1}>비밀번호 확인</FormLabel>
             <InputGroup>
               <Input
                 id="passwordConfirm"
@@ -190,8 +188,8 @@ export default function signup() {
           </FormControl>
 
           {/* 업체명 */}
-          <FormControl isInvalid={errors.corporateName}>
-            <FormLabel>업체명</FormLabel>
+          <FormControl mb={3} isInvalid={errors.corporateName}>
+            <FormLabel mb={1}>업체명</FormLabel>
             <Input
               id="corporateName"
               name="corporateName"
@@ -205,8 +203,8 @@ export default function signup() {
           </FormControl>
 
           {/* 대표자명 */}
-          <FormControl isInvalid={errors.name}>
-            <FormLabel>대표자명</FormLabel>
+          <FormControl mb={3} isInvalid={errors.name}>
+            <FormLabel mb={1}>대표자명</FormLabel>
             <Input
               id="name"
               name="name"
@@ -220,8 +218,8 @@ export default function signup() {
           </FormControl>
 
           {/* 사업자 등록번호 */}
-          <FormControl isInvalid={errors.corporateId}>
-            <FormLabel>사업자 등록번호</FormLabel>
+          <FormControl mb={3} isInvalid={errors.corporateId}>
+            <FormLabel mb={1}>사업자 등록번호</FormLabel>
             <Input
               id="corporateId"
               name="corporateId"
@@ -235,18 +233,24 @@ export default function signup() {
           </FormControl>
 
           {/* 주소 */}
-          <FormControl>
-            <FormLabel>주소</FormLabel>
-            <Input
-              id="zipCode"
-              name="zipCode"
-              type="text"
-              placeholder="우편번호"
-              ref={register}
-            />
-            <Button size="md" variant="outline" color="gray" isFullWidth>
-              우편번호 검색
-            </Button>
+          <FormControl isInvalid={errors.zipCode}>
+            <FormLabel mb={1}>주소</FormLabel>
+            <InputGroup>
+              <Input
+                id="zipCode"
+                name="zipCode"
+                type="text"
+                placeholder="우편번호"
+                ref={register}
+              />
+              <InputRightElement w="7rem">
+                <Button size="sm" color="gray">
+                  우편번호 검색
+                </Button>
+              </InputRightElement>
+            </InputGroup>
+          </FormControl>
+          <FormControl isInvalid={errors.address}>
             <Input
               id="address"
               name="address"
@@ -254,6 +258,8 @@ export default function signup() {
               placeholder="주소"
               ref={register}
             />
+          </FormControl>
+          <FormControl mb={3} isInvalid={errors.addressDetail}>
             <Input
               id="addressDetail"
               name="addressDetail"
@@ -261,11 +267,16 @@ export default function signup() {
               placeholder="상세주소"
               ref={register}
             />
+            <Box pl={2} color="red" fontSize="0.85rem">
+              {errors.zipCode?.message ||
+                errors.address?.message ||
+                errors.addressDetail?.message}
+            </Box>
           </FormControl>
 
           {/* 이메일 */}
-          <FormControl isInvalid={errors.email}>
-            <FormLabel>이메일</FormLabel>
+          <FormControl mb={3} isInvalid={errors.email}>
+            <FormLabel mb={1}>이메일</FormLabel>
             <Input
               id="email"
               name="email"
@@ -279,8 +290,8 @@ export default function signup() {
           </FormControl>
 
           {/* 휴대폰 번호 */}
-          <FormControl isInvalid={errors.tel}>
-            <FormLabel>휴대폰 번호</FormLabel>
+          <FormControl mb={3} isInvalid={errors.tel}>
+            <FormLabel mb={1}>휴대폰 번호</FormLabel>
             <Input
               id="tel"
               name="tel"
@@ -294,52 +305,57 @@ export default function signup() {
           </FormControl>
 
           {/* 이용약관 */}
-          <Stack
-            p={2}
-            mt={3}
-            spacing={1}
-            border="1px"
-            borderColor="gray.200"
-            borderRadius="md"
-          >
-            <Checkbox
-              id="termsCheck"
-              name="termsCheck"
-              isChecked={allChecked}
-              isIndeterminate={isIndeterminate}
-              onChange={(e) => {
-                setCheckedItems([e.target.checked, e.target.checked]);
-              }}
-              ref={register}
+          <FormControl mb={3} isInvalid={errors.termsCheck}>
+            <FormLabel mb={1}>이용약관</FormLabel>
+            <Stack
+              p={2}
+              spacing={1}
+              border="1px"
+              borderColor="gray.200"
+              borderRadius="md"
             >
-              전체 동의
-            </Checkbox>
-            <Flex justify="space-between" align="center">
               <Checkbox
-                isChecked={checkedItems[0]}
+                id="termsCheck"
+                name="termsCheck"
+                isChecked={allChecked}
+                isIndeterminate={isIndeterminate}
                 onChange={(e) => {
-                  setCheckedItems([e.target.checked, checkedItems[1]]);
+                  setCheckedItems([e.target.checked, e.target.checked]);
                 }}
+                ref={register}
               >
-                와이디커넥트샵 이용약관 동의
+                전체 동의
               </Checkbox>
-              <ModalButton title="와이디커넥트샵 이용약관" content="테스트1" />
-            </Flex>
-            <Flex justify="space-between" align="center">
-              <Checkbox
-                isChecked={checkedItems[1]}
-                onChange={(e) => {
-                  setCheckedItems([checkedItems[0], e.target.checked]);
-                }}
-              >
-                개인정보 수집 및 이용 동의
-              </Checkbox>
-              <ModalButton title="개인정보 수집 및 이용" content="테스트2" />
-            </Flex>
-          </Stack>
-          <Box pl={2} color="red" fontSize="0.85rem">
-            {errors.termsCheck?.message}
-          </Box>
+              <Flex justify="space-between" align="center">
+                <Checkbox
+                  isChecked={checkedItems[0]}
+                  onChange={(e) => {
+                    setCheckedItems([e.target.checked, checkedItems[1]]);
+                  }}
+                >
+                  와이디커넥트샵 이용약관 동의
+                </Checkbox>
+                <ModalButton
+                  title="와이디커넥트샵 이용약관"
+                  content="테스트1"
+                />
+              </Flex>
+              <Flex justify="space-between" align="center">
+                <Checkbox
+                  isChecked={checkedItems[1]}
+                  onChange={(e) => {
+                    setCheckedItems([checkedItems[0], e.target.checked]);
+                  }}
+                >
+                  개인정보 수집 및 이용 동의
+                </Checkbox>
+                <ModalButton title="개인정보 수집 및 이용" content="테스트2" />
+              </Flex>
+            </Stack>
+            <Box pl={2} color="red" fontSize="0.85rem">
+              {errors.termsCheck?.message}
+            </Box>
+          </FormControl>
 
           {/* 회원가입 버튼 */}
           <Button
