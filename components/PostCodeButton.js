@@ -1,17 +1,17 @@
 import {
+  Button,
   Modal,
   ModalOverlay,
   ModalContent,
   ModalBody,
-  ModalCloseButton,
   useDisclosure,
 } from "@chakra-ui/react";
-import { ChevronRightIcon } from "@chakra-ui/icons";
+import DaumPostCode from "react-daum-postcode";
 
-export default function ModalButton() {
+export default function PostCodeButton() {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  handleAddress = (data) => {
+  const handleAddress = (data) => {
     let AllAddress = data.address;
     let extraAddress = "";
     let zoneCodes = data.zonecode;
@@ -34,24 +34,23 @@ export default function ModalButton() {
 
   return (
     <>
-      <ChevronRightIcon
-        boxSize={6}
-        color="gray.500"
-        cursor="pointer"
-        onClick={onOpen}
-      />
-      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+      <Button size="sm" color="gray" onClick={onOpen}>
+        우편번호 검색
+      </Button>
+      <Modal
+        blockScrollOnMount={false}
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+      >
         <ModalOverlay />
         <ModalContent>
-          <ModalCloseButton />
-          <ModalBody>
+          <ModalBody p="1rem">
             <DaumPostCode
               onComplete={handleAddress}
               autoClose
-              width={width}
-              height={height}
-              style={modalStyle}
-              isDaumPost={isDaumPost}
+              height="470px"
+              // isDaumPost={isDaumPost}
             />
           </ModalBody>
         </ModalContent>

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Link from "next/link";
 import {
   Box,
@@ -9,7 +10,6 @@ import {
   ListItem,
   Icon,
   Text,
-  Heading,
 } from "@chakra-ui/react";
 import { SearchIcon } from "@chakra-ui/icons";
 import {
@@ -17,22 +17,24 @@ import {
   RiMessage3Line,
   RiShoppingCart2Line,
 } from "react-icons/ri";
+import Footer from "./Footer";
 
 export default function AppLayout({ children }) {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   return (
     <>
-      {/* TODO */}
-      {/* 로그인시 article 숨김 */}
-      <article>
-        <Link href="/signin">
-          <Box cursor="pointer">로그인</Box>
-        </Link>
-        <Link href="/signup">
-          <Box ml="1rem" cursor="pointer">
-            회원가입
-          </Box>
-        </Link>
-      </article>
+      {isLoggedIn ? null : (
+        <article>
+          <Link href="/signin" setIsLoggedIn>
+            <Box cursor="pointer">로그인</Box>
+          </Link>
+          <Link href="/signup">
+            <Box ml="1rem" cursor="pointer">
+              회원가입
+            </Box>
+          </Link>
+        </article>
+      )}
       <header>
         <Link href="/">
           <Image
@@ -52,19 +54,21 @@ export default function AppLayout({ children }) {
           </InputGroup>
         </Box>
         <List d="flex">
-          <Link href="/profile">
-            <ListItem
-              d="flex"
-              flexDirection="column"
-              justifyContent="center"
-              alignItems="center"
-              cursor="pointer"
-              color="#495057"
-            >
-              <Icon as={RiAccountBoxLine} boxSize="35px" />
-              <Text fontSize="12px">마이메뉴</Text>
-            </ListItem>
-          </Link>
+          {isLoggedIn ? (
+            <Link href="/profile">
+              <ListItem
+                d="flex"
+                flexDirection="column"
+                justifyContent="center"
+                alignItems="center"
+                cursor="pointer"
+                color="#495057"
+              >
+                <Icon as={RiAccountBoxLine} boxSize="35px" />
+                <Text fontSize="12px">마이메뉴</Text>
+              </ListItem>
+            </Link>
+          ) : null}
           <Link href="/inquire">
             <ListItem
               ml="1.5rem"
@@ -108,17 +112,7 @@ export default function AppLayout({ children }) {
         </Box>
       </main>
       <footer>
-        <Heading as="h1" size="md" fontFamily="noto" mb="0.75rem">
-          와이디커넥트(주)
-        </Heading>
-        <Text>
-          대표이사 윤재원 / 사업자등록번호 421-01-02162 / 통신판매업신고번호
-          xxxxxxxxxxx
-        </Text>
-        <Text>
-          부산광역시 영도구 와치로 213 / 051-403-8444 / 010-6888-8444 /
-          ydconnectcorp@gmail.com
-        </Text>
+        <Footer />
       </footer>
     </>
   );

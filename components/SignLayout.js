@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Footer from "../components/Footer";
 import { Image, Box } from "@chakra-ui/react";
 
 export default function SignLayout({ children }) {
@@ -13,9 +14,21 @@ export default function SignLayout({ children }) {
           alt="Logo Image"
         />
       </Link>
-      <Box w="350px" m="1rem auto" d="flex" flexDirection="column">
-        {children}
-      </Box>
+      <main>
+        <Box
+          w="500px"
+          m="2rem auto"
+          p="3rem"
+          bg="white"
+          boxShadow="md"
+          color="#868e96" // GRAY 6
+        >
+          {children}
+        </Box>
+      </main>
+      <footer>
+        <Footer />
+      </footer>
     </>
   );
 }
