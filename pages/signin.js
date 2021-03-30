@@ -4,15 +4,16 @@ import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import {
   Heading,
-  Input,
+  FormControl,
+  FormLabel,
   InputGroup,
-  InputLeftElement,
+  Input,
   InputRightElement,
   Box,
   Button,
   Divider,
 } from "@chakra-ui/react";
-import { EmailIcon, LockIcon, ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import SignLayout from "../components/SignLayout";
 
 const useYupValidationResolver = (validationSchema) =>
@@ -51,10 +52,11 @@ export default function signin({ setIsLoggedIn }) {
 
   const validationSchema = useMemo(() =>
     yup.object({
-      email: yup
+      id: yup
         .string()
-        .email("이메일 주소 형식이 아닙니다")
-        .required("이메일 주소를 입력해주세요"),
+        .min(6, "아이디는 최소 6문자, 최대 20문자로 입력해주세요")
+        .max(20, "아이디는 최소 6문자, 최대 20문자로 입력해주세요")
+        .required("아이디를 입력해주세요"),
       password: yup
         .string()
         .min(8, "비밀번호는 최소 8문자, 최대 16문자로 입력해 주세요")
@@ -80,47 +82,50 @@ export default function signin({ setIsLoggedIn }) {
         로그인
       </Heading>
       <form onSubmit={handleSubmit((data) => console.log(data))}>
-        {/* 이메일 */}
-        <InputGroup mt={3}>
-          <InputLeftElement
-            pointerEvents="none"
-            children={<EmailIcon color="gray.400" />}
-          />
-          <Input name="email" type="text" placeholder="이메일" ref={register} />
-        </InputGroup>
-        <Box pl={2} color="red" fontSize="0.85rem">
-          {errors.email?.message}
-        </Box>
-
-        {/* 비밀번호 */}
-        <InputGroup mt={3}>
-          <InputLeftElement
-            pointerEvents="none"
-            children={<LockIcon color="gray.400" />}
-          />
+        {/* 아이디 */}
+        <FormControl mb={3} isInvalid={errors.id}>
+          <FormLabel mb={1}>아이디</FormLabel>
           <Input
-            name="password"
-            type={showPassword ? "text" : "password"}
-            placeholder="비밀번호"
+            id="id"
+            name="id"
+            type="text"
+            placeholder="아이디"
             ref={register}
           />
-          <InputRightElement
-            children={
-              showPassword ? (
-                <ViewIcon color="gray.400" />
-              ) : (
-                <ViewOffIcon color="gray.400" />
-              )
-            }
-            onClick={(e) => {
-              setShowPassword(!showPassword);
-            }}
-            cursor="pointer"
-          />
-        </InputGroup>
-        <Box pl={2} color="red" fontSize="0.85rem">
-          {errors.password?.message}
-        </Box>
+          <Box pl={2} color="red" fontSize="0.85rem">
+            {errors.id?.message}
+          </Box>
+        </FormControl>
+
+        {/* 비밀번호 */}
+        <FormControl mb={3} isInvalid={errors.password}>
+          <FormLabel mb={1}>비밀번호</FormLabel>
+          <InputGroup>
+            <Input
+              id="password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="비밀번호"
+              ref={register}
+            />
+            <InputRightElement
+              children={
+                showPassword ? (
+                  <ViewIcon color="gray.400" />
+                ) : (
+                  <ViewOffIcon color="gray.400" />
+                )
+              }
+              onClick={(e) => {
+                setShowPassword(!showPassword);
+              }}
+              cursor="pointer"
+            />
+          </InputGroup>
+          <Box pl={2} color="red" fontSize="0.85rem">
+            {errors.password?.message}
+          </Box>
+        </FormControl>
 
         {/* 아이디 / 패스워드 찾기 */}
         <Link href="/findUser">

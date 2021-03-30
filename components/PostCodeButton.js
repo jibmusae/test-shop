@@ -8,13 +8,13 @@ import {
 } from "@chakra-ui/react";
 import DaumPostCode from "react-daum-postcode";
 
-export default function PostCodeButton() {
+export default function PostCodeButton({ setIsZipCode }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleAddress = (data) => {
-    let AllAddress = data.address;
+    let allAddress = data.address;
     let extraAddress = "";
-    let zoneCodes = data.zonecode;
+    let zoneCode = data.zonecode;
 
     if (data.addressType === "R") {
       if (data.bname !== "") {
@@ -24,12 +24,11 @@ export default function PostCodeButton() {
         extraAddress +=
           extraAddress !== "" ? `, ${data.buildingName}` : data.buildingName;
       }
-      AllAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
+      allAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
     }
-    setState({
-      fullAddress: AllAddress,
-      zoneCode: zoneCodes,
-    });
+
+    setIsZipCode(zoneCode);
+    // setIsAddress(allAddress);
   };
 
   return (

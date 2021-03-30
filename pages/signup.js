@@ -52,13 +52,10 @@ const useYupValidationResolver = (validationSchema) =>
     [validationSchema]
   );
 
-const AddressField = ({ setAddressField }) => {
+export default function signup() {
   const [isZipCode, setIsZipCode] = useState("");
   const [isAddress, SetIsAddress] = useState("");
-  const [isAddressDetail, setIsAddressDetail] = useState("");
-};
 
-export default function signup() {
   const [showPassword, setShowPassword] = useState([false, false]);
   const [checkedItems, setCheckedItems] = useState([false, false]);
 
@@ -69,7 +66,7 @@ export default function signup() {
     const value = showPassword[index];
 
     // TODO
-    // 리팩토링
+    // 리팩토링(커스텀훅)
     if (index === 0) {
       setShowPassword([!value, showPassword[1]]);
     } else if (index === 1) {
@@ -262,7 +259,10 @@ export default function signup() {
               ref={register}
             />
             <InputRightElement w="7rem">
-              <PostCodeButton setIsZipCode SetIsAddress setIsAddressDetail />
+              <PostCodeButton
+                setIsZipCode={setIsZipCode}
+                SetIsAddress={SetIsAddress}
+              />
             </InputRightElement>
           </InputGroup>
         </FormControl>
