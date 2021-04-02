@@ -53,28 +53,13 @@ const useYupValidationResolver = (validationSchema) =>
   );
 
 export default function signup() {
-  const [isZipCode, setIsZipCode] = useState("");
-  const [isAddress, SetIsAddress] = useState("");
-
+  const [zipCode, setZipCode] = useState("");
+  const [address, SetAddress] = useState("");
   const [showPassword, setShowPassword] = useState([false, false]);
   const [checkedItems, setCheckedItems] = useState([false, false]);
 
   const allChecked = checkedItems.every(Boolean);
   const isIndeterminate = checkedItems.some(Boolean) && !allChecked;
-
-  const clickShowButton = (index, e) => {
-    const value = showPassword[index];
-
-    // TODO
-    // 리팩토링(커스텀훅)
-    if (index === 0) {
-      setShowPassword([!value, showPassword[1]]);
-    } else if (index === 1) {
-      setShowPassword([showPassword[0], !value]);
-    } else {
-      console.log(`showPassword Button Click Error!`);
-    }
-  };
 
   const validationSchema = useMemo(() =>
     yup.object({
@@ -162,7 +147,7 @@ export default function signup() {
                 )
               }
               onClick={(e) => {
-                clickShowButton(0, e);
+                setShowPassword([!showPassword[0], showPassword[1]]);
               }}
               cursor="pointer"
             />
@@ -192,7 +177,7 @@ export default function signup() {
                 )
               }
               onClick={(e) => {
-                clickShowButton(1, e);
+                setShowPassword([showPassword[0], !showPassword[1]]);
               }}
               cursor="pointer"
             />
@@ -260,8 +245,8 @@ export default function signup() {
             />
             <InputRightElement w="7rem">
               <PostCodeButton
-                setIsZipCode={setIsZipCode}
-                SetIsAddress={SetIsAddress}
+              // setIsZipCode={setIsZipCode}
+              // SetIsAddress={SetIsAddress}
               />
             </InputRightElement>
           </InputGroup>

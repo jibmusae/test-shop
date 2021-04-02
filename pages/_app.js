@@ -1,8 +1,9 @@
 import Head from "next/head";
 import "../styles/globals.css";
 import { ChakraProvider } from "@chakra-ui/react";
+import wrapper from "../store/configureStore";
 
-export default function MyApp({ Component, pageProps }) {
+const YDShop = ({ Component, pageProps }) => {
   return (
     <ChakraProvider resetCSS>
       <Head>
@@ -12,4 +13,6 @@ export default function MyApp({ Component, pageProps }) {
       <Component {...pageProps} />
     </ChakraProvider>
   );
-}
+};
+
+export default wrapper.withRedux(YDShop);
