@@ -113,7 +113,7 @@ export default function signup() {
       </Heading>
       <form onSubmit={handleSubmit((data) => console.log(data))}>
         {/* 아이디 */}
-        <FormControl mb={3} isInvalid={errors.id}>
+        <FormControl mb={3}>
           <FormLabel mb={1}>아이디</FormLabel>
           <Input
             id="id"
@@ -128,7 +128,7 @@ export default function signup() {
         </FormControl>
 
         {/* 비밀번호 */}
-        <FormControl mb={3} isInvalid={errors.password}>
+        <FormControl mb={3}>
           <FormLabel mb={1}>비밀번호</FormLabel>
           <InputGroup>
             <Input
@@ -158,7 +158,7 @@ export default function signup() {
         </FormControl>
 
         {/* 비밀번호 확인 */}
-        <FormControl mb={3} isInvalid={errors.passwordConfirm}>
+        <FormControl mb={3}>
           <FormLabel mb={1}>비밀번호 확인</FormLabel>
           <InputGroup>
             <Input
@@ -188,7 +188,7 @@ export default function signup() {
         </FormControl>
 
         {/* 업체명 */}
-        <FormControl mb={3} isInvalid={errors.corporateName}>
+        <FormControl mb={3}>
           <FormLabel mb={1}>업체명</FormLabel>
           <Input
             id="corporateName"
@@ -203,7 +203,7 @@ export default function signup() {
         </FormControl>
 
         {/* 대표자명 */}
-        <FormControl mb={3} isInvalid={errors.name}>
+        <FormControl mb={3}>
           <FormLabel mb={1}>대표자명</FormLabel>
           <Input
             id="name"
@@ -218,7 +218,7 @@ export default function signup() {
         </FormControl>
 
         {/* 사업자 등록번호 */}
-        <FormControl mb={3} isInvalid={errors.corporateId}>
+        <FormControl mb={3}>
           <FormLabel mb={1}>사업자 등록번호</FormLabel>
           <Input
             id="corporateId"
@@ -233,7 +233,7 @@ export default function signup() {
         </FormControl>
 
         {/* 주소 */}
-        <FormControl isInvalid={errors.zipCode}>
+        <FormControl>
           <FormLabel mb={1}>주소</FormLabel>
           <InputGroup>
             <Input
@@ -251,7 +251,7 @@ export default function signup() {
             </InputRightElement>
           </InputGroup>
         </FormControl>
-        <FormControl isInvalid={errors.address}>
+        <FormControl>
           <Input
             id="address"
             name="address"
@@ -260,7 +260,7 @@ export default function signup() {
             ref={register}
           />
         </FormControl>
-        <FormControl mb={3} isInvalid={errors.addressDetail}>
+        <FormControl mb={3}>
           <Input
             id="addressDetail"
             name="addressDetail"
@@ -276,7 +276,7 @@ export default function signup() {
         </FormControl>
 
         {/* 이메일 */}
-        <FormControl mb={3} isInvalid={errors.email}>
+        <FormControl mb={3}>
           <FormLabel mb={1}>이메일</FormLabel>
           <Input
             id="email"
@@ -291,7 +291,7 @@ export default function signup() {
         </FormControl>
 
         {/* 휴대폰 번호 */}
-        <FormControl mb={3} isInvalid={errors.tel}>
+        <FormControl mb={3}>
           <FormLabel mb={1}>휴대폰 번호</FormLabel>
           <Input
             id="tel"
@@ -306,7 +306,7 @@ export default function signup() {
         </FormControl>
 
         {/* 이용약관 */}
-        <FormControl mb={3} isInvalid={errors.termsCheck}>
+        <FormControl mb={3}>
           <FormLabel mb={1}>이용약관</FormLabel>
           <Stack
             p={2}

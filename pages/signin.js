@@ -1,5 +1,7 @@
 import React, { useState, useCallback, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
+import Router from "next/router";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import {
@@ -15,6 +17,8 @@ import {
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import SignLayout from "../components/SignLayout";
+import { loginAction } from "../reducers";
+import useInput from "../hooks/useInput";
 
 const useYupValidationResolver = (validationSchema) =>
   useCallback(
@@ -47,8 +51,19 @@ const useYupValidationResolver = (validationSchema) =>
     [validationSchema]
   );
 
-export default function signin({ setIsLoggedIn }) {
+export default function signin() {
+  const [id, onChangeId] = useInput("");
+  const [password, onChangePassword] = useInput("");
   const [showPassword, setShowPassword] = useState(false);
+
+  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+
+  const dispatch = useDispatch();
+  const onSubmitForm = useCallback(() => {
+    console.log(id, password);
+    dispatch(loginAction({ id, password }));
+    Router.push("/");
+  }, [id, password]);
 
   const validationSchema = useMemo(() =>
     yup.object({
@@ -81,7 +96,7 @@ export default function signin({ setIsLoggedIn }) {
       >
         로그인
       </Heading>
-      <form onSubmit={handleSubmit((data) => console.log(data))}>
+      <form onSubmit={handleSubmit(onSubmitForm)}>
         {/* 아이디 */}
         <FormControl mb={3} isInvalid={errors.id}>
           <FormLabel mb={1}>아이디</FormLabel>
@@ -90,6 +105,8 @@ export default function signin({ setIsLoggedIn }) {
             name="id"
             type="text"
             placeholder="아이디"
+            value={id}
+            onChange={onChangeId}
             ref={register}
           />
           <Box pl={2} color="red" fontSize="0.85rem">
@@ -106,6 +123,8 @@ export default function signin({ setIsLoggedIn }) {
               name="password"
               type={showPassword ? "text" : "password"}
               placeholder="비밀번호"
+              value={password}
+              onChange={onChangePassword}
               ref={register}
             />
             <InputRightElement

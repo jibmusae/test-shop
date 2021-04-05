@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
 import {
   Box,
@@ -18,23 +19,34 @@ import {
   RiShoppingCart2Line,
 } from "react-icons/ri";
 import Footer from "./Footer";
+import { logoutAction } from "../reducers";
 
 export default function AppLayout({ children }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+  const dispatch = useDispatch();
+
+  const onLogout = useCallback(() => {
+    dispatch(logoutAction());
+  }, []);
+
   return (
     <>
-      {isLoggedIn ? null : (
-        <article>
-          <Link href="/signin" setIsLoggedIn>
-            <Box cursor="pointer">로그인</Box>
-          </Link>
-          <Link href="/signup">
-            <Box ml="1rem" cursor="pointer">
-              회원가입
-            </Box>
-          </Link>
-        </article>
-      )}
+      <article>
+        {isLoggedIn ? (
+          <Box cursor="pointer">로그아웃</Box>
+        ) : (
+          <>
+            <Link href="/signin">
+              <Box cursor="pointer">로그인</Box>
+            </Link>
+            <Link href="/signup">
+              <Box ml="1rem" cursor="pointer">
+                회원가입
+              </Box>
+            </Link>
+          </>
+        )}
+      </article>
       <header>
         <Link href="/">
           <Image
