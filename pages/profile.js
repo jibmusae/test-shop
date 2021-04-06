@@ -68,6 +68,8 @@ export default function profile() {
                   <Td>
                     <InputGroup>
                       <Input
+                        mb={1}
+                        mr={1}
                         id="zipCode"
                         name="zipCode"
                         type="text"
@@ -79,6 +81,21 @@ export default function profile() {
                       // SetIsAddress={SetIsAddress}
                       />
                     </InputGroup>
+                    <Input
+                      mb={1}
+                      size="sm"
+                      id="address"
+                      name="address"
+                      type="text"
+                      placeholder="주소"
+                    />
+                    <Input
+                      size="sm"
+                      id="addressDetail"
+                      name="addressDetail"
+                      type="text"
+                      placeholder="상세주소"
+                    />
                   </Td>
                 </Tr>
                 <Tr>

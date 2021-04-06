@@ -33,7 +33,9 @@ export default function AppLayout({ children }) {
     <>
       <article>
         {isLoggedIn ? (
-          <Box cursor="pointer">로그아웃</Box>
+          <Box cursor="pointer" onClick={onLogout}>
+            로그아웃
+          </Box>
         ) : (
           <>
             <Link href="/signin">
