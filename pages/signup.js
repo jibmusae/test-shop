@@ -235,7 +235,7 @@ export default function signup() {
         {/* 주소 */}
         <FormControl>
           <FormLabel mb={1}>주소</FormLabel>
-          <InputGroup>
+          <InputGroup mb={1}>
             <Input
               id="zipCode"
               name="zipCode"
@@ -253,6 +253,7 @@ export default function signup() {
         </FormControl>
         <FormControl>
           <Input
+            mb={1}
             id="address"
             name="address"
             type="text"

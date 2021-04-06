@@ -1,5 +1,3 @@
-import AppLayout from "../components/AppLayout";
-import InputPassword from "../components/InputPassword";
 import {
   Tabs,
   TabList,
@@ -12,9 +10,15 @@ import {
   Tr,
   Th,
   Td,
+  Box,
+  InputGroup,
+  Input,
+  InputRightElement,
   Text,
   Button,
 } from "@chakra-ui/react";
+import AppLayout from "../components/AppLayout";
+import PostCodeButton from "../components/PostCodeButton";
 
 export default function profile() {
   return (
@@ -41,15 +45,15 @@ export default function profile() {
               <Tbody>
                 <Tr>
                   <Th w="200px" bgColor="gray.200">
-                    이름
+                    업체명
                   </Th>
-                  <Td>윤재원</Td>
+                  <Td>와이디커넥트</Td>
                 </Tr>
                 <Tr>
                   <Th w="200px" bgColor="gray.200">
-                    이메일
+                    대표자명
                   </Th>
-                  <Td>ydconnectcorp@gmail.com</Td>
+                  <Td>윤재원</Td>
                 </Tr>
                 <Tr>
                   <Th w="200px" bgColor="gray.200">
@@ -59,34 +63,38 @@ export default function profile() {
                 </Tr>
                 <Tr>
                   <Th w="200px" bgColor="gray.200">
-                    이름
+                    주소
                   </Th>
-                  <Td>윤재원</Td>
+                  <Td>
+                    <InputGroup>
+                      <Input
+                        id="zipCode"
+                        name="zipCode"
+                        type="text"
+                        placeholder="우편번호"
+                        size="sm"
+                      />
+                      <PostCodeButton
+                      // setIsZipCode={setIsZipCode}
+                      // SetIsAddress={SetIsAddress}
+                      />
+                    </InputGroup>
+                  </Td>
+                </Tr>
+                <Tr>
+                  <Th w="200px" bgColor="gray.200">
+                    이메일
+                  </Th>
+                  <Td>ydconnectcorp@gmail.com</Td>
+                </Tr>
+                <Tr>
+                  <Th w="200px" bgColor="gray.200">
+                    휴대폰 번호
+                  </Th>
+                  <Td>010-6888-8444</Td>
                 </Tr>
               </Tbody>
             </Table>
-            {/*   <Tr>
-                <Th>이름</Th>
-                <Td>
-                  윤재원
-                  <Button w="50px" ml="0.5rem" size="xs" colorScheme="gray">
-                    변경
-                  </Button>
-                </Td>
-              </Tr>
-              <Tr>
-                <Th>이름</Th>
-                <Td>윤재원</Td>
-              </Tr>
-              <Tr>
-                <Th>이름</Th>
-                <Td>윤재원</Td>
-              </Tr>
-              <Tr>
-                <Th>이름</Th>
-                <Td>윤재원</Td>
-              </Tr>
-            </Table> */}
           </TabPanel>
         </TabPanels>
       </Tabs>

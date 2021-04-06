@@ -20,12 +20,19 @@ export default function ModalButton(props) {
         cursor="pointer"
         onClick={onOpen}
       />
-      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+        blockScrollOnMount={false}
+      >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{props.title}</ModalHeader>
+          <ModalHeader m="0" p="1rem">
+            {props.title}
+          </ModalHeader>
           <ModalCloseButton />
-          <ModalBody>{props.content}</ModalBody>
+          <ModalBody p="1rem">{props.content}</ModalBody>
         </ModalContent>
       </Modal>
     </>

@@ -51,6 +51,7 @@ export default function AppLayout({ children }) {
         <Link href="/">
           <Image
             w="150px"
+            ml="3rem"
             cursor="pointer"
             src="/image/logo_ydshop.png"
             alt="Header Logo Image"
