@@ -54,7 +54,21 @@ const useYupValidationResolver = (validationSchema) =>
 
 export default function signup() {
   const [zipCode, setZipCode] = useState("");
-  const [address, SetAddress] = useState("");
+  const onChangeZipCode = useCallback((e) => {
+    setZipCode(e.target.value);
+  }, []);
+  const getZipCode = (value) => {
+    setZipCode(value);
+  };
+
+  const [address, setAddress] = useState("");
+  const onChangeAddress = useCallback((e) => {
+    setAddress(e.target.value);
+  }, []);
+  const getAddress = (value) => {
+    setAddress(value);
+  };
+
   const [showPassword, setShowPassword] = useState([false, false]);
   const [checkedItems, setCheckedItems] = useState([false, false]);
 
@@ -241,13 +255,12 @@ export default function signup() {
               name="zipCode"
               type="text"
               placeholder="우편번호"
+              value={zipCode}
+              onChange={onChangeZipCode}
               ref={register}
             />
             <InputRightElement w="7rem">
-              <PostCodeButton
-              // setIsZipCode={setIsZipCode}
-              // SetIsAddress={SetIsAddress}
-              />
+              <PostCodeButton getZipCode={getZipCode} getAddress={getAddress} />
             </InputRightElement>
           </InputGroup>
         </FormControl>
@@ -258,6 +271,8 @@ export default function signup() {
             name="address"
             type="text"
             placeholder="주소"
+            value={address}
+            onChange={onChangeAddress}
             ref={register}
           />
         </FormControl>

@@ -1,3 +1,4 @@
+import { useState, useCallback } from "react";
 import {
   Tabs,
   TabList,
@@ -21,6 +22,22 @@ import AppLayout from "../components/AppLayout";
 import PostCodeButton from "../components/PostCodeButton";
 
 export default function profile() {
+  const [zipCode, setZipCode] = useState("");
+  const onChangeZipCode = useCallback((e) => {
+    setZipCode(e.target.value);
+  }, []);
+  const getZipCode = (value) => {
+    setZipCode(value);
+  };
+
+  const [address, setAddress] = useState("");
+  const onChangeAddress = useCallback((e) => {
+    setAddress(e.target.value);
+  }, []);
+  const getAddress = (value) => {
+    setAddress(value);
+  };
+
   return (
     <AppLayout>
       <Tabs isFitted variant="enclosed-colored">
@@ -75,10 +92,12 @@ export default function profile() {
                         type="text"
                         placeholder="우편번호"
                         size="sm"
+                        value={zipCode}
+                        onChange={onChangeZipCode}
                       />
                       <PostCodeButton
-                      // setIsZipCode={setIsZipCode}
-                      // SetIsAddress={SetIsAddress}
+                        getZipCode={getZipCode}
+                        getAddress={getAddress}
                       />
                     </InputGroup>
                     <Input
@@ -88,6 +107,8 @@ export default function profile() {
                       name="address"
                       type="text"
                       placeholder="주소"
+                      value={address}
+                      onChange={onChangeAddress}
                     />
                     <Input
                       size="sm"

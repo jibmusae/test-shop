@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react";
 import DaumPostCode from "react-daum-postcode";
 
-export default function PostCodeButton({ setIsZipCode }) {
+export default function PostCodeButton(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleAddress = (data) => {
@@ -27,8 +27,8 @@ export default function PostCodeButton({ setIsZipCode }) {
       allAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
     }
 
-    setIsZipCode(zoneCode);
-    // setIsAddress(allAddress);
+    props.getZipCode(zoneCode);
+    props.getAddress(allAddress);
   };
 
   return (
@@ -37,20 +37,15 @@ export default function PostCodeButton({ setIsZipCode }) {
         우편번호 검색
       </Button>
       <Modal
-        blockScrollOnMount={false}
         isOpen={isOpen}
         onClose={onClose}
+        blockScrollOnMount={false}
         isCentered
       >
         <ModalOverlay />
         <ModalContent>
           <ModalBody p="1rem">
-            <DaumPostCode
-              onComplete={handleAddress}
-              autoClose
-              height="470px"
-              // isDaumPost={isDaumPost}
-            />
+            <DaumPostCode onComplete={handleAddress} autoClose height="470px" />
           </ModalBody>
         </ModalContent>
       </Modal>
