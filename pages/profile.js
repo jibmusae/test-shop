@@ -22,6 +22,14 @@ import AppLayout from "../components/AppLayout";
 import PostCodeButton from "../components/PostCodeButton";
 
 export default function profile() {
+  const [modalOpenFlg, setModalOpenFlg] = useState(false);
+  const openPostModal = () => {
+    setModalOpenFlg(true);
+  };
+  const closePostModal = () => {
+    setModalOpenFlg(false);
+  };
+
   const [zipCode, setZipCode] = useState("");
   const onChangeZipCode = useCallback((e) => {
     setZipCode(e.target.value);
@@ -95,7 +103,12 @@ export default function profile() {
                         value={zipCode}
                         onChange={onChangeZipCode}
                       />
+                      <Button size="sm" color="gray" onClick={openPostModal}>
+                        우편번호 검색
+                      </Button>
                       <PostCodeButton
+                        open={modalOpenFlg}
+                        close={closePostModal}
                         getZipCode={getZipCode}
                         getAddress={getAddress}
                       />
