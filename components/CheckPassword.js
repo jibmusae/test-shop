@@ -1,6 +1,6 @@
 import { Heading, Flex, Text, Input, Button } from "@chakra-ui/react";
 
-export default function InputPassword() {
+export default function CheckPassword() {
   return (
     <>
       <Heading

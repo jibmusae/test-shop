@@ -69,7 +69,7 @@ export default function AppLayout({ children }) {
           </InputGroup>
         </Box>
         <List d="flex">
-          {isLoggedIn ? (
+          {isLoggedIn && (
             <Link href="/profile">
               <ListItem
                 d="flex"
@@ -83,7 +83,7 @@ export default function AppLayout({ children }) {
                 <Text fontSize="12px">마이메뉴</Text>
               </ListItem>
             </Link>
-          ) : null}
+          )}
           <Link href="/inquire">
             <ListItem
               ml="1.5rem"

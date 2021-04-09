@@ -53,6 +53,12 @@ const useYupValidationResolver = (validationSchema) =>
   );
 
 export default function signup() {
+  const [isPostOpen, setIsPostOpen] = useState(false);
+  const onClickDaumPost = () => {
+    setIsPostOpen(true);
+    document.body.style.overflow = "hidden";
+  };
+
   const [zipCode, setZipCode] = useState("");
   const onChangeZipCode = useCallback((e) => {
     setZipCode(e.target.value);
@@ -258,9 +264,20 @@ export default function signup() {
               value={zipCode}
               onChange={onChangeZipCode}
               ref={register}
+              isReadOnly
             />
             <InputRightElement w="7rem">
-              <PostCodeButton getZipCode={getZipCode} getAddress={getAddress} />
+              <Button size="sm" color="gray" onClick={onClickDaumPost}>
+                우편번호 검색
+              </Button>
+              {isPostOpen && (
+                <PostCodeButton
+                  setIsPostOpen={setIsPostOpen}
+                  isPostOpen={isPostOpen}
+                  getZipCode={getZipCode}
+                  getAddress={getAddress}
+                />
+              )}
             </InputRightElement>
           </InputGroup>
         </FormControl>
@@ -274,6 +291,7 @@ export default function signup() {
             value={address}
             onChange={onChangeAddress}
             ref={register}
+            isReadOnly
           />
         </FormControl>
         <FormControl mb={3}>

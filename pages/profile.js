@@ -11,23 +11,19 @@ import {
   Tr,
   Th,
   Td,
-  Box,
   InputGroup,
   Input,
-  InputRightElement,
-  Text,
+  Flex,
   Button,
 } from "@chakra-ui/react";
 import AppLayout from "../components/AppLayout";
 import PostCodeButton from "../components/PostCodeButton";
 
 export default function profile() {
-  const [modalOpenFlg, setModalOpenFlg] = useState(false);
-  const openPostModal = () => {
-    setModalOpenFlg(true);
-  };
-  const closePostModal = () => {
-    setModalOpenFlg(false);
+  const [isPostOpen, setIsPostOpen] = useState(false);
+  const onClickDaumPost = () => {
+    setIsPostOpen(true);
+    document.body.style.overflow = "hidden";
   };
 
   const [zipCode, setZipCode] = useState("");
@@ -102,16 +98,24 @@ export default function profile() {
                         size="sm"
                         value={zipCode}
                         onChange={onChangeZipCode}
+                        isReadOnly
                       />
-                      <Button size="sm" color="gray" onClick={openPostModal}>
+                      <Button
+                        w="120px"
+                        size="sm"
+                        color="gray"
+                        onClick={onClickDaumPost}
+                      >
                         우편번호 검색
                       </Button>
-                      <PostCodeButton
-                        open={modalOpenFlg}
-                        close={closePostModal}
-                        getZipCode={getZipCode}
-                        getAddress={getAddress}
-                      />
+                      {isPostOpen && (
+                        <PostCodeButton
+                          setIsPostOpen={setIsPostOpen}
+                          isPostOpen={isPostOpen}
+                          getZipCode={getZipCode}
+                          getAddress={getAddress}
+                        />
+                      )}
                     </InputGroup>
                     <Input
                       mb={1}
@@ -122,6 +126,7 @@ export default function profile() {
                       placeholder="주소"
                       value={address}
                       onChange={onChangeAddress}
+                      isReadOnly
                     />
                     <Input
                       size="sm"
@@ -146,6 +151,16 @@ export default function profile() {
                 </Tr>
               </Tbody>
             </Table>
+            <Flex mt="2rem" justifyContent="center">
+              <Button
+                w="150px"
+                size="md"
+                colorScheme="blue"
+                // onClick={onClickModify}
+              >
+                수정하기
+              </Button>
+            </Flex>
           </TabPanel>
         </TabPanels>
       </Tabs>
