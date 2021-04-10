@@ -35,6 +35,8 @@ export default function PostCodeButton(props) {
     props.getZipCode(zoneCode);
     props.getAddress(allAddress);
     props.setIsPostOpen(false);
+
+    document.body.style.overflow = "auto";
   }, []);
 
   return (

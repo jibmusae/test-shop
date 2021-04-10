@@ -21,8 +21,7 @@ import {
 import { EditIcon } from "@chakra-ui/icons";
 
 export default function InProgress() {
-  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
-  const isAdminUser = useSelector((state) => state.user.isAdminUser);
+  const { user } = useSelector((state) => state.user);
 
   const startDate = "2021년 3월 1일";
   const endDate = "2021년 12월 31일";
@@ -43,7 +42,7 @@ export default function InProgress() {
         </Heading>
         <IconButton
           // TODO 관리자 로그인시 활성화
-          display={isLoggedIn ? "inline-flex" : "none"}
+          display={user ? "inline-flex" : "none"}
           colorScheme="blue"
           aria-label="Add Item"
           fontSize="20px"
@@ -103,7 +102,7 @@ export default function InProgress() {
                 justifyContent="center"
                 alignItems="center"
               >
-                {isLoggedIn ? (
+                {user ? (
                   <Text fontSize="md">123,456,789원</Text>
                 ) : (
                   <Text fontSize="md">금액 : 회원 공개</Text>
@@ -136,7 +135,7 @@ export default function InProgress() {
                 </Button>
                 <Button
                   // TODO 관리자 로그인시 활성화
-                  display={isLoggedIn ? "inline-flex" : "none"}
+                  display={user ? "inline-flex" : "none"}
                   w="100px"
                   mt="0.5rem"
                   size="sm"
@@ -186,7 +185,7 @@ export default function InProgress() {
                 justifyContent="center"
                 alignItems="center"
               >
-                {isLoggedIn ? (
+                {user ? (
                   <Text fontSize="md">123,456,789원</Text>
                 ) : (
                   <Text fontSize="md">금액 : 회원 공개</Text>
@@ -219,7 +218,7 @@ export default function InProgress() {
                 </Button>
                 <Button
                   // TODO 관리자 로그인시 활성화
-                  display={isLoggedIn ? "inline-flex" : "none"}
+                  display={user ? "inline-flex" : "none"}
                   w="100px"
                   mt="0.5rem"
                   size="sm"
@@ -279,7 +278,7 @@ export default function InProgress() {
                 justifyContent="center"
                 alignItems="center"
               >
-                {isLoggedIn ? (
+                {user ? (
                   <Text fontSize="md">123,456,789원</Text>
                 ) : (
                   <Text fontSize="md">금액 : 회원 공개</Text>
@@ -312,7 +311,7 @@ export default function InProgress() {
                 </Button>
                 <Button
                   // TODO 관리자 로그인시 활성화
-                  display={isLoggedIn ? "inline-flex" : "none"}
+                  display={user ? "inline-flex" : "none"}
                   w="100px"
                   mt="0.5rem"
                   size="sm"
@@ -368,7 +367,7 @@ export default function InProgress() {
                 justifyContent="center"
                 alignItems="center"
               >
-                {isLoggedIn ? (
+                {user ? (
                   <Text fontSize="md">123,456,789원</Text>
                 ) : (
                   <Text fontSize="md">금액 : 회원 공개</Text>
@@ -401,7 +400,7 @@ export default function InProgress() {
                 </Button>
                 <Button
                   // TODO 관리자 로그인시 활성화
-                  display={isLoggedIn ? "inline-flex" : "none"}
+                  display={user ? "inline-flex" : "none"}
                   w="100px"
                   mt="0.5rem"
                   size="sm"
@@ -460,7 +459,7 @@ export default function InProgress() {
                 justifyContent="center"
                 alignItems="center"
               >
-                {isLoggedIn ? (
+                {user ? (
                   <Text fontSize="md">123,456,789원</Text>
                 ) : (
                   <Text fontSize="md">금액 : 회원 공개</Text>
@@ -493,7 +492,7 @@ export default function InProgress() {
                 </Button>
                 <Button
                   // TODO 관리자 로그인시 활성화
-                  display={isLoggedIn ? "inline-flex" : "none"}
+                  display={user ? "inline-flex" : "none"}
                   w="100px"
                   mt="0.5rem"
                   size="sm"

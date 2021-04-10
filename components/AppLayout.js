@@ -1,6 +1,7 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
+import Router from "next/router";
 import {
   Box,
   Image,
@@ -19,20 +20,25 @@ import {
   RiShoppingCart2Line,
 } from "react-icons/ri";
 import Footer from "./Footer";
-import { logoutAction } from "../reducers";
+import { logoutRequestAction } from "../reducers/user";
 
 export default function AppLayout({ children }) {
-  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+  const { user, logoutDone } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-
   const onLogout = useCallback(() => {
-    dispatch(logoutAction());
+    dispatch(logoutRequestAction());
   }, []);
+
+  useEffect(() => {
+    if (logoutDone) {
+      Router.push("/");
+    }
+  }, [logoutDone]);
 
   return (
     <>
       <article>
-        {isLoggedIn ? (
+        {user ? (
           <Box cursor="pointer" onClick={onLogout}>
             로그아웃
           </Box>
@@ -69,7 +75,7 @@ export default function AppLayout({ children }) {
           </InputGroup>
         </Box>
         <List d="flex">
-          {isLoggedIn && (
+          {user && (
             <Link href="/profile">
               <ListItem
                 d="flex"

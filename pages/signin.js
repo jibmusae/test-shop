@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
 import Router from "next/router";
@@ -17,7 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import SignLayout from "../components/SignLayout";
-import { loginAction } from "../reducers";
+import { loginRequestAction } from "../reducers/user";
 import useInput from "../hooks/useInput";
 
 const useYupValidationResolver = (validationSchema) =>
@@ -56,14 +56,20 @@ export default function signin() {
   const [password, onChangePassword] = useInput("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
-
+  const { loginLoading, loginDone } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const onSubmitForm = useCallback(() => {
-    console.log(id, password);
-    dispatch(loginAction({ id, password }));
+    dispatch(loginRequestAction({ id, password }));
+
     Router.push("/");
   }, [id, password]);
+
+  // useEffect(() => {
+  //   console.log(loginDone);
+  //   if (loginDone) {
+  //     Router.push("/");
+  //   }
+  // }, [loginDone]);
 
   const validationSchema = useMemo(() =>
     yup.object({
@@ -166,6 +172,7 @@ export default function signin() {
           mb={3}
           colorScheme="blue"
           size="md"
+          isLoading={loginLoading}
           isFullWidth
         >
           로그인

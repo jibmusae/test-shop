@@ -18,29 +18,46 @@ import {
 } from "@chakra-ui/react";
 import AppLayout from "../components/AppLayout";
 import PostCodeButton from "../components/PostCodeButton";
+import { useSelector } from "react-redux";
 
 export default function profile() {
+  const { user } = useSelector((state) => state.user);
+
   const [isPostOpen, setIsPostOpen] = useState(false);
   const onClickDaumPost = () => {
     setIsPostOpen(true);
     document.body.style.overflow = "hidden";
   };
 
-  const [zipCode, setZipCode] = useState("");
-  const onChangeZipCode = useCallback((e) => {
-    setZipCode(e.target.value);
-  }, []);
+  const [zipCode, setZipCode] = useState(user.zipCode);
+  const onChangeZipCode = useCallback(
+    (e) => {
+      setZipCode(e.target.value);
+    },
+    [zipCode]
+  );
   const getZipCode = (value) => {
     setZipCode(value);
   };
 
-  const [address, setAddress] = useState("");
-  const onChangeAddress = useCallback((e) => {
-    setAddress(e.target.value);
-  }, []);
+  const [address, setAddress] = useState(user.address);
+  const onChangeAddress = useCallback(
+    (e) => {
+      setAddress(e.target.value);
+    },
+    [address]
+  );
   const getAddress = (value) => {
     setAddress(value);
   };
+
+  const [addressDetail, setAddressDetail] = useState(user.addressDetail);
+  const onChangeAddressDetail = useCallback(
+    (e) => {
+      setAddressDetail(e.target.value);
+    },
+    [addressDetail]
+  );
 
   return (
     <AppLayout>
@@ -68,19 +85,19 @@ export default function profile() {
                   <Th w="200px" bgColor="gray.200">
                     업체명
                   </Th>
-                  <Td>와이디커넥트</Td>
+                  <Td>{user.corporateName}</Td>
                 </Tr>
                 <Tr>
                   <Th w="200px" bgColor="gray.200">
                     대표자명
                   </Th>
-                  <Td>윤재원</Td>
+                  <Td>{user.name}</Td>
                 </Tr>
                 <Tr>
                   <Th w="200px" bgColor="gray.200">
                     사업자 등록번호
                   </Th>
-                  <Td>421-01-02162</Td>
+                  <Td>{user.corporateId}</Td>
                 </Tr>
                 <Tr>
                   <Th w="200px" bgColor="gray.200">
@@ -134,6 +151,8 @@ export default function profile() {
                       name="addressDetail"
                       type="text"
                       placeholder="상세주소"
+                      value={addressDetail}
+                      onChange={onChangeAddressDetail}
                     />
                   </Td>
                 </Tr>
@@ -141,13 +160,13 @@ export default function profile() {
                   <Th w="200px" bgColor="gray.200">
                     이메일
                   </Th>
-                  <Td>ydconnectcorp@gmail.com</Td>
+                  <Td>{user.email}</Td>
                 </Tr>
                 <Tr>
                   <Th w="200px" bgColor="gray.200">
                     휴대폰 번호
                   </Th>
-                  <Td>010-6888-8444</Td>
+                  <Td>{user.tel}</Td>
                 </Tr>
               </Tbody>
             </Table>
