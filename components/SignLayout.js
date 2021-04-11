@@ -1,6 +1,6 @@
-import Link from "next/link";
-import Footer from "../components/Footer";
-import { Image, Box } from "@chakra-ui/react";
+import Link from 'next/link';
+import Footer from '../components/Footer';
+import { Image, Box } from '@chakra-ui/react';
 
 export default function SignLayout({ children }) {
   return (

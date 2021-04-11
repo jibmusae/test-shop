@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useSelector } from 'react-redux';
 import {
   Heading,
   Tabs,
@@ -17,14 +17,14 @@ import {
   NumberDecrementStepper,
   Button,
   IconButton,
-} from "@chakra-ui/react";
-import { EditIcon } from "@chakra-ui/icons";
+} from '@chakra-ui/react';
+import { EditIcon } from '@chakra-ui/icons';
 
 export default function InProgress() {
   const { user } = useSelector((state) => state.user);
 
-  const startDate = "2021년 3월 1일";
-  const endDate = "2021년 12월 31일";
+  const startDate = '2021년 3월 1일';
+  const endDate = '2021년 12월 31일';
 
   return (
     <>
@@ -42,7 +42,7 @@ export default function InProgress() {
         </Heading>
         <IconButton
           // TODO 관리자 로그인시 활성화
-          display={user ? "inline-flex" : "none"}
+          display={user ? 'inline-flex' : 'none'}
           colorScheme="blue"
           aria-label="Add Item"
           fontSize="20px"
@@ -52,10 +52,10 @@ export default function InProgress() {
       <Tabs isFitted variant="enclosed-colored">
         {/* Tab Title */}
         <TabList mb="1rem">
-          <Tab _selected={{ color: "white", bg: "blue.500" }}>CPU</Tab>
-          <Tab _selected={{ color: "white", bg: "blue.500" }}>메인보드</Tab>
-          <Tab _selected={{ color: "white", bg: "blue.500" }}>그래픽카드</Tab>
-          <Tab _selected={{ color: "white", bg: "blue.500" }}>메모리</Tab>
+          <Tab _selected={{ color: 'white', bg: 'blue.500' }}>CPU</Tab>
+          <Tab _selected={{ color: 'white', bg: 'blue.500' }}>메인보드</Tab>
+          <Tab _selected={{ color: 'white', bg: 'blue.500' }}>그래픽카드</Tab>
+          <Tab _selected={{ color: 'white', bg: 'blue.500' }}>메모리</Tab>
         </TabList>
 
         {/* Tab Detail */}
@@ -135,7 +135,7 @@ export default function InProgress() {
                 </Button>
                 <Button
                   // TODO 관리자 로그인시 활성화
-                  display={user ? "inline-flex" : "none"}
+                  display={user ? 'inline-flex' : 'none'}
                   w="100px"
                   mt="0.5rem"
                   size="sm"
@@ -218,7 +218,7 @@ export default function InProgress() {
                 </Button>
                 <Button
                   // TODO 관리자 로그인시 활성화
-                  display={user ? "inline-flex" : "none"}
+                  display={user ? 'inline-flex' : 'none'}
                   w="100px"
                   mt="0.5rem"
                   size="sm"
@@ -311,7 +311,7 @@ export default function InProgress() {
                 </Button>
                 <Button
                   // TODO 관리자 로그인시 활성화
-                  display={user ? "inline-flex" : "none"}
+                  display={user ? 'inline-flex' : 'none'}
                   w="100px"
                   mt="0.5rem"
                   size="sm"
@@ -400,7 +400,7 @@ export default function InProgress() {
                 </Button>
                 <Button
                   // TODO 관리자 로그인시 활성화
-                  display={user ? "inline-flex" : "none"}
+                  display={user ? 'inline-flex' : 'none'}
                   w="100px"
                   mt="0.5rem"
                   size="sm"
@@ -492,7 +492,7 @@ export default function InProgress() {
                 </Button>
                 <Button
                   // TODO 관리자 로그인시 활성화
-                  display={user ? "inline-flex" : "none"}
+                  display={user ? 'inline-flex' : 'none'}
                   w="100px"
                   mt="0.5rem"
                   size="sm"

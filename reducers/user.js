@@ -16,28 +16,28 @@ export const initialState = {
 };
 
 // 변수
-export const LOGIN_REQUEST = "LOGIN_REQUEST";
-export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
-export const LOGIN_FAILURE = "LOGIN_FAILURE";
+export const LOGIN_REQUEST = 'LOGIN_REQUEST';
+export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
+export const LOGIN_FAILURE = 'LOGIN_FAILURE';
 
-export const LOGOUT_REQUEST = "LOGOUT_REQUEST";
-export const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
-export const LOGOUT_FAILURE = "LOGOUT_FAILURE";
+export const LOGOUT_REQUEST = 'LOGOUT_REQUEST';
+export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
+export const LOGOUT_FAILURE = 'LOGOUT_FAILURE';
 
-export const SIGNUP_REQUEST = "SIGNUP_REQUEST";
-export const SIGNUP_SUCCESS = "SIGNUP_SUCCESS";
-export const SIGNUP_FAILURE = "SIGNUP_FAILURE";
+export const SIGNUP_REQUEST = 'SIGNUP_REQUEST';
+export const SIGNUP_SUCCESS = 'SIGNUP_SUCCESS';
+export const SIGNUP_FAILURE = 'SIGNUP_FAILURE';
 
 const dummyUser = (data) => ({
   ...data,
-  corporateName: "테스트 회사명",
-  name: "테스트 이름",
-  corporateId: "000-00-00000",
-  zipCode: "00000",
-  address: "테스트 주소",
-  addressDetail: "테스트 상세주소",
-  tel: "000-0000-0000",
-  email: "test@test.test",
+  corporateName: '테스트 회사명',
+  name: '테스트 이름',
+  corporateId: '000-00-00000',
+  zipCode: '00000',
+  address: '테스트 주소',
+  addressDetail: '테스트 상세주소',
+  tel: '000-0000-0000',
+  email: 'test@test.test',
 });
 
 // 로그인 액션

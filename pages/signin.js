@@ -1,9 +1,9 @@
-import React, { useState, useCallback, useMemo, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import Link from "next/link";
-import Router from "next/router";
-import * as yup from "yup";
-import { useForm } from "react-hook-form";
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import Link from 'next/link';
+import Router from 'next/router';
+import * as yup from 'yup';
+import { useForm } from 'react-hook-form';
 import {
   Heading,
   FormControl,
@@ -14,11 +14,11 @@ import {
   Box,
   Button,
   Divider,
-} from "@chakra-ui/react";
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-import SignLayout from "../components/SignLayout";
-import { loginRequestAction } from "../reducers/user";
-import useInput from "../hooks/useInput";
+} from '@chakra-ui/react';
+import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import SignLayout from '../components/SignLayout';
+import { loginRequestAction } from '../reducers/user';
+import useInput from '../hooks/useInput';
 
 const useYupValidationResolver = (validationSchema) =>
   useCallback(
@@ -39,7 +39,7 @@ const useYupValidationResolver = (validationSchema) =>
             (allErrors, currentError) => ({
               ...allErrors,
               [currentError.path]: {
-                type: currentError.type ?? "validation",
+                type: currentError.type ?? 'validation',
                 message: currentError.message,
               },
             }),
@@ -52,8 +52,8 @@ const useYupValidationResolver = (validationSchema) =>
   );
 
 export default function signin() {
-  const [id, onChangeId] = useInput("");
-  const [password, onChangePassword] = useInput("");
+  const [id, onChangeId] = useInput('');
+  const [password, onChangePassword] = useInput('');
   const [showPassword, setShowPassword] = useState(false);
 
   const { loginLoading, loginDone } = useSelector((state) => state.user);
@@ -61,7 +61,7 @@ export default function signin() {
   const onSubmitForm = useCallback(() => {
     dispatch(loginRequestAction({ id, password }));
 
-    Router.push("/");
+    Router.push('/');
   }, [id, password]);
 
   // useEffect(() => {
@@ -75,14 +75,14 @@ export default function signin() {
     yup.object({
       id: yup
         .string()
-        .min(6, "아이디는 최소 6문자, 최대 20문자로 입력해주세요")
-        .max(20, "아이디는 최소 6문자, 최대 20문자로 입력해주세요")
-        .required("아이디를 입력해주세요"),
+        .min(6, '아이디는 최소 6문자, 최대 20문자로 입력해주세요')
+        .max(20, '아이디는 최소 6문자, 최대 20문자로 입력해주세요')
+        .required('아이디를 입력해주세요'),
       password: yup
         .string()
-        .min(8, "비밀번호는 최소 8문자, 최대 16문자로 입력해 주세요")
-        .max(16, "비밀번호는 최소 8문자, 최대 16문자로 입력해 주세요")
-        .required("비밀번호를 입력해주세요"),
+        .min(8, '비밀번호는 최소 8문자, 최대 16문자로 입력해 주세요')
+        .max(16, '비밀번호는 최소 8문자, 최대 16문자로 입력해 주세요')
+        .required('비밀번호를 입력해주세요'),
     })
   );
 
@@ -127,7 +127,7 @@ export default function signin() {
             <Input
               id="password"
               name="password"
-              type={showPassword ? "text" : "password"}
+              type={showPassword ? 'text' : 'password'}
               placeholder="비밀번호"
               value={password}
               onChange={onChangePassword}

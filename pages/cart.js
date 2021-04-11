@@ -1,5 +1,5 @@
-import Link from "next/link";
-import AppLayout from "../components/AppLayout";
+import Link from 'next/link';
+import AppLayout from '../components/AppLayout';
 import {
   Heading,
   Table,
@@ -19,8 +19,8 @@ import {
   ButtonGroup,
   Image,
   Icon,
-} from "@chakra-ui/react";
-import { CgClose, CgMathPlus, CgMathEqual } from "react-icons/cg";
+} from '@chakra-ui/react';
+import { CgClose, CgMathPlus, CgMathEqual } from 'react-icons/cg';
 
 export default function cart() {
   return (

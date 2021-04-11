@@ -1,7 +1,7 @@
-import { useCallback, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import Link from "next/link";
-import Router from "next/router";
+import { useCallback, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import Link from 'next/link';
+import Router from 'next/router';
 import {
   Box,
   Image,
@@ -12,15 +12,15 @@ import {
   ListItem,
   Icon,
   Text,
-} from "@chakra-ui/react";
-import { SearchIcon } from "@chakra-ui/icons";
+} from '@chakra-ui/react';
+import { SearchIcon } from '@chakra-ui/icons';
 import {
   RiAccountBoxLine,
   RiMessage3Line,
   RiShoppingCart2Line,
-} from "react-icons/ri";
-import Footer from "./Footer";
-import { logoutRequestAction } from "../reducers/user";
+} from 'react-icons/ri';
+import Footer from './Footer';
+import { logoutRequestAction } from '../reducers/user';
 
 export default function AppLayout({ children }) {
   const { user, logoutDone } = useSelector((state) => state.user);
@@ -31,7 +31,7 @@ export default function AppLayout({ children }) {
 
   useEffect(() => {
     if (logoutDone) {
-      Router.push("/");
+      Router.push('/');
     }
   }, [logoutDone]);
 

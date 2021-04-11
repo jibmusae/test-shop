@@ -1,7 +1,7 @@
-import React, { useState, useCallback, useMemo } from "react";
-import Link from "next/link";
-import * as yup from "yup";
-import { useForm } from "react-hook-form";
+import React, { useState, useCallback, useMemo } from 'react';
+import Link from 'next/link';
+import * as yup from 'yup';
+import { useForm } from 'react-hook-form';
 import {
   Heading,
   FormControl,
@@ -15,11 +15,11 @@ import {
   Checkbox,
   Button,
   Divider,
-} from "@chakra-ui/react";
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-import SignLayout from "../components/SignLayout";
-import ModalButton from "../components/ModalButton";
-import PostCodeButton from "../components/PostCodeButton";
+} from '@chakra-ui/react';
+import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import SignLayout from '../components/SignLayout';
+import ModalButton from '../components/ModalButton';
+import PostCodeButton from '../components/PostCodeButton';
 
 const useYupValidationResolver = (validationSchema) =>
   useCallback(
@@ -40,7 +40,7 @@ const useYupValidationResolver = (validationSchema) =>
             (allErrors, currentError) => ({
               ...allErrors,
               [currentError.path]: {
-                type: currentError.type ?? "validation",
+                type: currentError.type ?? 'validation',
                 message: currentError.message,
               },
             }),
@@ -56,10 +56,10 @@ export default function signup() {
   const [isPostOpen, setIsPostOpen] = useState(false);
   const onClickDaumPost = () => {
     setIsPostOpen(true);
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = 'hidden';
   };
 
-  const [zipCode, setZipCode] = useState("");
+  const [zipCode, setZipCode] = useState('');
   const onChangeZipCode = useCallback((e) => {
     setZipCode(e.target.value);
   }, []);
@@ -67,7 +67,7 @@ export default function signup() {
     setZipCode(value);
   };
 
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState('');
   const onChangeAddress = useCallback((e) => {
     setAddress(e.target.value);
   }, []);
@@ -85,33 +85,33 @@ export default function signup() {
     yup.object({
       id: yup
         .string()
-        .min(6, "아이디는 최소 6문자, 최대 20문자로 입력해주세요")
-        .max(20, "아이디는 최소 6문자, 최대 20문자로 입력해주세요")
-        .required("아이디를 입력해주세요"),
+        .min(6, '아이디는 최소 6문자, 최대 20문자로 입력해주세요')
+        .max(20, '아이디는 최소 6문자, 최대 20문자로 입력해주세요')
+        .required('아이디를 입력해주세요'),
       password: yup
         .string()
-        .min(8, "비밀번호는 최소 8문자, 최대 16문자로 입력해주세요")
-        .max(16, "비밀번호는 최소 8문자, 최대 16문자로 입력해주세요")
-        .required("비밀번호를 입력해주세요"),
+        .min(8, '비밀번호는 최소 8문자, 최대 16문자로 입력해주세요')
+        .max(16, '비밀번호는 최소 8문자, 최대 16문자로 입력해주세요')
+        .required('비밀번호를 입력해주세요'),
       passwordConfirm: yup
         .string()
-        .oneOf([yup.ref("password"), null], "비밀번호가 일치하지 않습니다")
-        .required("비밀번호를 입력해주세요"),
-      corporateName: yup.string().required("업체명을 입력해주세요"),
+        .oneOf([yup.ref('password'), null], '비밀번호가 일치하지 않습니다')
+        .required('비밀번호를 입력해주세요'),
+      corporateName: yup.string().required('업체명을 입력해주세요'),
       name: yup
         .string()
-        .min(2, "대표자명은 최소 2문자로 입력해주세요")
-        .required("대표자명을 입력해주세요"),
-      corporateId: yup.string().required("사업자 등록번호를 입력해주세요"),
-      zipCode: yup.string().required("우편번호를 입력해주세요"),
-      address: yup.string().required("주소를 입력해주세요"),
-      addressDetail: yup.string().required("상세주소를 입력해주세요"),
+        .min(2, '대표자명은 최소 2문자로 입력해주세요')
+        .required('대표자명을 입력해주세요'),
+      corporateId: yup.string().required('사업자 등록번호를 입력해주세요'),
+      zipCode: yup.string().required('우편번호를 입력해주세요'),
+      address: yup.string().required('주소를 입력해주세요'),
+      addressDetail: yup.string().required('상세주소를 입력해주세요'),
       email: yup
         .string()
-        .email("이메일 주소 형식이 아닙니다")
-        .required("이메일 주소를 입력해주세요"),
-      tel: yup.string().required("휴대폰 번호를 입력해주세요"),
-      termsCheck: yup.boolean().oneOf([true], "전체 이용약관에 동의해주세요"),
+        .email('이메일 주소 형식이 아닙니다')
+        .required('이메일 주소를 입력해주세요'),
+      tel: yup.string().required('휴대폰 번호를 입력해주세요'),
+      termsCheck: yup.boolean().oneOf([true], '전체 이용약관에 동의해주세요'),
     })
   );
 
@@ -154,7 +154,7 @@ export default function signup() {
             <Input
               id="password"
               name="password"
-              type={showPassword[0] ? "text" : "password"}
+              type={showPassword[0] ? 'text' : 'password'}
               placeholder="비밀번호"
               ref={register}
             />
@@ -184,7 +184,7 @@ export default function signup() {
             <Input
               id="passwordConfirm"
               name="passwordConfirm"
-              type={showPassword[1] ? "text" : "password"}
+              type={showPassword[1] ? 'text' : 'password'}
               placeholder="비밀번호 확인"
               ref={register}
             />

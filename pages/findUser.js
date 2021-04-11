@@ -1,5 +1,5 @@
-import Link from "next/link";
-import AppLayout from "../components/AppLayout";
+import Link from 'next/link';
+import AppLayout from '../components/AppLayout';
 import {
   Box,
   Tabs,
@@ -12,15 +12,15 @@ import {
   AccordionButton,
   AccordionPanel,
   AccordionIcon,
-} from "@chakra-ui/react";
+} from '@chakra-ui/react';
 
 export default function findUser() {
   return (
     <AppLayout>
       <Tabs isFitted variant="enclosed-colored">
         <TabList mb="0.5rem">
-          <Tab _selected={{ color: "white", bg: "blue.500" }}>아이디 찾기</Tab>
-          <Tab _selected={{ color: "white", bg: "blue.500" }}>
+          <Tab _selected={{ color: 'white', bg: 'blue.500' }}>아이디 찾기</Tab>
+          <Tab _selected={{ color: 'white', bg: 'blue.500' }}>
             비밀번호 재설정
           </Tab>
         </TabList>

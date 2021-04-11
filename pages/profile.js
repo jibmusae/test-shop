@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback } from 'react';
 import {
   Tabs,
   TabList,
@@ -15,10 +15,10 @@ import {
   Input,
   Flex,
   Button,
-} from "@chakra-ui/react";
-import AppLayout from "../components/AppLayout";
-import PostCodeButton from "../components/PostCodeButton";
-import { useSelector } from "react-redux";
+} from '@chakra-ui/react';
+import AppLayout from '../components/AppLayout';
+import PostCodeButton from '../components/PostCodeButton';
+import { useSelector } from 'react-redux';
 
 export default function profile() {
   const { user } = useSelector((state) => state.user);
@@ -26,7 +26,7 @@ export default function profile() {
   const [isPostOpen, setIsPostOpen] = useState(false);
   const onClickDaumPost = () => {
     setIsPostOpen(true);
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = 'hidden';
   };
 
   const [zipCode, setZipCode] = useState(user.zipCode);
@@ -64,8 +64,8 @@ export default function profile() {
       <Tabs isFitted variant="enclosed-colored">
         {/* Tab Title */}
         <TabList mb="1rem">
-          <Tab _selected={{ color: "white", bg: "blue.500" }}>주문조회</Tab>
-          <Tab _selected={{ color: "white", bg: "blue.500" }}>개인정보</Tab>
+          <Tab _selected={{ color: 'white', bg: 'blue.500' }}>주문조회</Tab>
+          <Tab _selected={{ color: 'white', bg: 'blue.500' }}>개인정보</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>

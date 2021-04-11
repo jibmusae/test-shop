@@ -6,8 +6,8 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
-} from "@chakra-ui/react";
-import { ChevronRightIcon } from "@chakra-ui/icons";
+} from '@chakra-ui/react';
+import { ChevronRightIcon } from '@chakra-ui/icons';
 
 export default function ModalButton(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
