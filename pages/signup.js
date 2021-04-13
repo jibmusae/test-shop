@@ -20,6 +20,7 @@ import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import SignLayout from '../components/SignLayout';
 import ModalButton from '../components/ModalButton';
 import PostCodeButton from '../components/PostCodeButton';
+import useInput from '../hooks/useInput';
 
 const useYupValidationResolver = (validationSchema) =>
   useCallback(
@@ -53,34 +54,62 @@ const useYupValidationResolver = (validationSchema) =>
   );
 
 export default function signup() {
+  // Input
+  const [inputs, onChangeInputs] = useInput({
+    id: '',
+    password: '',
+    passwordConfirm: '',
+    corporateName: '',
+    name: '',
+    corporateId: '',
+    addressDetail: '',
+    email: '',
+    tel: '',
+  });
+  const {
+    id,
+    password,
+    passwordConfirm,
+    corporateName,
+    name,
+    corporateId,
+    addressDetail,
+    email,
+    tel,
+  } = inputs;
+
+  // 다음 우편검색
+  const [zipCode, setZipCode] = useState('');
+  const onChangeZipCode = useCallback((e) => {
+    setZipCode(e.target.value);
+  }, []);
+  const [address, setAddress] = useState('');
+  const onChangeAddress = useCallback((e) => {
+    setAddress(e.target.value);
+  }, []);
+
+  const getZipCode = (value) => {
+    setZipCode(value);
+  };
+  const getAddress = (value) => {
+    setAddress(value);
+  };
+
   const [isPostOpen, setIsPostOpen] = useState(false);
   const onClickDaumPost = () => {
     setIsPostOpen(true);
     document.body.style.overflow = 'hidden';
   };
 
-  const [zipCode, setZipCode] = useState('');
-  const onChangeZipCode = useCallback((e) => {
-    setZipCode(e.target.value);
-  }, []);
-  const getZipCode = (value) => {
-    setZipCode(value);
-  };
-
-  const [address, setAddress] = useState('');
-  const onChangeAddress = useCallback((e) => {
-    setAddress(e.target.value);
-  }, []);
-  const getAddress = (value) => {
-    setAddress(value);
-  };
-
+  // 비밀번호 보이기
   const [showPassword, setShowPassword] = useState([false, false]);
   const [checkedItems, setCheckedItems] = useState([false, false]);
 
+  // 이용약관 전체선택
   const allChecked = checkedItems.every(Boolean);
   const isIndeterminate = checkedItems.some(Boolean) && !allChecked;
 
+  // react-hook-form 유효성 검사
   const validationSchema = useMemo(() =>
     yup.object({
       id: yup
@@ -114,7 +143,6 @@ export default function signup() {
       termsCheck: yup.boolean().oneOf([true], '전체 이용약관에 동의해주세요'),
     })
   );
-
   const resolver = useYupValidationResolver(validationSchema);
   const { handleSubmit, register, errors } = useForm({ resolver });
 
@@ -141,6 +169,7 @@ export default function signup() {
             type="text"
             placeholder="아이디"
             ref={register}
+            onChange={onChangeInputs}
           />
           <Box pl={2} color="red" fontSize="0.85rem">
             {errors.id?.message}
@@ -157,6 +186,7 @@ export default function signup() {
               type={showPassword[0] ? 'text' : 'password'}
               placeholder="비밀번호"
               ref={register}
+              onChange={onChangeInputs}
             />
             <InputRightElement
               children={
@@ -187,6 +217,7 @@ export default function signup() {
               type={showPassword[1] ? 'text' : 'password'}
               placeholder="비밀번호 확인"
               ref={register}
+              onChange={onChangeInputs}
             />
             <InputRightElement
               children={
@@ -216,6 +247,7 @@ export default function signup() {
             type="text"
             placeholder="업체명"
             ref={register}
+            onChange={onChangeInputs}
           />
           <Box pl={2} color="red" fontSize="0.85rem">
             {errors.corporateName?.message}
@@ -231,6 +263,7 @@ export default function signup() {
             type="text"
             placeholder="대표자명"
             ref={register}
+            onChange={onChangeInputs}
           />
           <Box pl={2} color="red" fontSize="0.85rem">
             {errors.name?.message}
@@ -246,6 +279,7 @@ export default function signup() {
             type="text"
             placeholder="사업자 등록번호(숫자만)"
             ref={register}
+            onChange={onChangeInputs}
           />
           <Box pl={2} color="red" fontSize="0.85rem">
             {errors.corporateId?.message}
@@ -261,9 +295,9 @@ export default function signup() {
               name="zipCode"
               type="text"
               placeholder="우편번호"
+              ref={register}
               value={zipCode}
               onChange={onChangeZipCode}
-              ref={register}
               isReadOnly
             />
             <InputRightElement w="7rem">
@@ -288,9 +322,9 @@ export default function signup() {
             name="address"
             type="text"
             placeholder="주소"
+            ref={register}
             value={address}
             onChange={onChangeAddress}
-            ref={register}
             isReadOnly
           />
         </FormControl>
@@ -301,6 +335,7 @@ export default function signup() {
             type="text"
             placeholder="상세주소"
             ref={register}
+            onChange={onChangeInputs}
           />
           <Box pl={2} color="red" fontSize="0.85rem">
             {errors.zipCode?.message ||
@@ -318,6 +353,7 @@ export default function signup() {
             type="text"
             placeholder="이메일"
             ref={register}
+            onChange={onChangeInputs}
           />
           <Box pl={2} color="red" fontSize="0.85rem">
             {errors.email?.message}
@@ -333,6 +369,7 @@ export default function signup() {
             type="text"
             placeholder="휴대폰 번호"
             ref={register}
+            onChange={onChangeInputs}
           />
           <Box pl={2} color="red" fontSize="0.85rem">
             {errors.tel?.message}
@@ -350,7 +387,6 @@ export default function signup() {
             borderRadius="md"
           >
             <Checkbox
-              id="termsCheck"
               name="termsCheck"
               isChecked={allChecked}
               isIndeterminate={isIndeterminate}

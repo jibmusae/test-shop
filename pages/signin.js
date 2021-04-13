@@ -52,15 +52,22 @@ const useYupValidationResolver = (validationSchema) =>
   );
 
 export default function signin() {
-  const [id, onChangeId] = useInput('');
-  const [password, onChangePassword] = useInput('');
+  // Input
+  const [inputs, onChangeInputs] = useInput({
+    id: '',
+    password: '',
+  });
+  const { id, password } = inputs;
+
+  // 비밀번호 보이기
   const [showPassword, setShowPassword] = useState(false);
 
+  // 로그인 스테이터스
   const { loginLoading, loginDone } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const onSubmitForm = useCallback(() => {
     dispatch(loginRequestAction({ id, password }));
-
+    // TODO useEffect
     Router.push('/');
   }, [id, password]);
 
@@ -71,6 +78,7 @@ export default function signin() {
   //   }
   // }, [loginDone]);
 
+  // react-hook-form 유효성 검사
   const validationSchema = useMemo(() =>
     yup.object({
       id: yup
@@ -85,7 +93,6 @@ export default function signin() {
         .required('비밀번호를 입력해주세요'),
     })
   );
-
   const resolver = useYupValidationResolver(validationSchema);
   const { handleSubmit, register, errors } = useForm({ resolver });
 
@@ -111,8 +118,7 @@ export default function signin() {
             name="id"
             type="text"
             placeholder="아이디"
-            value={id}
-            onChange={onChangeId}
+            onChange={onChangeInputs}
             ref={register}
           />
           <Box pl={2} color="red" fontSize="0.85rem">
@@ -129,8 +135,7 @@ export default function signin() {
               name="password"
               type={showPassword ? 'text' : 'password'}
               placeholder="비밀번호"
-              value={password}
-              onChange={onChangePassword}
+              onChange={onChangeInputs}
               ref={register}
             />
             <InputRightElement

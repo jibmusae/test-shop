@@ -72,11 +72,7 @@ export default function PostCodeButton(props) {
       </style>
       <div className="modalOverlay" onClick={onClickOverlay}>
         <div className="modalWrapper" tabIndex="-1">
-          <DaumPostCode
-            style={PostCodeStyle}
-            onComplete={handleAddress}
-            autoClose
-          />
+          <DaumPostCode style={PostCodeStyle} onComplete={handleAddress} />
         </div>
       </div>
     </>
