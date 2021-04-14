@@ -79,7 +79,7 @@ export default function profile() {
             <Heading as="h1" size="md">
               개인정보 설정
             </Heading>
-            <Table my={5} size="sm" borderTop="1px">
+            <Table my="1rem" size="sm" borderTop="1px">
               <Tbody>
                 <Tr>
                   <Th w="200px" bgColor="gray.200">
@@ -164,7 +164,7 @@ export default function profile() {
                 </Tr>
                 <Tr>
                   <Th w="200px" bgColor="gray.200">
-                    휴대폰 번호
+                    연락처
                   </Th>
                   <Td>{user.tel}</Td>
                 </Tr>

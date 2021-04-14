@@ -179,18 +179,20 @@ export default function cart() {
         </Box>
         <Box>원</Box>
       </Box>
-      <ButtonGroup
-        d="flex"
-        justifyContent="flex-end"
-        w="100%"
-        colorScheme="blue"
-        spacing="3"
-      >
-        <Button w="150px" variant="outline">
-          선택구매
-        </Button>
-        <Button w="150px">전체구매</Button>
-      </ButtonGroup>
+      <Link href="/payment">
+        <ButtonGroup
+          d="flex"
+          justifyContent="flex-end"
+          w="100%"
+          colorScheme="blue"
+          spacing="3"
+        >
+          <Button w="150px" variant="outline">
+            선택구매
+          </Button>
+          <Button w="150px">전체구매</Button>
+        </ButtonGroup>
+      </Link>
     </AppLayout>
   );
 }

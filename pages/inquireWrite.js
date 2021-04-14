@@ -62,6 +62,8 @@ export default function InquireWrite() {
         </Tbody>
       </Table>
       <Flex mt="2rem" justifyContent="center">
+        {/* TODO */}
+        {/* 본인글일 경우 || 관리자일 경우 표시 */}
         <Button
           w="150px"
           mr="1rem"
@@ -71,11 +73,13 @@ export default function InquireWrite() {
         >
           삭제
         </Button>
+        {/* TODO */}
+        {/* 본인글일 경우 '수정하기'로 교체표시 */}
         <Button
           w="150px"
           size="md"
           colorScheme="blue"
-          // onClick={onClickModify}
+          // onClick={onClickPost}
         >
           등록하기
         </Button>

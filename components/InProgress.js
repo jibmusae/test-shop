@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import {
   Heading,
@@ -19,9 +20,15 @@ import {
   IconButton,
 } from '@chakra-ui/react';
 import { EditIcon } from '@chakra-ui/icons';
+import AddItem from './AddItem';
 
 export default function InProgress() {
   const { user } = useSelector((state) => state.user);
+
+  const [isAddItem, setIsAddItem] = useState(false);
+  const onClickAddItem = () => {
+    setIsAddItem(true);
+  };
 
   const startDate = '2021년 3월 1일';
   const endDate = '2021년 12월 31일';
@@ -40,14 +47,7 @@ export default function InProgress() {
         >
           진행중인 상품
         </Heading>
-        <IconButton
-          // TODO 관리자 로그인시 활성화
-          display={user ? 'inline-flex' : 'none'}
-          colorScheme="blue"
-          aria-label="Add Item"
-          fontSize="20px"
-          icon={<EditIcon />}
-        />
+        <AddItem setIsAddItem={setIsAddItem} isAddItem={isAddItem} />
       </Flex>
       <Tabs isFitted variant="enclosed-colored">
         {/* Tab Title */}
@@ -55,7 +55,7 @@ export default function InProgress() {
           <Tab _selected={{ color: 'white', bg: 'blue.500' }}>CPU</Tab>
           <Tab _selected={{ color: 'white', bg: 'blue.500' }}>메인보드</Tab>
           <Tab _selected={{ color: 'white', bg: 'blue.500' }}>그래픽카드</Tab>
-          <Tab _selected={{ color: 'white', bg: 'blue.500' }}>메모리</Tab>
+          <Tab _selected={{ color: 'white', bg: 'blue.500' }}>그 외</Tab>
         </TabList>
 
         {/* Tab Detail */}
