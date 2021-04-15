@@ -72,7 +72,7 @@ export default function ModalButton(props) {
             <FormControl id="itemImage" mb="1rem">
               <FormLabel>상품 이미지</FormLabel>
               <Flex>
-                <Input type="image" onChange={onChangeImage} />
+                <Input type="file" onChange={onChangeImage} />
               </Flex>
             </FormControl>
             <FormControl id="itemPrice" mb="1rem">
@@ -93,6 +93,20 @@ export default function ModalButton(props) {
                 />
               </InputGroup>
             </FormControl>
+            <Flex>
+              <FormControl id="itemStartDate" mb="1rem" mr="1rem">
+                <FormLabel>시작일</FormLabel>
+                <Input
+                  name="itemStartDate"
+                  type="text"
+                  placeholder="YYYYMMDD"
+                />
+              </FormControl>
+              <FormControl id="itemEndDate" mb="1rem">
+                <FormLabel>종료일</FormLabel>
+                <Input name="itemEndDate" type="text" placeholder="YYYYMMDD" />
+              </FormControl>
+            </Flex>
             <FormControl id="itemContent" mb="1rem">
               <FormLabel>상품설명</FormLabel>
               <Textarea minH="150px" size="sm" resize="none" />

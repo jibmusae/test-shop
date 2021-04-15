@@ -19,7 +19,6 @@ import {
   Button,
   IconButton,
 } from '@chakra-ui/react';
-import { EditIcon } from '@chakra-ui/icons';
 import AddItem from './AddItem';
 
 export default function InProgress() {
