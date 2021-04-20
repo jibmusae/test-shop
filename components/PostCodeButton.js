@@ -32,8 +32,8 @@ export default function PostCodeButton(props) {
       allAddress += extraAddress !== '' ? ` (${extraAddress})` : '';
     }
 
-    props.getZipCode(zoneCode);
-    props.getAddress(allAddress);
+    props.setZipCode(zoneCode);
+    props.setAddress(allAddress);
     props.setIsPostOpen(false);
 
     document.body.style.overflow = 'auto';

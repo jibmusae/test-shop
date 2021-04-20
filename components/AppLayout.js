@@ -1,19 +1,8 @@
-import { useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import react, { useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import Router from 'next/router';
-import {
-  Box,
-  Image,
-  InputGroup,
-  Input,
-  InputRightElement,
-  List,
-  ListItem,
-  Icon,
-  Text,
-} from '@chakra-ui/react';
-import { SearchIcon } from '@chakra-ui/icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { Box, Image, List, ListItem, Icon, Text } from '@chakra-ui/react';
 import {
   RiAccountBoxLine,
   RiMessage3Line,
@@ -65,15 +54,6 @@ export default function AppLayout({ children }) {
             alt="Header Logo Image"
           />
         </Link>
-        <Box w="450px" h="35px">
-          <InputGroup>
-            <Input placeholder="검색" />
-            <InputRightElement
-              children={<SearchIcon color="gray.500" />}
-              cursor="pointer"
-            />
-          </InputGroup>
-        </Box>
         <List d="flex">
           {user && (
             <Link href="/profile">

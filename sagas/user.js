@@ -1,22 +1,29 @@
 import axios from 'axios';
 import { all, call, delay, fork, put, takeLatest } from 'redux-saga/effects';
 import {
-  LOGIN_FAILURE,
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
-  LOGOUT_FAILURE,
+  LOGIN_FAILURE,
   LOGOUT_REQUEST,
   LOGOUT_SUCCESS,
-  SIGNUP_FAILURE,
+  LOGOUT_FAILURE,
   SIGNUP_REQUEST,
   SIGNUP_SUCCESS,
+  SIGNUP_FAILURE,
 } from '../reducers/user';
 
-// 로그인
+// API
 function loginAPI(data) {
   return axios.post('/api/login', data);
 }
+function logoutAPI() {
+  return axios.post('/api/logout');
+}
+function signupAPI(data) {
+  return axios.post('/api/signup', data);
+}
 
+// 로그인
 function* login(action) {
   try {
     // 서버 필요
@@ -37,10 +44,6 @@ function* login(action) {
 }
 
 // 로그아웃
-function logoutAPI() {
-  return axios.post('/api/logout');
-}
-
 function* logout(action) {
   try {
     // 서버 필요
@@ -60,10 +63,6 @@ function* logout(action) {
 }
 
 // 회원가입
-function signupAPI(data) {
-  return axios.post('/api/signup', data);
-}
-
 function* signup(action) {
   try {
     // 서버 필요
@@ -87,11 +86,9 @@ function* signup(action) {
 function* watchLogin() {
   yield takeLatest(LOGIN_REQUEST, login);
 }
-
 function* watchLogout() {
   yield takeLatest(LOGOUT_REQUEST, logout);
 }
-
 function* watchSignup() {
   yield takeLatest(SIGNUP_REQUEST, signup);
 }

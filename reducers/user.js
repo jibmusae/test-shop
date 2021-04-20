@@ -15,6 +15,19 @@ export const initialState = {
   loginData: {},
 };
 
+// 더미 유저
+const dummyUser = (data) => ({
+  ...data,
+  corporateName: '테스트 회사명',
+  name: '테스트 이름',
+  corporateId: '000-00-00000',
+  zipCode: '00000',
+  address: '테스트 주소',
+  addressDetail: '테스트 상세주소',
+  tel: '000-0000-0000',
+  email: 'test@test.test',
+});
+
 // 변수
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
@@ -28,18 +41,6 @@ export const SIGNUP_REQUEST = 'SIGNUP_REQUEST';
 export const SIGNUP_SUCCESS = 'SIGNUP_SUCCESS';
 export const SIGNUP_FAILURE = 'SIGNUP_FAILURE';
 
-const dummyUser = (data) => ({
-  ...data,
-  corporateName: '테스트 회사명',
-  name: '테스트 이름',
-  corporateId: '000-00-00000',
-  zipCode: '00000',
-  address: '테스트 주소',
-  addressDetail: '테스트 상세주소',
-  tel: '000-0000-0000',
-  email: 'test@test.test',
-});
-
 // 로그인 액션
 export const loginRequestAction = (data) => ({
   type: LOGIN_REQUEST,
@@ -52,12 +53,14 @@ export const logoutRequestAction = () => ({
 });
 
 // 회원가입 액션
-export const signupRequestAction = () => ({
+export const signupRequestAction = (data) => ({
   type: SIGNUP_REQUEST,
+  data,
 });
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
+    // 로그인
     case LOGIN_REQUEST:
       return {
         ...state,
@@ -78,6 +81,7 @@ const reducer = (state = initialState, action) => {
         loginLoading: false,
         loginError: action.error,
       };
+    // 로그아웃
     case LOGOUT_REQUEST:
       return {
         ...state,
@@ -98,6 +102,7 @@ const reducer = (state = initialState, action) => {
         logoutLoading: false,
         logoutError: action.error,
       };
+    // 회원가입
     case SIGNUP_REQUEST:
       return {
         ...state,

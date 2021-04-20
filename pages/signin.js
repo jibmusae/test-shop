@@ -1,13 +1,12 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Router from 'next/router';
+import { useDispatch, useSelector } from 'react-redux';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { useForm } from 'react-hook-form';
 import {
   Heading,
-  FormControl,
-  FormLabel,
   InputGroup,
   Input,
   InputRightElement,
@@ -16,85 +15,45 @@ import {
   Divider,
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
-import SignLayout from '../components/SignLayout';
 import { loginRequestAction } from '../reducers/user';
-import useInput from '../hooks/useInput';
+import SignLayout from '../components/SignLayout';
 
-const useYupValidationResolver = (validationSchema) =>
-  useCallback(
-    async (data) => {
-      try {
-        const values = await validationSchema.validate(data, {
-          abortEarly: false,
-        });
-
-        return {
-          values,
-          errors: {},
-        };
-      } catch (errors) {
-        return {
-          values: {},
-          errors: errors.inner.reduce(
-            (allErrors, currentError) => ({
-              ...allErrors,
-              [currentError.path]: {
-                type: currentError.type ?? 'validation',
-                message: currentError.message,
-              },
-            }),
-            {}
-          ),
-        };
-      }
-    },
-    [validationSchema]
-  );
+// yup
+const signinSchema = yup.object().shape({
+  id: yup.string().required('아이디를 입력해주세요'),
+  password: yup.string().required('비밀번호를 입력해주세요'),
+});
 
 export default function signin() {
-  // Input
-  const [inputs, onChangeInputs] = useInput({
-    id: '',
-    password: '',
-  });
-  const { id, password } = inputs;
-
   // 비밀번호 보이기
   const [showPassword, setShowPassword] = useState(false);
 
-  // 로그인 스테이터스
+  // TODO useState -> redux-saga
+  const [confirmLoading, setConfirmLoading] = useState(false);
+
+  // TODO 로그인 스테이터스
   const { loginLoading, loginDone } = useSelector((state) => state.user);
-  const dispatch = useDispatch();
-  const onSubmitForm = useCallback(() => {
-    dispatch(loginRequestAction({ id, password }));
-    // TODO useEffect
-    Router.push('/');
-  }, [id, password]);
+  // const dispatch = useDispatch();
+  const onSubmitForm = (data) => {
+    console.log(data);
+    setConfirmLoading(true);
+    setTimeout(() => {
+      setConfirmLoading(false);
+      Router.push('/');
+    }, 1000);
+    // dispatch(loginRequestAction({ id, password }));
+  };
 
   // useEffect(() => {
-  //   console.log(loginDone);
-  //   if (loginDone) {
-  //     Router.push("/");
-  //   }
-  // }, [loginDone]);
+  //   console.log(loginLoading);
+  // }, [loginLoading]);
 
   // react-hook-form 유효성 검사
-  const validationSchema = useMemo(() =>
-    yup.object({
-      id: yup
-        .string()
-        .min(6, '아이디는 최소 6문자, 최대 20문자로 입력해주세요')
-        .max(20, '아이디는 최소 6문자, 최대 20문자로 입력해주세요')
-        .required('아이디를 입력해주세요'),
-      password: yup
-        .string()
-        .min(8, '비밀번호는 최소 8문자, 최대 16문자로 입력해 주세요')
-        .max(16, '비밀번호는 최소 8문자, 최대 16문자로 입력해 주세요')
-        .required('비밀번호를 입력해주세요'),
-    })
-  );
-  const resolver = useYupValidationResolver(validationSchema);
-  const { handleSubmit, register, errors } = useForm({ resolver });
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ resolver: yupResolver(signinSchema) });
 
   return (
     <SignLayout>
@@ -111,51 +70,49 @@ export default function signin() {
       </Heading>
       <form onSubmit={handleSubmit(onSubmitForm)}>
         {/* 아이디 */}
-        <FormControl mb={3} isInvalid={errors.id}>
-          <FormLabel mb={1}>아이디</FormLabel>
-          <Input
-            id="id"
-            name="id"
-            type="text"
-            placeholder="아이디"
-            onChange={onChangeInputs}
-            ref={register}
-          />
-          <Box pl={2} color="red" fontSize="0.85rem">
-            {errors.id?.message}
-          </Box>
-        </FormControl>
+        <Box my={2}>아이디</Box>
+        <Controller
+          name="id"
+          control={control}
+          defaultValue=""
+          render={({ field }) => <Input {...field} placeholder="아이디" />}
+        />
+        <Box pl={2} color="red" fontSize="0.85rem">
+          {errors.id?.message}
+        </Box>
 
         {/* 비밀번호 */}
-        <FormControl mb={3} isInvalid={errors.password}>
-          <FormLabel mb={1}>비밀번호</FormLabel>
-          <InputGroup>
-            <Input
-              id="password"
-              name="password"
-              type={showPassword ? 'text' : 'password'}
-              placeholder="비밀번호"
-              onChange={onChangeInputs}
-              ref={register}
-            />
-            <InputRightElement
-              children={
-                showPassword ? (
-                  <ViewIcon color="gray.400" />
-                ) : (
-                  <ViewOffIcon color="gray.400" />
-                )
-              }
-              onClick={(e) => {
-                setShowPassword(!showPassword);
-              }}
-              cursor="pointer"
-            />
-          </InputGroup>
-          <Box pl={2} color="red" fontSize="0.85rem">
-            {errors.password?.message}
-          </Box>
-        </FormControl>
+        <Box my={2}>비밀번호</Box>
+        <Controller
+          name="password"
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <InputGroup>
+              <Input
+                {...field}
+                type={showPassword ? 'text' : 'password'}
+                placeholder="패스워드"
+              />
+              <InputRightElement
+                children={
+                  showPassword ? (
+                    <ViewIcon color="gray.400" />
+                  ) : (
+                    <ViewOffIcon color="gray.400" />
+                  )
+                }
+                onClick={(e) => {
+                  setShowPassword(!showPassword);
+                }}
+                cursor="pointer"
+              />
+            </InputGroup>
+          )}
+        />
+        <Box pl={2} color="red" fontSize="0.85rem">
+          {errors.password?.message}
+        </Box>
 
         {/* 아이디 / 패스워드 찾기 */}
         <Link href="/findUser">
@@ -177,7 +134,7 @@ export default function signin() {
           mb={3}
           colorScheme="blue"
           size="md"
-          isLoading={loginLoading}
+          isLoading={confirmLoading}
           isFullWidth
         >
           로그인

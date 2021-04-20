@@ -1,5 +1,11 @@
 // 이전상태
 export const initialState = {
+  addItemLoading: false,
+  addItemDone: false,
+  addItemError: null,
+  removeItemLoading: false,
+  removeItemDone: false,
+  removeItemError: null,
   mainItems: [
     {
       id: 1,
@@ -39,15 +45,48 @@ export const removeItemRequestAction = () => ({
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
+    // 상품 추가
     case ADD_ITEM_REQUEST:
       return {
         ...state,
-        mainItems: [...state.mainItems, dummyItems],
-        itemAdded: true,
+        addItemLoading: true,
+        addItemDone: false,
+        addItemError: null,
       };
+    case ADD_ITEM_SUCCESS:
+      return {
+        ...state,
+        addItemLoading: false,
+        addItemDone: true,
+        mainItems: [...state.mainItems, dummyItems],
+      };
+    case ADD_ITEM_FAILURE:
+      return {
+        ...state,
+        addItemLoading: false,
+        addItemError: action.error,
+      };
+    // 상품 제거
     case REMOVE_ITEM_REQUEST:
       return {
         ...state,
+        removeItemLoading: true,
+        removeItemDone: false,
+        removeItemError: null,
+      };
+    case REMOVE_ITEM_SUCCESS:
+      return {
+        ...state,
+        removeItemLoading: false,
+        removeItemDone: true,
+        // TODO 상품 제거
+        mainItems: [...state.mainItems],
+      };
+    case REMOVE_ITEM_FAILURE:
+      return {
+        ...state,
+        removeItemLoading: false,
+        removeItemError: action.error,
       };
     default:
       return state;
