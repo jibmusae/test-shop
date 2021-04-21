@@ -12,17 +12,11 @@ import Footer from './Footer';
 import { logoutRequestAction } from '../reducers/user';
 
 export default function AppLayout({ children }) {
-  const { user, logoutDone } = useSelector((state) => state.user);
+  const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const onLogout = useCallback(() => {
     dispatch(logoutRequestAction());
   }, []);
-
-  useEffect(() => {
-    if (logoutDone) {
-      Router.push('/');
-    }
-  }, [logoutDone]);
 
   return (
     <>

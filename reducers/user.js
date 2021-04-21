@@ -10,7 +10,6 @@ export const initialState = {
   signupDone: false,
   signupError: null,
   user: null,
-  isAdminUser: false,
   signUpData: {},
   loginData: {},
 };
@@ -26,6 +25,7 @@ const dummyUser = (data) => ({
   addressDetail: '테스트 상세주소',
   tel: '000-0000-0000',
   email: 'test@test.test',
+  isAdmin: true,
 });
 
 // 변수
@@ -65,14 +65,14 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         loginLoading: true,
-        loginDoen: false,
+        loginDone: false,
         loginError: null,
       };
     case LOGIN_SUCCESS:
       return {
         ...state,
         loginLoading: false,
-        loginDoen: true,
+        loginDone: true,
         user: dummyUser(action.data),
       };
     case LOGIN_FAILURE:
@@ -86,14 +86,14 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         logoutLoading: true,
-        logoutDoen: false,
+        logoutDone: false,
         logoutError: null,
       };
     case LOGOUT_SUCCESS:
       return {
         ...state,
         logoutLoading: false,
-        logoutDoen: true,
+        logoutDone: true,
         user: null,
       };
     case LOGOUT_FAILURE:

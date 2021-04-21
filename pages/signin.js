@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Router from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import {
@@ -17,6 +17,7 @@ import {
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { loginRequestAction } from '../reducers/user';
 import SignLayout from '../components/SignLayout';
+import useInput from '../hooks/useInput';
 
 // yup
 const signinSchema = yup.object().shape({
@@ -25,32 +26,31 @@ const signinSchema = yup.object().shape({
 });
 
 export default function signin() {
+  // Input
+  const [id, onChangeId] = useInput('');
+  const [password, onChangePassword] = useInput('');
+
   // 비밀번호 보이기
   const [showPassword, setShowPassword] = useState(false);
 
-  // TODO useState -> redux-saga
-  const [confirmLoading, setConfirmLoading] = useState(false);
+  // 로그인 상태관리
+  const dispatch = useDispatch();
+  const { loginLoading, user } = useSelector((state) => state.user);
+  const onSubmitForm = useCallback(() => {
+    console.log(id, password);
+    dispatch(loginRequestAction({ id, password }));
+  }, [id, password]);
 
-  // TODO 로그인 스테이터스
-  const { loginLoading, loginDone } = useSelector((state) => state.user);
-  // const dispatch = useDispatch();
-  const onSubmitForm = (data) => {
-    console.log(data);
-    setConfirmLoading(true);
-    setTimeout(() => {
-      setConfirmLoading(false);
+  // 로그인 성공시 화면 이동
+  useEffect(() => {
+    if (user) {
       Router.push('/');
-    }, 1000);
-    // dispatch(loginRequestAction({ id, password }));
-  };
-
-  // useEffect(() => {
-  //   console.log(loginLoading);
-  // }, [loginLoading]);
+    }
+  }, [user]);
 
   // react-hook-form 유효성 검사
   const {
-    control,
+    register,
     handleSubmit,
     formState: { errors },
   } = useForm({ resolver: yupResolver(signinSchema) });
@@ -71,11 +71,11 @@ export default function signin() {
       <form onSubmit={handleSubmit(onSubmitForm)}>
         {/* 아이디 */}
         <Box my={2}>아이디</Box>
-        <Controller
-          name="id"
-          control={control}
-          defaultValue=""
-          render={({ field }) => <Input {...field} placeholder="아이디" />}
+        <Input
+          {...register('id')}
+          placeholder="아이디"
+          value={id}
+          onChange={onChangeId}
         />
         <Box pl={2} color="red" fontSize="0.85rem">
           {errors.id?.message}
@@ -83,33 +83,28 @@ export default function signin() {
 
         {/* 비밀번호 */}
         <Box my={2}>비밀번호</Box>
-        <Controller
-          name="password"
-          control={control}
-          defaultValue=""
-          render={({ field }) => (
-            <InputGroup>
-              <Input
-                {...field}
-                type={showPassword ? 'text' : 'password'}
-                placeholder="패스워드"
-              />
-              <InputRightElement
-                children={
-                  showPassword ? (
-                    <ViewIcon color="gray.400" />
-                  ) : (
-                    <ViewOffIcon color="gray.400" />
-                  )
-                }
-                onClick={(e) => {
-                  setShowPassword(!showPassword);
-                }}
-                cursor="pointer"
-              />
-            </InputGroup>
-          )}
-        />
+        <InputGroup>
+          <Input
+            {...register('password')}
+            placeholder="패스워드"
+            value={password}
+            onChange={onChangePassword}
+            type={showPassword ? 'text' : 'password'}
+          />
+          <InputRightElement
+            children={
+              showPassword ? (
+                <ViewIcon color="gray.400" />
+              ) : (
+                <ViewOffIcon color="gray.400" />
+              )
+            }
+            onClick={(e) => {
+              setShowPassword(!showPassword);
+            }}
+            cursor="pointer"
+          />
+        </InputGroup>
         <Box pl={2} color="red" fontSize="0.85rem">
           {errors.password?.message}
         </Box>
@@ -134,7 +129,7 @@ export default function signin() {
           mb={3}
           colorScheme="blue"
           size="md"
-          isLoading={confirmLoading}
+          isLoading={loginLoading}
           isFullWidth
         >
           로그인
