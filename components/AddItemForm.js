@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -24,14 +24,16 @@ import {
 } from '@chakra-ui/react';
 import { EditIcon } from '@chakra-ui/icons';
 import useInput from '../hooks/useInput';
+import { addItemRequestAction } from '../reducers/item';
 
 // yup
 const addItemSchema = yup.object().shape({
   title: yup.string().required('상품명을 입력해주세요'),
-  image: yup.string().required('상품이미지를 등록해주세요'),
-  price: yup.number().required('금액을 입력해주세요'),
-  startDate: yup.number().required('시작일을 입력해주세요'),
-  endDate: yup.number().required('종료일을 입력해주세요'),
+  image: yup.string().required('상품이미지를 선택해주세요'),
+  price: yup.string().required('금액을 입력해주세요'),
+  startDate: yup.string().required('시작일을 입력해주세요'),
+  endDate: yup.string().required('종료일을 입력해주세요'),
+  content: yup.string().required('상품설명을 입력해주세요'),
 });
 
 export default function AddItemForm(props) {
@@ -44,15 +46,21 @@ export default function AddItemForm(props) {
     setCategory(value);
   }, []);
   const [title, onChangeTitle] = useInput('');
-  // TODO 상품 이미지
-  // const [itemImage, setItemImage] = useState(null);
-  // const onChangeImage = (e) => {
-  //   setItemImage(e.target.files[0]);
-  // };
   const [price, onChangePrice] = useInput(0);
   const [startDate, onChangeStartDate] = useInput(null);
   const [endDate, onChangeEndDate] = useInput(null);
   const [content, onChangeContent] = useInput('');
+
+  // 이미지 선택
+  const hiddenFileInput = useRef(null);
+  const onClickImageUpload = (e) => {
+    hiddenFileInput.current.click();
+  };
+
+  const [image, setImage] = useState('');
+  const onChangeImage = (e) => {
+    setImage(e.target.files[0].name);
+  };
 
   // 상품 상태관리
   const dispatch = useDispatch();
@@ -116,18 +124,49 @@ export default function AddItemForm(props) {
                   <Radio value="4">그 외</Radio>
                 </Flex>
               </RadioGroup>
+              <Box pl={2} color="red" fontSize="0.85rem">
+                {errors.category?.message}
+              </Box>
 
               {/* 상품명 */}
               <Box my={2}>상품명</Box>
-              <Input {...register('title')} placeholder="상품명" />
+              <Input
+                {...register('title')}
+                onChange={onChangeTitle}
+                placeholder="상품명"
+              />
+              <Box pl={2} color="red" fontSize="0.85rem">
+                {errors.title?.message}
+              </Box>
 
               {/* 상품 이미지 */}
               <Box my={2}>상품 이미지</Box>
               <Input
                 type="file"
-                {...register('image')}
-                // onChange={onChangeImage}
+                ref={hiddenFileInput}
+                onChange={onChangeImage}
+                d="none"
               />
+              <InputGroup>
+                <Input
+                  {...register('image')}
+                  placeholder="이미지 선택"
+                  value={image}
+                  readOnly
+                />
+                <InputRightElement width="100px">
+                  <Button
+                    size="sm"
+                    colorScheme="blue"
+                    onClick={onClickImageUpload}
+                  >
+                    이미지 선택
+                  </Button>
+                </InputRightElement>
+              </InputGroup>
+              <Box pl={2} color="red" fontSize="0.85rem">
+                {errors.image?.message}
+              </Box>
 
               {/* 금액 */}
               <Box my={2}>금액</Box>
@@ -136,6 +175,7 @@ export default function AddItemForm(props) {
                   {...register('price')}
                   type="number"
                   placeholder="0"
+                  onChange={onChangePrice}
                   textAlign="end"
                 />
                 <InputRightElement
@@ -146,6 +186,9 @@ export default function AddItemForm(props) {
                   children="원"
                 />
               </InputGroup>
+              <Box pl={2} color="red" fontSize="0.85rem">
+                {errors.price?.message}
+              </Box>
 
               {/* 진행일시 */}
               <Flex>
@@ -154,16 +197,24 @@ export default function AddItemForm(props) {
                   <Input
                     {...register('startDate')}
                     type="number"
+                    onChange={onChangeStartDate}
                     placeholder="YYYYMMDD"
                   />
+                  <Box pl={2} color="red" fontSize="0.85rem">
+                    {errors.startDate?.message}
+                  </Box>
                 </Box>
                 <Box ml={1}>
                   <Box my={2}>종료일</Box>
                   <Input
                     {...register('endDate')}
                     type="number"
+                    onChange={onChangeEndDate}
                     placeholder="YYYYMMDD"
                   />
+                  <Box pl={2} color="red" fontSize="0.85rem">
+                    {errors.endDate?.message}
+                  </Box>
                 </Box>
               </Flex>
 
@@ -173,8 +224,12 @@ export default function AddItemForm(props) {
                 {...register('content')}
                 minH="150px"
                 size="sm"
+                onChange={onChangeContent}
                 resize="none"
               />
+              <Box pl={2} color="red" fontSize="0.85rem">
+                {errors.content?.message}
+              </Box>
 
               {/* 상품 등록 버튼 */}
               <Flex mt={4} justifyContent="center">
@@ -182,6 +237,7 @@ export default function AddItemForm(props) {
                   w="150px"
                   size="md"
                   colorScheme="blue"
+                  type="submit"
                   isLoading={addItemLoading}
                 >
                   등록하기

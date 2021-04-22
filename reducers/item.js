@@ -75,6 +75,21 @@ export const REMOVE_ITEM_REQUEST = 'REMOVE_ITEM_REQUEST';
 export const REMOVE_ITEM_SUCCESS = 'REMOVE_ITEM_SUCCESS';
 export const REMOVE_ITEM_FAILURE = 'REMOVE_ITEM_FAILURE';
 
+// 더미 아이템 테스트
+const dummyItems = {
+  id: 99,
+  category: 1,
+  title: '아이유 예쁘당 헤헤',
+  image: {
+    src: 'https://pbs.twimg.com/media/EIlWXnoUEAAM7cy?format=jpg&name=large',
+    alt: '아이유',
+  },
+  price: 9999999999999,
+  startDate: '19930516',
+  endDate: '20991231',
+  content: `아이유 예쁘당 헤헤헤헤헤헤`,
+};
+
 // 상품 추가 액션
 export const addItemRequestAction = (data) => ({
   type: ADD_ITEM_REQUEST,
@@ -90,6 +105,7 @@ const reducer = (state = initialState, action) => {
   switch (action.type) {
     // 상품 추가
     case ADD_ITEM_REQUEST:
+      console.log('addItem 주문이여유~');
       return {
         ...state,
         addItemLoading: true,
@@ -98,13 +114,16 @@ const reducer = (state = initialState, action) => {
       };
     case ADD_ITEM_SUCCESS:
       // const category = state.
+      console.log('addItem 성공했어유~');
+      console.log(action.data);
       return {
         ...state,
         addItemLoading: false,
         addItemDone: true,
-        mainItems: [...state.mainItems, dummyItems],
+        mainItems: [...state.mainItems, dummyItems(action.data)],
       };
     case ADD_ITEM_FAILURE:
+      console.log('addItem 실패했어유~');
       return {
         ...state,
         addItemLoading: false,

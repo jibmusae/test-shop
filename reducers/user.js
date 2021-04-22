@@ -62,6 +62,7 @@ const reducer = (state = initialState, action) => {
   switch (action.type) {
     // 로그인
     case LOGIN_REQUEST:
+      console.log('login 주문이여유~');
       return {
         ...state,
         loginLoading: true,
@@ -69,6 +70,7 @@ const reducer = (state = initialState, action) => {
         loginError: null,
       };
     case LOGIN_SUCCESS:
+      console.log('login 성공했어유~');
       return {
         ...state,
         loginLoading: false,
@@ -76,6 +78,7 @@ const reducer = (state = initialState, action) => {
         user: dummyUser(action.data),
       };
     case LOGIN_FAILURE:
+      console.log('login 실패했어유~');
       return {
         ...state,
         loginLoading: false,
