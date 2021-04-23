@@ -41,26 +41,46 @@ export default function AddItemForm(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   // 입력
+  const [inputs, setInputs] = useState({
+    title: '',
+    price: 0,
+    startDate: 20000101,
+    endDate: 20301231,
+    content: '',
+  });
+  const onChangeInputs = (e) => {
+    const { name, value } = e.target;
+    setInputs({ ...inputs, [name]: value });
+  };
+
+  // 입력(카테고리)
   const [category, setCategory] = useState(1);
-  const onChangeCategory = useCallback((value) => {
+  const onChangeCategory = (value) => {
     setCategory(value);
+  };
+
+  // 입력(이미지)
+  const [image, setImage] = useState('');
+  const [imageName, setImageName] = useState('');
+  const [imageAlt, setImageAlt] = useState('');
+  const onChangeImage = useCallback((e) => {
+    if (e.target.value !== '') {
+      const imageNameSplit = e.target.files[0]?.name.split('.');
+
+      setImage(e.target.value);
+      setImageName(e.target.files[0]?.name);
+      setImageAlt(e.target.files[0] && imageNameSplit[0]);
+    }
   }, []);
-  const [title, onChangeTitle] = useInput('');
-  const [price, onChangePrice] = useInput(0);
-  const [startDate, onChangeStartDate] = useInput(null);
-  const [endDate, onChangeEndDate] = useInput(null);
-  const [content, onChangeContent] = useInput('');
 
   // 이미지 선택
-  const hiddenFileInput = useRef(null);
+  const fileRef = useRef();
   const onClickImageUpload = (e) => {
-    hiddenFileInput.current.click();
+    fileRef.current.click();
   };
 
-  const [image, setImage] = useState('');
-  const onChangeImage = (e) => {
-    setImage(e.target.files[0].name);
-  };
+  // 입력 값
+  const { title, price, startDate, endDate, content } = inputs;
 
   // 상품 상태관리
   const dispatch = useDispatch();
@@ -78,7 +98,7 @@ export default function AddItemForm(props) {
         content,
       })
     );
-  }, []);
+  }, [category, title, image, price, startDate, endDate, content]);
 
   // react-hook-form 유효성 검사
   const {
@@ -125,6 +145,9 @@ export default function AddItemForm(props) {
                 </Flex>
               </RadioGroup>
               <Box pl={2} color="red" fontSize="0.85rem">
+                <Button size="xs" onClick={(e) => console.log(category)}>
+                  카테고리
+                </Button>
                 {errors.category?.message}
               </Box>
 
@@ -132,28 +155,27 @@ export default function AddItemForm(props) {
               <Box my={2}>상품명</Box>
               <Input
                 {...register('title')}
-                onChange={onChangeTitle}
+                onChange={onChangeInputs}
                 placeholder="상품명"
               />
               <Box pl={2} color="red" fontSize="0.85rem">
+                <Button size="xs" onClick={(e) => console.log(title)}>
+                  상품명
+                </Button>
                 {errors.title?.message}
               </Box>
 
               {/* 상품 이미지 */}
               <Box my={2}>상품 이미지</Box>
               <Input
+                {...register('image')}
                 type="file"
-                ref={hiddenFileInput}
+                ref={fileRef}
                 onChange={onChangeImage}
                 d="none"
               />
               <InputGroup>
-                <Input
-                  {...register('image')}
-                  placeholder="이미지 선택"
-                  value={image}
-                  readOnly
-                />
+                <Input placeholder="이미지 선택" value={imageName} readOnly />
                 <InputRightElement width="100px">
                   <Button
                     size="sm"
@@ -165,6 +187,12 @@ export default function AddItemForm(props) {
                 </InputRightElement>
               </InputGroup>
               <Box pl={2} color="red" fontSize="0.85rem">
+                <Button
+                  size="xs"
+                  onClick={(e) => console.log(image, imageName, imageAlt)}
+                >
+                  상품 이미지
+                </Button>
                 {errors.image?.message}
               </Box>
 
@@ -175,7 +203,7 @@ export default function AddItemForm(props) {
                   {...register('price')}
                   type="number"
                   placeholder="0"
-                  onChange={onChangePrice}
+                  onChange={onChangeInputs}
                   textAlign="end"
                 />
                 <InputRightElement
@@ -187,6 +215,9 @@ export default function AddItemForm(props) {
                 />
               </InputGroup>
               <Box pl={2} color="red" fontSize="0.85rem">
+                <Button size="xs" onClick={(e) => console.log(price)}>
+                  금액
+                </Button>
                 {errors.price?.message}
               </Box>
 
@@ -197,10 +228,13 @@ export default function AddItemForm(props) {
                   <Input
                     {...register('startDate')}
                     type="number"
-                    onChange={onChangeStartDate}
+                    onChange={onChangeInputs}
                     placeholder="YYYYMMDD"
                   />
                   <Box pl={2} color="red" fontSize="0.85rem">
+                    <Button size="xs" onClick={(e) => console.log(startDate)}>
+                      시작일
+                    </Button>
                     {errors.startDate?.message}
                   </Box>
                 </Box>
@@ -209,10 +243,13 @@ export default function AddItemForm(props) {
                   <Input
                     {...register('endDate')}
                     type="number"
-                    onChange={onChangeEndDate}
+                    onChange={onChangeInputs}
                     placeholder="YYYYMMDD"
                   />
                   <Box pl={2} color="red" fontSize="0.85rem">
+                    <Button size="xs" onClick={(e) => console.log(endDate)}>
+                      종료일
+                    </Button>
                     {errors.endDate?.message}
                   </Box>
                 </Box>
@@ -224,10 +261,13 @@ export default function AddItemForm(props) {
                 {...register('content')}
                 minH="150px"
                 size="sm"
-                onChange={onChangeContent}
+                onChange={onChangeInputs}
                 resize="none"
               />
               <Box pl={2} color="red" fontSize="0.85rem">
+                <Button size="xs" onClick={(e) => console.log(content)}>
+                  상품 설명
+                </Button>
                 {errors.content?.message}
               </Box>
 

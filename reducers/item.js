@@ -86,7 +86,7 @@ const dummyItems = {
   },
   price: 9999999999999,
   startDate: '19930516',
-  endDate: '20991231',
+  endDate: '20290203',
   content: `아이유 예쁘당 헤헤헤헤헤헤`,
 };
 
@@ -120,7 +120,7 @@ const reducer = (state = initialState, action) => {
         ...state,
         addItemLoading: false,
         addItemDone: true,
-        mainItems: [...state.mainItems, dummyItems(action.data)],
+        mainItems: [...state.mainItems],
       };
     case ADD_ITEM_FAILURE:
       console.log('addItem 실패했어유~');
