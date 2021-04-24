@@ -77,14 +77,14 @@ export const REMOVE_ITEM_FAILURE = 'REMOVE_ITEM_FAILURE';
 
 // 더미 아이템 테스트
 const dummyItems = {
-  id: 99,
+  id: 98,
   category: 1,
   title: '아이유 예쁘당 헤헤',
   image: {
     src: 'https://pbs.twimg.com/media/EIlWXnoUEAAM7cy?format=jpg&name=large',
     alt: '아이유',
   },
-  price: 9999999999999,
+  price: 999999999,
   startDate: '19930516',
   endDate: '20290203',
   content: `아이유 예쁘당 헤헤헤헤헤헤`,
@@ -120,7 +120,7 @@ const reducer = (state = initialState, action) => {
         ...state,
         addItemLoading: false,
         addItemDone: true,
-        mainItems: [...state.mainItems],
+        mainItems: [...state.mainItems, dummyItems],
       };
     case ADD_ITEM_FAILURE:
       console.log('addItem 실패했어유~');

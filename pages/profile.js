@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   Tabs,
   TabList,
@@ -19,45 +19,38 @@ import {
 import AppLayout from '../components/AppLayout';
 import PostCodeButton from '../components/PostCodeButton';
 import { useSelector } from 'react-redux';
+import Router from 'next/router';
 
 export default function profile() {
+  // 상태관리
   const { user } = useSelector((state) => state.user);
 
+  // 페이지 이동
+  useEffect(() => {
+    if (!user) {
+      Router.push('/');
+    }
+  }, [user]);
+
+  // 우편번호
   const [isPostOpen, setIsPostOpen] = useState(false);
   const onClickDaumPost = () => {
     setIsPostOpen(true);
     document.body.style.overflow = 'hidden';
   };
 
-  const [zipCode, setZipCode] = useState(user.zipCode);
-  const onChangeZipCode = useCallback(
-    (e) => {
-      setZipCode(e.target.value);
-    },
-    [zipCode]
-  );
-  const getZipCode = (value) => {
-    setZipCode(value);
-  };
-
-  const [address, setAddress] = useState(user.address);
-  const onChangeAddress = useCallback(
-    (e) => {
-      setAddress(e.target.value);
-    },
-    [address]
-  );
-  const getAddress = (value) => {
-    setAddress(value);
-  };
-
-  const [addressDetail, setAddressDetail] = useState(user.addressDetail);
-  const onChangeAddressDetail = useCallback(
-    (e) => {
-      setAddressDetail(e.target.value);
-    },
-    [addressDetail]
-  );
+  const [zipCode, setZipCode] = useState(user?.zipCode);
+  const onChangeZipCode = useCallback((e) => {
+    setZipCode(e.target.value);
+  }, []);
+  const [address, setAddress] = useState(user?.address);
+  const onChangeAddress = useCallback((e) => {
+    setAddress(e.target.value);
+  }, []);
+  const [addressDetail, setAddressDetail] = useState(user?.addressDetail);
+  const onChangeAddressDetail = useCallback((e) => {
+    setAddressDetail(e.target.value);
+  }, []);
 
   return (
     <AppLayout>
@@ -85,19 +78,19 @@ export default function profile() {
                   <Th w="200px" bgColor="gray.200">
                     업체명
                   </Th>
-                  <Td>{user.corporateName}</Td>
+                  <Td>{user?.corporateName}</Td>
                 </Tr>
                 <Tr>
                   <Th w="200px" bgColor="gray.200">
                     대표자명
                   </Th>
-                  <Td>{user.name}</Td>
+                  <Td>{user?.name}</Td>
                 </Tr>
                 <Tr>
                   <Th w="200px" bgColor="gray.200">
                     사업자 등록번호
                   </Th>
-                  <Td>{user.corporateId}</Td>
+                  <Td>{user?.corporateId}</Td>
                 </Tr>
                 <Tr>
                   <Th w="200px" bgColor="gray.200">
@@ -129,8 +122,8 @@ export default function profile() {
                         <PostCodeButton
                           setIsPostOpen={setIsPostOpen}
                           isPostOpen={isPostOpen}
-                          getZipCode={getZipCode}
-                          getAddress={getAddress}
+                          setZipCode={setZipCode}
+                          setAddress={setAddress}
                         />
                       )}
                     </InputGroup>
@@ -160,13 +153,13 @@ export default function profile() {
                   <Th w="200px" bgColor="gray.200">
                     이메일
                   </Th>
-                  <Td>{user.email}</Td>
+                  <Td>{user?.email}</Td>
                 </Tr>
                 <Tr>
                   <Th w="200px" bgColor="gray.200">
                     연락처
                   </Th>
-                  <Td>{user.tel}</Td>
+                  <Td>{user?.tel}</Td>
                 </Tr>
               </Tbody>
             </Table>

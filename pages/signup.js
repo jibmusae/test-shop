@@ -262,7 +262,9 @@ export default function signup() {
           name="addressDetail"
           control={control}
           defaultValue=""
-          render={({ field }) => <Input {...field} placeholder="상세주소" />}
+          render={({ field }) => (
+            <Input {...field} mt={1} placeholder="상세주소" />
+          )}
         />
         <Box pl={2} color="red" fontSize="0.85rem">
           {errors.zipCode?.message ||

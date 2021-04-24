@@ -23,7 +23,6 @@ import {
   InputRightElement,
 } from '@chakra-ui/react';
 import { EditIcon } from '@chakra-ui/icons';
-import useInput from '../hooks/useInput';
 import { addItemRequestAction } from '../reducers/item';
 
 // yup
@@ -145,9 +144,6 @@ export default function AddItemForm(props) {
                 </Flex>
               </RadioGroup>
               <Box pl={2} color="red" fontSize="0.85rem">
-                <Button size="xs" onClick={(e) => console.log(category)}>
-                  카테고리
-                </Button>
                 {errors.category?.message}
               </Box>
 
@@ -159,23 +155,25 @@ export default function AddItemForm(props) {
                 placeholder="상품명"
               />
               <Box pl={2} color="red" fontSize="0.85rem">
-                <Button size="xs" onClick={(e) => console.log(title)}>
-                  상품명
-                </Button>
                 {errors.title?.message}
               </Box>
 
               {/* 상품 이미지 */}
               <Box my={2}>상품 이미지</Box>
               <Input
-                {...register('image')}
                 type="file"
                 ref={fileRef}
                 onChange={onChangeImage}
                 d="none"
               />
               <InputGroup>
-                <Input placeholder="이미지 선택" value={imageName} readOnly />
+                <Input
+                  {...register('image')}
+                  placeholder="이미지 선택"
+                  value={imageName}
+                  readOnly
+                />
+
                 <InputRightElement width="100px">
                   <Button
                     size="sm"
@@ -187,12 +185,6 @@ export default function AddItemForm(props) {
                 </InputRightElement>
               </InputGroup>
               <Box pl={2} color="red" fontSize="0.85rem">
-                <Button
-                  size="xs"
-                  onClick={(e) => console.log(image, imageName, imageAlt)}
-                >
-                  상품 이미지
-                </Button>
                 {errors.image?.message}
               </Box>
 
@@ -215,9 +207,6 @@ export default function AddItemForm(props) {
                 />
               </InputGroup>
               <Box pl={2} color="red" fontSize="0.85rem">
-                <Button size="xs" onClick={(e) => console.log(price)}>
-                  금액
-                </Button>
                 {errors.price?.message}
               </Box>
 
@@ -232,9 +221,6 @@ export default function AddItemForm(props) {
                     placeholder="YYYYMMDD"
                   />
                   <Box pl={2} color="red" fontSize="0.85rem">
-                    <Button size="xs" onClick={(e) => console.log(startDate)}>
-                      시작일
-                    </Button>
                     {errors.startDate?.message}
                   </Box>
                 </Box>
@@ -247,9 +233,6 @@ export default function AddItemForm(props) {
                     placeholder="YYYYMMDD"
                   />
                   <Box pl={2} color="red" fontSize="0.85rem">
-                    <Button size="xs" onClick={(e) => console.log(endDate)}>
-                      종료일
-                    </Button>
                     {errors.endDate?.message}
                   </Box>
                 </Box>
@@ -265,9 +248,6 @@ export default function AddItemForm(props) {
                 resize="none"
               />
               <Box pl={2} color="red" fontSize="0.85rem">
-                <Button size="xs" onClick={(e) => console.log(content)}>
-                  상품 설명
-                </Button>
                 {errors.content?.message}
               </Box>
 
