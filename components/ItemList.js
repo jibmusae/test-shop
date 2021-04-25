@@ -20,16 +20,16 @@ export default function ItemList({ item }) {
   const dispatch = useDispatch();
 
   // 진행일시
-  const startDate = `${Number(item.startDate.substr(0, 4))}년 ${Number(
-    item.startDate.substr(4, 2)
-  )}월 ${Number(item.startDate.substr(6, 2))}일`;
+  const startDate = `${Number(item?.startDate?.substr(0, 4))}년 ${Number(
+    item?.startDate?.substr(4, 2)
+  )}월 ${Number(item?.startDate?.substr(6, 2))}일`;
 
-  const endDate = `${Number(item.endDate.substr(0, 4))}년 ${Number(
-    item.endDate.substr(4, 2)
-  )}월 ${Number(item.endDate.substr(6, 2))}일`;
+  const endDate = `${Number(item?.endDate?.substr(0, 4))}년 ${Number(
+    item?.endDate?.substr(4, 2)
+  )}월 ${Number(item?.endDate?.substr(6, 2))}일`;
 
   // 금액
-  const price = `${item.price.toLocaleString('ko-KR')}원`;
+  const price = `${item?.price?.toLocaleString('ko-KR')}원`;
 
   return (
     <>
@@ -46,7 +46,7 @@ export default function ItemList({ item }) {
         boxShadow="base"
         alignItems="center"
       >
-        <Image boxSize="150px" src={item.image.src} alt={item.image.alt} />
+        <Image boxSize="150px" src={item?.image?.src} alt={item?.image?.alt} />
         <Box w="476px" mx="2rem">
           <Heading
             as="h2"
@@ -57,9 +57,9 @@ export default function ItemList({ item }) {
             overflow="hidden"
             textOverflow="ellipsis"
           >
-            {item.title}
+            {item?.title}
           </Heading>
-          <Text>{item.content}</Text>
+          <Text>{item?.content}</Text>
         </Box>
         <Flex
           w="120px"

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -9,6 +9,7 @@ import {
   ModalContent,
   ModalHeader,
   ModalBody,
+  ModalFooter,
   ModalCloseButton,
   useDisclosure,
   IconButton,
@@ -42,9 +43,9 @@ export default function AddItemForm(props) {
   // 입력
   const [inputs, setInputs] = useState({
     title: '',
-    price: 0,
-    startDate: 20000101,
-    endDate: 20301231,
+    price: '',
+    startDate: '',
+    endDate: '',
     content: '',
   });
   const onChangeInputs = (e) => {
@@ -54,9 +55,6 @@ export default function AddItemForm(props) {
 
   // 입력(카테고리)
   const [category, setCategory] = useState(1);
-  const onChangeCategory = (value) => {
-    setCategory(value);
-  };
 
   // 입력(이미지)
   const [image, setImage] = useState('');
@@ -83,21 +81,42 @@ export default function AddItemForm(props) {
 
   // 상품 상태관리
   const dispatch = useDispatch();
-  const { addItemLoading } = useSelector((state) => state.item);
-  const onSubmitForm = useCallback(() => {
-    console.log(category, title, image, price, startDate, endDate, content);
+  const { addItemLoading, addItemDone } = useSelector((state) => state.item);
+  const onSubmitForm = () => {
     dispatch(
       addItemRequestAction({
         category,
         title,
         image,
+        imageAlt,
         price,
         startDate,
         endDate,
         content,
       })
     );
-  }, [category, title, image, price, startDate, endDate, content]);
+    if (addItemDone) {
+      onClose();
+    }
+  };
+
+  useEffect(() => {
+    if (addItemDone) {
+      setInputs({
+        title: '',
+        price: '',
+        startDate: '',
+        endDate: '',
+        content: '',
+      });
+      setCategory(1);
+      setImage('');
+      setImageName('');
+      setImageAlt('');
+
+      onClose();
+    }
+  }, [addItemDone]);
 
   // react-hook-form 유효성 검사
   const {
@@ -127,20 +146,20 @@ export default function AddItemForm(props) {
             상품 추가
           </ModalHeader>
           <ModalCloseButton />
-          <ModalBody p="1.5rem">
-            <form onSubmit={handleSubmit(onSubmitForm)}>
+          <form onSubmit={handleSubmit(onSubmitForm)}>
+            <ModalBody p="1.5rem">
               {/* 카테고리 */}
               <Box my={2}>카테고리</Box>
               <RadioGroup
                 {...register('category')}
-                defaultValue="1"
-                onChange={onChangeCategory}
+                onChange={setCategory}
+                value={category}
               >
                 <Flex justifyContent="space-around">
-                  <Radio value="1">CPU</Radio>
-                  <Radio value="2">메인보드</Radio>
-                  <Radio value="3">그래픽카드</Radio>
-                  <Radio value="4">그 외</Radio>
+                  <Radio value={1}>CPU</Radio>
+                  <Radio value={2}>메인보드</Radio>
+                  <Radio value={3}>그래픽카드</Radio>
+                  <Radio value={4}>그 외</Radio>
                 </Flex>
               </RadioGroup>
               <Box pl={2} color="red" fontSize="0.85rem">
@@ -153,6 +172,7 @@ export default function AddItemForm(props) {
                 {...register('title')}
                 onChange={onChangeInputs}
                 placeholder="상품명"
+                value={title}
               />
               <Box pl={2} color="red" fontSize="0.85rem">
                 {errors.title?.message}
@@ -161,19 +181,15 @@ export default function AddItemForm(props) {
               {/* 상품 이미지 */}
               <Box my={2}>상품 이미지</Box>
               <Input
+                {...register('image')}
                 type="file"
                 ref={fileRef}
                 onChange={onChangeImage}
+                value={image}
                 d="none"
               />
               <InputGroup>
-                <Input
-                  {...register('image')}
-                  placeholder="이미지 선택"
-                  value={imageName}
-                  readOnly
-                />
-
+                <Input placeholder="이미지 선택" value={imageName} readOnly />
                 <InputRightElement width="100px">
                   <Button
                     size="sm"
@@ -195,8 +211,9 @@ export default function AddItemForm(props) {
                   {...register('price')}
                   type="number"
                   placeholder="0"
-                  onChange={onChangeInputs}
                   textAlign="end"
+                  onChange={onChangeInputs}
+                  value={price}
                 />
                 <InputRightElement
                   pr="0.5rem"
@@ -217,8 +234,9 @@ export default function AddItemForm(props) {
                   <Input
                     {...register('startDate')}
                     type="number"
-                    onChange={onChangeInputs}
                     placeholder="YYYYMMDD"
+                    onChange={onChangeInputs}
+                    value={startDate}
                   />
                   <Box pl={2} color="red" fontSize="0.85rem">
                     {errors.startDate?.message}
@@ -229,8 +247,9 @@ export default function AddItemForm(props) {
                   <Input
                     {...register('endDate')}
                     type="number"
-                    onChange={onChangeInputs}
                     placeholder="YYYYMMDD"
+                    onChange={onChangeInputs}
+                    value={endDate}
                   />
                   <Box pl={2} color="red" fontSize="0.85rem">
                     {errors.endDate?.message}
@@ -244,15 +263,18 @@ export default function AddItemForm(props) {
                 {...register('content')}
                 minH="150px"
                 size="sm"
-                onChange={onChangeInputs}
                 resize="none"
+                onChange={onChangeInputs}
+                value={content}
               />
               <Box pl={2} color="red" fontSize="0.85rem">
                 {errors.content?.message}
               </Box>
 
               {/* 상품 등록 버튼 */}
-              <Flex mt={4} justifyContent="center">
+            </ModalBody>
+            <ModalFooter>
+              <Flex justifyContent="center">
                 <Button
                   w="150px"
                   size="md"
@@ -263,8 +285,8 @@ export default function AddItemForm(props) {
                   등록하기
                 </Button>
               </Flex>
-            </form>
-          </ModalBody>
+            </ModalFooter>
+          </form>
         </ModalContent>
       </Modal>
     </>

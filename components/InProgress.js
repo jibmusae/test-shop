@@ -27,11 +27,11 @@ export default function InProgress() {
   let etcArray = [];
 
   mainItems.map((item) => {
-    if (item.category === 1) {
+    if (Number(item.category) === 1) {
       cpuArray.push(item);
-    } else if (item.category === 2) {
+    } else if (Number(item.category) === 2) {
       mbArray.push(item);
-    } else if (item.category === 3) {
+    } else if (Number(item.category) === 3) {
       vgaArray.push(item);
     } else {
       etcArray.push(item);
