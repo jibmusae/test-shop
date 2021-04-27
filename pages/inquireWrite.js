@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Router from 'next/router';
+import { useSelector } from 'react-redux';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import {
   Heading,
   Table,
@@ -12,31 +17,43 @@ import {
   Flex,
   Button,
   Box,
-  Text,
+  HStack,
 } from '@chakra-ui/react';
-import { useForm } from 'react-hook-form';
 import AppLayout from '../components/AppLayout';
+import useInput from '../hooks/useInput';
+
+const inquireSchema = yup.object().shape({
+  name: yup.string().required('이름을 입력해주세요'),
+  email: yup.string().required('이메일 주소를 입력해주세요'),
+  tel1: yup.string().required('휴대폰 번호를 입력해주세요'),
+  tel2: yup.string().required('휴대폰 번호를 입력해주세요'),
+  tel3: yup.string().required('휴대폰 번호를 입력해주세요'),
+  title: yup.string().required('타이틀을 입력해주세요'),
+  contents: yup.string().required('문의내용을 입력해주세요'),
+});
 
 export default function InquireWrite() {
-  const [tel1, setTel1] = useState('');
-  const [tel2, setTel2] = useState('');
-  const [tel3, setTel3] = useState('');
-  const onChangeTel = (e) => {
-    console.log(e);
-  };
+  // 상태관리
+  const { user } = useSelector((state) => state.user);
 
-  // maxLength
-  const maxLengthCheck = (e) => {
-    if (e.target.value.length > e.maxLength) {
-      e.target.value = e.target.value.slice(0, e.maxLength);
-    }
-  };
+  // Input
+  const [inputs, onChangeInputs] = useInput({
+    name: user?.name,
+    email: user?.email,
+    tel1: user?.tel.substr(0, 3),
+    tel2: user?.tel.substr(3, 4),
+    tel3: user?.tel.substr(7, 4),
+    title: '',
+    contents: '',
+  });
+  const { name, email, tel1, tel2, tel3, title, contents } = inputs;
 
+  // react-hook-form
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({ resolver: yupResolver(inquireSchema) });
 
   return (
     <AppLayout>
@@ -58,55 +75,87 @@ export default function InquireWrite() {
                 이름
               </Th>
               <Td>
-                <Input {...register('name')} name="name" size="sm" />
+                <Input
+                  {...register('name')}
+                  size="sm"
+                  placeholder="이름"
+                  value={name}
+                  onChange={onChangeInputs}
+                />
+                <Box pl={2} color="red" fontSize="0.85rem">
+                  {errors.name?.message}
+                </Box>
               </Td>
             </Tr>
             <Tr>
-              <Th bgColor="gray.200">이메일</Th>
+              <Th bgColor="gray.200">이메일 주소</Th>
               <Td>
-                <Input {...register('email')} size="sm" />
-                {errors.email?.email}
+                <Input
+                  {...register('email')}
+                  size="sm"
+                  placeholder="이메일 주소"
+                  value={email}
+                  onChange={onChangeInputs}
+                />
+                <Box pl={2} color="red" fontSize="0.85rem">
+                  {errors.email?.message}
+                </Box>
               </Td>
             </Tr>
             <Tr>
-              <Th bgColor="gray.200">연락처</Th>
+              <Th bgColor="gray.200">휴대폰 번호</Th>
               <Td>
-                <Flex alignItems="center">
+                <HStack spacing="0.5rem">
                   <Input
                     {...register('tel1')}
-                    type="number"
-                    w="6rem"
                     size="sm"
-                    mr="0.5rem"
+                    w="50px"
+                    type="number"
                     placeholder="010"
-                    maxLength={3}
-                    onInput={maxLengthCheck}
+                    value={tel1}
+                    onChange={onChangeInputs}
                   />
-                  <Text fontSize="1.5rem">-</Text>
+                  <Box>-</Box>
                   <Input
                     {...register('tel2')}
                     size="sm"
-                    mx="0.25rem"
+                    w="58px"
+                    type="number"
                     placeholder="1234"
-                    maxLength={4}
-                    onInput={maxLengthCheck}
+                    value={tel2}
+                    onChange={onChangeInputs}
                   />
-                  <Text>-</Text>
+                  <Box>-</Box>
                   <Input
                     {...register('tel3')}
                     size="sm"
-                    ml="0.5rem"
+                    w="58px"
+                    type="number"
                     placeholder="5678"
-                    maxLength={4}
-                    onInput={maxLengthCheck}
+                    value={tel3}
+                    onChange={onChangeInputs}
                   />
-                </Flex>
+                </HStack>
+                <Box pl={2} color="red" fontSize="0.85rem">
+                  {errors.tel1?.message ||
+                    errors.tel2?.message ||
+                    errors.tel3?.message}
+                </Box>
               </Td>
             </Tr>
             <Tr>
               <Th bgColor="gray.200">타이틀</Th>
               <Td>
-                <Input {...register('title')} size="sm" />
+                <Input
+                  {...register('title')}
+                  size="sm"
+                  placeholder="타이틀"
+                  value={title}
+                  onChange={onChangeInputs}
+                />
+                <Box pl={2} color="red" fontSize="0.85rem">
+                  {errors.title?.message}
+                </Box>
               </Td>
             </Tr>
             <Tr>
@@ -117,7 +166,12 @@ export default function InquireWrite() {
                   size="sm"
                   minH="210px"
                   resize="none"
+                  value={contents}
+                  onChange={onChangeInputs}
                 />
+                <Box pl={2} color="red" fontSize="0.85rem">
+                  {errors.contents?.message}
+                </Box>
               </Td>
             </Tr>
           </Tbody>

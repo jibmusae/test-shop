@@ -25,8 +25,6 @@ export default function inquire() {
       >
         문의하기
       </Heading>
-      {/* TODO */}
-      {/* 자신의 글을 최상위로!! */}
       <Table mb="1rem" size="sm" borderTop="1px">
         <Thead>
           <Tr>

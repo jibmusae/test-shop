@@ -27,17 +27,19 @@ const signinSchema = yup.object().shape({
 
 export default function signin() {
   // Input
-  const [id, onChangeId] = useInput('');
-  const [password, onChangePassword] = useInput('');
+  const [inputs, onChangeInputs] = useInput({
+    id: '',
+    password: '',
+  });
+  const { id, password } = inputs;
 
   // 비밀번호 보이기
   const [showPassword, setShowPassword] = useState(false);
 
   // 로그인 상태관리
-  const dispatch = useDispatch();
   const { loginLoading, user } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const onSubmitForm = useCallback(() => {
-    console.log(id, password);
     dispatch(loginRequestAction({ id, password }));
   }, [id, password]);
 
@@ -48,7 +50,7 @@ export default function signin() {
     }
   }, [user]);
 
-  // react-hook-form 유효성 검사
+  // react-hook-form
   const {
     register,
     handleSubmit,
@@ -75,7 +77,7 @@ export default function signin() {
           {...register('id')}
           placeholder="아이디"
           value={id}
-          onChange={onChangeId}
+          onChange={onChangeInputs}
         />
         <Box pl={2} color="red" fontSize="0.85rem">
           {errors.id?.message}
@@ -86,10 +88,10 @@ export default function signin() {
         <InputGroup>
           <Input
             {...register('password')}
+            type={showPassword ? 'text' : 'password'}
             placeholder="패스워드"
             value={password}
-            onChange={onChangePassword}
-            type={showPassword ? 'text' : 'password'}
+            onChange={onChangeInputs}
           />
           <InputRightElement
             children={

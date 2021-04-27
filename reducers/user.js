@@ -17,14 +17,14 @@ export const initialState = {
 // 더미 유저
 const dummyUser = (data) => ({
   ...data,
-  corporateName: '테스트 회사명',
-  name: '테스트 이름',
-  corporateId: '000-00-00000',
-  zipCode: '00000',
-  address: '테스트 주소',
-  addressDetail: '테스트 상세주소',
-  tel: '000-0000-0000',
-  email: 'test@test.test',
+  corporateName: '와이디커넥트',
+  name: '윤재원',
+  corporateId: '4210102162',
+  zipCode: '49103',
+  address: '부산광역시 영도구 와치로 213',
+  addressDetail: '상가 1층 105호',
+  tel: '01068888444',
+  email: 'ydconnectcorp@gmail.com',
   isAdmin: true,
 });
 

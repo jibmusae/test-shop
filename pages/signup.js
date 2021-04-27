@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import Link from 'next/link';
-import Router from 'next/router';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -15,11 +14,14 @@ import {
   Checkbox,
   Button,
   Divider,
+  HStack,
+  VStack,
 } from '@chakra-ui/react';
-import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import { ViewIcon, ViewOffIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import SignLayout from '../components/SignLayout';
-import ModalButton from '../components/ModalButton';
-import PostCodeButton from '../components/PostCodeButton';
+import Modal from '../components/Modal';
+import PostCode from '../components/PostCode';
+import useInput from '../hooks/useInput';
 
 // yup
 const signupSchema = yup.object().shape({
@@ -42,31 +44,62 @@ const signupSchema = yup.object().shape({
     .string()
     .required('대표자명을 입력해주세요')
     .min(2, '대표자명은 최소 2문자로 입력해주세요'),
-  corporateId: yup.string().required('사업자 등록번호를 입력해주세요'),
-  zipCode: yup.string().required('우편번호를 입력해주세요'),
-  address: yup.string().required('주소를 입력해주세요'),
+  corporateId1: yup.string().required('사업자 등록번호를 입력해주세요'),
+  corporateId2: yup.string().required('사업자 등록번호를 입력해주세요'),
+  corporateId3: yup.string().required('사업자 등록번호를 입력해주세요'),
+  zipCode: yup.string().required('우편번호를 선택해주세요'),
+  address: yup.string().required('주소를 선택해주세요'),
   addressDetail: yup.string().required('상세주소를 입력해주세요'),
   email: yup.string().required('이메일 주소를 입력해주세요'),
-  tel: yup.string().required('휴대폰 번호를 입력해주세요'),
+  tel1: yup.string().required('휴대폰 번호를 입력해주세요'),
+  tel2: yup.string().required('휴대폰 번호를 입력해주세요'),
+  tel3: yup.string().required('휴대폰 번호를 입력해주세요'),
   termsCheck: yup.boolean().oneOf([true], '전체 이용약관에 동의해주세요'),
 });
 
 export default function signup() {
-  // 다음 우편검색
+  // Input
+  const [inputs, onChangeInputs] = useInput({
+    id: '',
+    password: '',
+    passwordConfirm: '',
+    corporateName: '',
+    name: '',
+    corporateId1: '',
+    corporateId2: '',
+    corporateId3: '',
+    addressDetail: '',
+    email: '',
+    tel1: '',
+    tel2: '',
+    tel3: '',
+  });
+  const {
+    id,
+    password,
+    passwordConfirm,
+    corporateName,
+    name,
+    corporateId1,
+    corporateId2,
+    corporateId3,
+    addressDetail,
+    email,
+    tel1,
+    tel2,
+    tel3,
+  } = inputs;
+
+  // 주소검색 모달
+  const [showPostCodeModal, setShowPostCodeModal] = useState(false);
   const [zipCode, setZipCode] = useState('');
+  const [address, setAddress] = useState('');
   const onChangeZipCode = useCallback((e) => {
     setZipCode(e.target.value);
   }, []);
-  const [address, setAddress] = useState('');
   const onChangeAddress = useCallback((e) => {
     setAddress(e.target.value);
   }, []);
-
-  const [isPostOpen, setIsPostOpen] = useState(false);
-  const onClickDaumPost = () => {
-    setIsPostOpen(true);
-    document.body.style.overflow = 'hidden';
-  };
 
   // 비밀번호 보이기
   const [showPassword, setShowPassword] = useState([false, false]);
@@ -76,9 +109,13 @@ export default function signup() {
   const allChecked = checkedItems.every(Boolean);
   const isIndeterminate = checkedItems.some(Boolean) && !allChecked;
 
-  // react-hook-form 유효성 검사
+  // 이용약관 모달
+  const [showServiceModal, setShowServiceModal] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+
+  // react-hook-form
   const {
-    control,
+    register,
     handleSubmit,
     formState: { errors },
   } = useForm({ resolver: yupResolver(signupSchema) });
@@ -99,11 +136,11 @@ export default function signup() {
       <form onSubmit={handleSubmit((data) => console.log(data))}>
         {/* 아이디 */}
         <Box my={2}>아이디</Box>
-        <Controller
-          name="id"
-          control={control}
-          defaultValue=""
-          render={({ field }) => <Input {...field} placeholder="아이디" />}
+        <Input
+          {...register('id')}
+          placeholder="아이디"
+          value={id}
+          onChange={onChangeInputs}
         />
         <Box pl={2} color="red" fontSize="0.85rem">
           {errors.id?.message}
@@ -111,77 +148,67 @@ export default function signup() {
 
         {/* 비밀번호 */}
         <Box my={2}>비밀번호</Box>
-        <Controller
-          name="password"
-          control={control}
-          defaultValue=""
-          render={({ field }) => (
-            <InputGroup>
-              <Input
-                {...field}
-                type={showPassword[0] ? 'text' : 'password'}
-                placeholder="패스워드"
-              />
-              <InputRightElement
-                children={
-                  showPassword[0] ? (
-                    <ViewIcon color="gray.400" />
-                  ) : (
-                    <ViewOffIcon color="gray.400" />
-                  )
-                }
-                onClick={(e) => {
-                  setShowPassword([!showPassword[0], showPassword[1]]);
-                }}
-                cursor="pointer"
-              />
-            </InputGroup>
-          )}
-        />
+        <InputGroup>
+          <Input
+            {...register('password')}
+            type={showPassword[0] ? 'text' : 'password'}
+            placeholder="비밀번호"
+            value={password}
+            onChange={onChangeInputs}
+          />
+          <InputRightElement
+            children={
+              showPassword[0] ? (
+                <ViewIcon color="gray.400" />
+              ) : (
+                <ViewOffIcon color="gray.400" />
+              )
+            }
+            onClick={(e) => {
+              setShowPassword([!showPassword[0], showPassword[1]]);
+            }}
+            cursor="pointer"
+          />
+        </InputGroup>
         <Box pl={2} color="red" fontSize="0.85rem">
           {errors.password?.message}
         </Box>
 
         {/* 비밀번호 확인 */}
         <Box my={2}>비밀번호 확인</Box>
-        <Controller
-          name="passwordConfirm"
-          control={control}
-          defaultValue=""
-          render={({ field }) => (
-            <InputGroup>
-              <Input
-                {...field}
-                type={showPassword[1] ? 'text' : 'password'}
-                placeholder="패스워드 확인"
-              />
-              <InputRightElement
-                children={
-                  showPassword[1] ? (
-                    <ViewIcon color="gray.400" />
-                  ) : (
-                    <ViewOffIcon color="gray.400" />
-                  )
-                }
-                onClick={(e) => {
-                  setShowPassword([showPassword[0], !showPassword[1]]);
-                }}
-                cursor="pointer"
-              />
-            </InputGroup>
-          )}
-        />
+        <InputGroup>
+          <Input
+            {...register('passwordConfirm')}
+            type={showPassword[1] ? 'text' : 'password'}
+            placeholder="비밀번호 확인"
+            value={passwordConfirm}
+            onChange={onChangeInputs}
+          />
+          <InputRightElement
+            children={
+              showPassword[1] ? (
+                <ViewIcon color="gray.400" />
+              ) : (
+                <ViewOffIcon color="gray.400" />
+              )
+            }
+            onClick={(e) => {
+              setShowPassword([showPassword[0], !showPassword[1]]);
+            }}
+            cursor="pointer"
+          />
+        </InputGroup>
         <Box pl={2} color="red" fontSize="0.85rem">
           {errors.passwordConfirm?.message}
         </Box>
 
         {/* 업체명 */}
         <Box my={2}>업체명</Box>
-        <Controller
-          name="corporateName"
-          control={control}
-          defaultValue=""
-          render={({ field }) => <Input {...field} placeholder="업체명" />}
+        <Input
+          {...register('corporateName')}
+          placeholder="업체명"
+          value={corporateName}
+          onChange={onChangeInputs}
         />
         <Box pl={2} color="red" fontSize="0.85rem">
           {errors.corporateName?.message}
@@ -189,11 +216,11 @@ export default function signup() {
 
         {/* 대표자명 */}
         <Box my={2}>대표자명</Box>
-        <Controller
-          name="name"
-          control={control}
-          defaultValue=""
-          render={({ field }) => <Input {...field} placeholder="대표자명" />}
+        <Input
+          {...register('name')}
+          placeholder="대표자명"
+          value={name}
+          onChange={onChangeInputs}
         />
         <Box pl={2} color="red" fontSize="0.85rem">
           {errors.name?.message}
@@ -201,71 +228,91 @@ export default function signup() {
 
         {/* 사업자 등록번호 */}
         <Box my={2}>사업자 등록번호</Box>
-        <Controller
-          name="corporateId"
-          control={control}
-          defaultValue=""
-          render={({ field }) => (
-            <Input {...field} placeholder="사업자 등록번호" />
-          )}
-        />
+        <HStack spacing="0.5rem">
+          <Input
+            {...register('corporateId1')}
+            w="61px"
+            type="number"
+            placeholder="123"
+            value={corporateId1}
+            onChange={onChangeInputs}
+          />
+          <Box>-</Box>
+          <Input
+            {...register('corporateId2')}
+            w="52px"
+            type="number"
+            placeholder="45"
+            value={corporateId2}
+            onChange={onChangeInputs}
+          />
+          <Box>-</Box>
+          <Input
+            {...register('corporateId3')}
+            w="79px"
+            type="number"
+            placeholder="67890"
+            value={corporateId3}
+            onChange={onChangeInputs}
+          />
+        </HStack>
         <Box pl={2} color="red" fontSize="0.85rem">
-          {errors.corporateId?.message}
+          {errors.corporateId1?.message ||
+            errors.corporateId2?.message ||
+            errors.corporateId3?.message}
         </Box>
 
         {/* 주소 */}
         <Box my={2}>주소</Box>
-        <Controller
-          name="zipCode"
-          control={control}
-          defaultValue=""
-          render={({ field }) => (
-            <InputGroup mb={1}>
-              <Input
-                {...field}
-                placeholder="우편번호"
-                value={zipCode}
-                onChange={onChangeZipCode}
-                isReadOnly
-              />
-              <InputRightElement w="7rem">
-                <Button size="sm" color="gray" onClick={onClickDaumPost}>
-                  우편번호 검색
-                </Button>
-                {isPostOpen && (
-                  <PostCodeButton
-                    setIsPostOpen={setIsPostOpen}
-                    isPostOpen={isPostOpen}
+        <VStack spacing="0.5rem">
+          <InputGroup>
+            <Input
+              {...register('zipCode')}
+              type="number"
+              placeholder="우편번호"
+              value={zipCode}
+              onChange={onChangeZipCode}
+              isReadOnly
+            />
+            <InputRightElement w="7rem">
+              <Button
+                size="sm"
+                color="gray"
+                onClick={(e) => setShowPostCodeModal(true)}
+              >
+                우편번호 검색
+              </Button>
+              {showPostCodeModal && (
+                <Modal
+                  width="450px"
+                  height="550px"
+                  padding="0.5rem"
+                  setShowModal={setShowPostCodeModal}
+                >
+                  <PostCode
+                    height="500px"
+                    setShowPostCodeModal={setShowPostCodeModal}
                     setZipCode={setZipCode}
                     setAddress={setAddress}
                   />
-                )}
-              </InputRightElement>
-            </InputGroup>
-          )}
-        />
-        <Controller
-          name="address"
-          control={control}
-          defaultValue=""
-          render={({ field }) => (
-            <Input
-              {...field}
-              placeholder="주소"
-              value={address}
-              onChange={onChangeAddress}
-              isReadOnly
-            />
-          )}
-        />
-        <Controller
-          name="addressDetail"
-          control={control}
-          defaultValue=""
-          render={({ field }) => (
-            <Input {...field} mt={1} placeholder="상세주소" />
-          )}
-        />
+                </Modal>
+              )}
+            </InputRightElement>
+          </InputGroup>
+          <Input
+            {...register('address')}
+            placeholder="주소"
+            value={address}
+            onChange={onChangeAddress}
+            isReadOnly
+          />
+          <Input
+            {...register('addressDetail')}
+            placeholder="상세주소"
+            value={addressDetail}
+            onChange={onChangeInputs}
+          />
+        </VStack>
         <Box pl={2} color="red" fontSize="0.85rem">
           {errors.zipCode?.message ||
             errors.address?.message ||
@@ -274,26 +321,48 @@ export default function signup() {
 
         {/* 이메일 */}
         <Box my={2}>이메일</Box>
-        <Controller
-          name="email"
-          control={control}
-          defaultValue=""
-          render={({ field }) => <Input {...field} placeholder="이메일" />}
+        <Input
+          {...register('email')}
+          placeholder="이메일"
+          value={email}
+          onChange={onChangeInputs}
         />
         <Box pl={2} color="red" fontSize="0.85rem">
           {errors.email?.message}
         </Box>
 
         {/* 휴대폰 번호 */}
-        <Box my={2}>연락처</Box>
-        <Controller
-          name="tel"
-          control={control}
-          defaultValue=""
-          render={({ field }) => <Input {...field} placeholder="연락처" />}
-        />
+        <Box my={2}>휴대폰 번호</Box>
+        <HStack spacing="0.5rem">
+          <Input
+            {...register('tel1')}
+            w="61px"
+            type="number"
+            placeholder="010"
+            value={tel1}
+            onChange={onChangeInputs}
+          />
+          <Box>-</Box>
+          <Input
+            {...register('tel2')}
+            w="70px"
+            type="number"
+            placeholder="1234"
+            value={tel2}
+            onChange={onChangeInputs}
+          />
+          <Box>-</Box>
+          <Input
+            {...register('tel3')}
+            w="70px"
+            type="number"
+            placeholder="5678"
+            value={tel3}
+            onChange={onChangeInputs}
+          />
+        </HStack>
         <Box pl={2} color="red" fontSize="0.85rem">
-          {errors.tel?.message}
+          {errors.tel1?.message || errors.tel2?.message || errors.tel3?.message}
         </Box>
 
         {/* 이용약관 */}
@@ -305,23 +374,16 @@ export default function signup() {
           borderColor="gray.200"
           borderRadius="md"
         >
-          <Controller
-            name="termsCheck"
-            control={control}
-            defaultValue={false}
-            render={({ field }) => (
-              <Checkbox
-                {...field}
-                isChecked={allChecked}
-                isIndeterminate={isIndeterminate}
-                onChange={(e) => {
-                  setCheckedItems([e.target.checked, e.target.checked]);
-                }}
-              >
-                전체 동의
-              </Checkbox>
-            )}
-          />
+          <Checkbox
+            {...register('termsCheck')}
+            isChecked={allChecked}
+            isIndeterminate={isIndeterminate}
+            onChange={(e) => {
+              setCheckedItems([e.target.checked, e.target.checked]);
+            }}
+          >
+            전체 동의
+          </Checkbox>
           <Flex justify="space-between" align="center">
             <Checkbox
               isChecked={checkedItems[0]}
@@ -331,7 +393,23 @@ export default function signup() {
             >
               와이디커넥트샵 이용약관 동의
             </Checkbox>
-            <ModalButton title="와이디커넥트샵 이용약관" content="테스트1" />
+            <ChevronRightIcon
+              boxSize={6}
+              color="gray.500"
+              cursor="pointer"
+              onClick={(e) => setShowServiceModal(true)}
+            />
+            {showServiceModal && (
+              <Modal
+                width="450px"
+                height="500px"
+                padding="0.5rem 1.5rem"
+                title="와이디커넥트샵 이용약관"
+                setShowModal={setShowServiceModal}
+              >
+                테스트입니당
+              </Modal>
+            )}
           </Flex>
           <Flex justify="space-between" align="center">
             <Checkbox
@@ -342,7 +420,23 @@ export default function signup() {
             >
               개인정보 수집 및 이용 동의
             </Checkbox>
-            <ModalButton title="개인정보 수집 및 이용" content="테스트2" />
+            <ChevronRightIcon
+              boxSize={6}
+              color="gray.500"
+              cursor="pointer"
+              onClick={(e) => setShowPrivacyModal(true)}
+            />
+            {showPrivacyModal && (
+              <Modal
+                width="450px"
+                height="500px"
+                padding="0.5rem 1.5rem"
+                title="개인정보 수집 및 이용 동의"
+                setShowModal={setShowPrivacyModal}
+              >
+                테스트2입니당
+              </Modal>
+            )}
           </Flex>
         </Stack>
         <Box pl={2} color="red" fontSize="0.85rem">
