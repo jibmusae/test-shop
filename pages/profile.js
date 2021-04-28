@@ -323,7 +323,10 @@ export default function profile() {
                   </Tr>
                 </Tbody>
               </Table>
-              <Flex mt="2rem" justifyContent="center">
+              <Flex mt="2rem" justifyContent="space-between">
+                <Button w="150px" size="md" colorScheme="red" variant="outline">
+                  회원탈퇴
+                </Button>
                 <Button type="submit" w="150px" size="md" colorScheme="blue">
                   수정하기
                 </Button>

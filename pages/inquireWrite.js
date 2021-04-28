@@ -177,37 +177,22 @@ export default function InquireWrite() {
           </Tbody>
         </Table>
         <Flex mt="2rem" justifyContent="space-between">
-          <Box>
-            <Link href="/inquire">
-              <Button
-                w="150px"
-                mr="1rem"
-                size="md"
-                colorScheme="blue"
-                variant="outline"
-              >
-                돌아가기
-              </Button>
-            </Link>
-          </Box>
-          <Box>
-            {/* TODO */}
-            {/* 본인글일 경우 || 관리자일 경우 표시 */}
+          <Link href="/inquire">
             <Button
               w="150px"
               mr="1rem"
               size="md"
-              colorScheme="red"
-              // onClick={onClickModify}
+              colorScheme="blue"
+              variant="outline"
             >
-              삭제
+              돌아가기
             </Button>
-            {/* TODO */}
-            {/* 본인글일 경우 '수정하기'로 교체표시 */}
-            <Button type="submit" w="150px" size="md" colorScheme="blue">
-              등록하기
-            </Button>
-          </Box>
+          </Link>
+          {/* TODO */}
+          {/* 본인글일 경우 '수정하기'로 교체표시 */}
+          <Button type="submit" w="150px" size="md" colorScheme="blue">
+            등록하기
+          </Button>
         </Flex>
       </form>
     </AppLayout>
