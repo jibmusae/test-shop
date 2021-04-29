@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import {
   Heading,
@@ -15,7 +15,7 @@ import ItemList from './itemList';
 export default function InProgress() {
   // 상태관리
   const { user } = useSelector((state) => state.user);
-  let { mainItems } = useSelector((state) => state.item);
+  const { mainItems } = useSelector((state) => state.item);
 
   // 상품추가 모달
   const [isAddItem, setIsAddItem] = useState(false);

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import Router from 'next/router';
 import { useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
@@ -23,11 +23,17 @@ import {
   Input,
   Flex,
   Button,
+  AlertDialog,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogBody,
 } from '@chakra-ui/react';
 import AppLayout from '../components/AppLayout';
 import PostCode from '../components/PostCode';
 import useInput from '../hooks/useInput';
 import Modal from '../components/Modal';
+import OrderList from '../components/OrderList';
 
 const profileSchema = yup.object().shape({
   corporateName: yup.string().required('업체명을 입력해주세요'),
@@ -47,6 +53,7 @@ const profileSchema = yup.object().shape({
 export default function profile() {
   // 상태관리
   const { user } = useSelector((state) => state.user);
+  const { mainOrders } = useSelector((state) => state.order);
 
   // Input
   const [inputs, onChangeInputs] = useInput({
@@ -85,6 +92,11 @@ export default function profile() {
     setAddress(e.target.value);
   }, []);
 
+  // AlertDialog
+  const [showAlert, setShowAlert] = useState(false);
+  const closeAlert = () => setShowAlert(false);
+  const cancelRef = useRef();
+
   // 페이지 이동
   useEffect(() => {
     if (!user) {
@@ -112,6 +124,22 @@ export default function profile() {
             <Heading as="h1" size="md">
               주문조회
             </Heading>
+            {mainOrders.length !== 0 ? (
+              mainOrders.map((order) => (
+                <OrderList key={order.id} order={order} />
+              ))
+            ) : (
+              <Flex
+                m="1rem"
+                p="1.5rem"
+                border="1px"
+                borderRadius="lg"
+                borderColor="gray.300"
+                boxShadow="base"
+              >
+                주문내역이 없습니다.
+              </Flex>
+            )}
           </TabPanel>
           <TabPanel>
             <Heading as="h1" size="md">
@@ -324,9 +352,55 @@ export default function profile() {
                 </Tbody>
               </Table>
               <Flex mt="2rem" justifyContent="space-between">
-                <Button w="150px" size="md" colorScheme="red" variant="outline">
+                <Button
+                  w="150px"
+                  size="md"
+                  colorScheme="red"
+                  variant="outline"
+                  onClick={() => setShowAlert(true)}
+                >
                   회원탈퇴
                 </Button>
+                <AlertDialog
+                  motionPreset="slideInBottom"
+                  isOpen={showAlert}
+                  leastDestructiveRef={cancelRef}
+                  onClose={closeAlert}
+                  blockScrollOnMount={false}
+                  isCentered
+                >
+                  <AlertDialogOverlay>
+                    <AlertDialogContent>
+                      <AlertDialogHeader m="0" fontSize="lg" fontWeight="bold">
+                        회원탈퇴
+                      </AlertDialogHeader>
+                      <AlertDialogBody>
+                        회원탈퇴 이후 한 달간 재가입이 불가능합니다.
+                        <br />
+                        정말로 탈퇴하시겠습니까?
+                        <Flex my="1.5rem" justifyContent="space-between">
+                          <Button
+                            w="100px"
+                            size="sm"
+                            colorScheme="blue"
+                            ref={cancelRef}
+                            onClick={closeAlert}
+                          >
+                            취소
+                          </Button>
+                          <Button
+                            w="100px"
+                            size="sm"
+                            colorScheme="red"
+                            onClick={closeAlert}
+                          >
+                            탈퇴
+                          </Button>
+                        </Flex>
+                      </AlertDialogBody>
+                    </AlertDialogContent>
+                  </AlertDialogOverlay>
+                </AlertDialog>
                 <Button type="submit" w="150px" size="md" colorScheme="blue">
                   수정하기
                 </Button>

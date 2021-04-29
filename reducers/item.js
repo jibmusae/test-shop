@@ -99,8 +99,9 @@ export const addItemRequestAction = (data) => ({
 });
 
 // 상품 제거 액션
-export const removeItemRequestAction = () => ({
+export const removeItemRequestAction = (data) => ({
   type: REMOVE_ITEM_REQUEST,
+  data,
 });
 
 const reducer = (state = initialState, action) => {

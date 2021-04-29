@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   Text,
   Flex,
@@ -17,7 +17,6 @@ import {
 export default function ItemList({ item }) {
   // 상태관리
   const { user } = useSelector((state) => state.user);
-  const dispatch = useDispatch();
 
   // 진행일시
   const startDate = `${Number(item?.startDate?.substr(0, 4))}년 ${Number(
