@@ -1,28 +1,55 @@
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import AppLayout from '../components/AppLayout';
+import Router from 'next/router';
+import { useSelector } from 'react-redux';
 import {
   Heading,
   Table,
   Thead,
-  Tbody,
   Tr,
   Th,
-  Td,
   Box,
   Checkbox,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
   Button,
   ButtonGroup,
-  Image,
   Icon,
+  Flex,
+  Text,
 } from '@chakra-ui/react';
-import { CgClose, CgMathPlus, CgMathEqual } from 'react-icons/cg';
+import { CgMathPlus, CgMathEqual } from 'react-icons/cg';
+import AppLayout from '../components/AppLayout';
+import CartList from '../components/CartList';
 
 export default function cart() {
+  // 전체 정보
+  const [totalValue, setTotalValue] = useState({
+    count: 0,
+    amount: 0,
+    shipping: 0,
+    totalPrice: 0,
+  });
+  const { count, amount, shipping, totalPrice } = totalValue;
+  const onChangeTotalValue = (e) => {
+    // TODO
+  };
+
+  // 상태관리
+  const { user } = useSelector((state) => state.user);
+  const { mainCarts } = useSelector((state) => state.cart);
+
+  // 선택삭제 버튼
+  const onClickCheckRemove = (e) => {
+    // TODO 선택삭제
+    console.log(mainCarts);
+  };
+
+  // 페이지 이동
+  // useEffect(() => {
+  //   if (!user) {
+  //     Router.push('/signin');
+  //   }
+  // }, [user]);
+
   return (
     <AppLayout>
       <Heading
@@ -35,164 +62,103 @@ export default function cart() {
       >
         장바구니
       </Heading>
-      <Table variant="simple" borderTop="1px" borderColor="gray.400">
-        <Thead>
-          <Tr>
-            <Th w="64px">
-              <Checkbox defaultIsChecked />
-            </Th>
-            <Th w="123px"></Th>
-            <Th textAlign="center">상품 정보</Th>
-            <Th w="110px" textAlign="center">
-              수량
-            </Th>
-            <Th w="148px" isNumeric>
-              금액
-            </Th>
-            <Th w="64px" textAlign="center"></Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          <Tr>
-            <Td>
-              <Checkbox defaultIsChecked />
-            </Td>
-            <Td>
-              <Image boxSize="75px" src="image/item/5600x.jpg" alt="5600x" />
-            </Td>
-            <Td>AMD Ryzen5 5600x</Td>
-            <Td>
-              <NumberInput size="sm" defaultValue={1} min={1} max={99}>
-                <NumberInputField />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-            </Td>
-            <Td isNumeric>700,000원</Td>
-            <Td>
-              <Icon
-                as={CgClose}
-                boxSize={4}
-                color="gray.500"
-                cursor="pointer"
-                // onClick={deleteCartItem}
-              />
-            </Td>
-          </Tr>
-          <Tr>
-            <Td>
-              <Checkbox defaultIsChecked />
-            </Td>
-            <Td>
-              <Image boxSize="75px" src="image/item/10100.jpg" alt="10100" />
-            </Td>
-            <Td>intel i3-10100</Td>
-            <Td>
-              <NumberInput size="sm" defaultValue={1} min={1} max={99}>
-                <NumberInputField />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-            </Td>
-            <Td isNumeric>1,234,567원</Td>
-            <Td>
-              <Icon
-                as={CgClose}
-                boxSize={4}
-                color="gray.500"
-                cursor="pointer"
-                // onClick={deleteCartItem}
-              />
-            </Td>
-          </Tr>
-          <Tr>
-            <Td>
-              <Checkbox defaultIsChecked />
-            </Td>
-            <Td>
-              <Image
-                boxSize="75px"
-                src="image/item/zotac_3070_te.jpg"
-                alt="zotac_3070_te"
-              />
-            </Td>
-            <Td>ZOTAC GAMING 3070 TWIN EDGE OC</Td>
-            <Td>
-              <NumberInput size="sm" defaultValue={1} min={1} max={99}>
-                <NumberInputField />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-            </Td>
-            <Td isNumeric>12,345,678원</Td>
-            <Td>
-              <Icon
-                as={CgClose}
-                boxSize={4}
-                color="gray.500"
-                cursor="pointer"
-                // onClick={deleteCartItem}
-              />
-            </Td>
-          </Tr>
-        </Tbody>
-      </Table>
-      <Button colorScheme="red" size="sm" variant="outline" m={3}>
-        선택삭제
-      </Button>
-      <Box
+      {mainCarts.length !== 0 ? (
+        <>
+          <Table variant="simple" borderTop="1px" borderColor="gray.400">
+            <Thead>
+              <Tr>
+                <Th w="64px">
+                  <Checkbox />
+                </Th>
+                <Th w="123px"></Th>
+                <Th textAlign="center">상품 정보</Th>
+                <Th w="110px" textAlign="center">
+                  수량
+                </Th>
+                <Th w="148px" isNumeric>
+                  금액
+                </Th>
+                <Th w="64px" textAlign="center"></Th>
+              </Tr>
+            </Thead>
+            {mainCarts.map((cart) => (
+              <CartList key={cart?.item?.id} cart={cart} />
+            ))}
+          </Table>
+          <Button
+            m="1rem"
+            size="sm"
+            colorScheme="red"
+            variant="outline"
+            onClick={onClickCheckRemove}
+          >
+            선택삭제
+          </Button>
+        </>
+      ) : (
+        <Flex
+          my="2rem"
+          p="1.5rem"
+          border="1px"
+          borderRadius="lg"
+          borderColor="gray.300"
+          boxShadow="base"
+        >
+          장바구니가 비었습니다.
+        </Flex>
+      )}
+      <Flex
         w="100%"
-        my={5}
-        p={5}
-        d="flex"
+        my="1rem"
+        p="1rem 1.5rem"
         justifyContent="flex-end"
         alignItems="center"
-        border="2px"
+        border="1px"
+        borderRadius="lg"
         borderColor="gray.300"
-        borderRadius="md"
-        boxShadow
+        boxShadow="base"
       >
-        <Box mx={1}>전체</Box>
-        <Box mx={1} color="red.400">
-          <b>3</b>
-        </Box>
-        <Box>개의 상품금액</Box>
-        <Box mx={1} color="red.400">
-          <b>123,456,789</b>
-        </Box>
-        <Box>원</Box>
-        <Icon as={CgMathPlus} boxSize={4} mx={2} color="gray" />
-        <Box mx={1}>배송비</Box>
-        <Box mx={1} color="red.400">
-          <b>2,500</b>
-        </Box>
-        <Box>원</Box>
-        <Icon as={CgMathEqual} boxSize={4} mx={2} color="gray" />
-        <Box mx={1} color="red.400">
-          <b>123,456,789</b>
-        </Box>
-        <Box>원</Box>
-      </Box>
-      <Link href="/payment">
-        <ButtonGroup
-          d="flex"
-          justifyContent="flex-end"
-          w="100%"
-          colorScheme="blue"
-          spacing="3"
-        >
-          <Button w="150px" variant="outline">
-            선택구매
+        <Text mr="0.5rem">전체</Text>
+        <Text fontWeight="bold" color="red.400">
+          {count}
+        </Text>
+        <Text m="0 0.5rem 0 0.25rem">개의 상품금액</Text>
+        <Text fontWeight="bold" color="red.400">
+          {amount}
+        </Text>
+        <Text ml="0.25rem">원</Text>
+        <Icon mx="0.5rem" as={CgMathPlus} boxSize="20px" color="gray" />
+        <Text mr="0.5rem">배송비</Text>
+        <Text fontWeight="bold" color="red.400">
+          {shipping}
+        </Text>
+        <Text ml="0.25rem">원</Text>
+        <Icon mx="0.5rem" as={CgMathEqual} boxSize="20px" color="gray" />
+        <Text fontWeight="bold" color="red.400">
+          {totalPrice.toLocaleString('ko-KR')}
+        </Text>
+        <Text ml="0.25rem">원</Text>
+      </Flex>
+      <ButtonGroup
+        w="100%"
+        d="flex"
+        justifyContent="flex-end"
+        colorScheme="blue"
+        spacing="3"
+      >
+        {mainCarts.length !== 0 ? (
+          <>
+            <Button w="150px" variant="outline">
+              선택구매
+            </Button>
+            <Button w="150px">전체구매</Button>
+          </>
+        ) : (
+          <Button w="150px" disabled>
+            전체구매
           </Button>
-          <Button w="150px">전체구매</Button>
-        </ButtonGroup>
-      </Link>
+        )}
+      </ButtonGroup>
     </AppLayout>
   );
 }
