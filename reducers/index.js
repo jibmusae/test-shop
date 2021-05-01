@@ -4,7 +4,6 @@ import user from './user';
 import item from './item';
 import order from './order';
 import inquire from './inquire';
-import cart from './cart';
 
 const rootReducer = combineReducers({
   index: (state = {}, action) => {
@@ -19,7 +18,6 @@ const rootReducer = combineReducers({
   item,
   order,
   inquire,
-  cart,
 });
 
 export default rootReducer;

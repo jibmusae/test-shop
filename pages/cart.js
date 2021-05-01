@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Router from 'next/router';
 import { useSelector } from 'react-redux';
@@ -8,7 +8,6 @@ import {
   Thead,
   Tr,
   Th,
-  Box,
   Checkbox,
   Button,
   ButtonGroup,
@@ -35,20 +34,12 @@ export default function cart() {
 
   // 상태관리
   const { user } = useSelector((state) => state.user);
-  const { mainCarts } = useSelector((state) => state.cart);
 
   // 선택삭제 버튼
   const onClickCheckRemove = (e) => {
     // TODO 선택삭제
     console.log(mainCarts);
   };
-
-  // 페이지 이동
-  // useEffect(() => {
-  //   if (!user) {
-  //     Router.push('/signin');
-  //   }
-  // }, [user]);
 
   return (
     <AppLayout>
@@ -62,51 +53,48 @@ export default function cart() {
       >
         장바구니
       </Heading>
-      {mainCarts.length !== 0 ? (
-        <>
-          <Table variant="simple" borderTop="1px" borderColor="gray.400">
-            <Thead>
-              <Tr>
-                <Th w="64px">
-                  <Checkbox />
-                </Th>
-                <Th w="123px"></Th>
-                <Th textAlign="center">상품 정보</Th>
-                <Th w="110px" textAlign="center">
-                  수량
-                </Th>
-                <Th w="148px" isNumeric>
-                  금액
-                </Th>
-                <Th w="64px" textAlign="center"></Th>
-              </Tr>
-            </Thead>
-            {mainCarts.map((cart) => (
-              <CartList key={cart?.item?.id} cart={cart} />
-            ))}
-          </Table>
-          <Button
-            m="1rem"
-            size="sm"
-            colorScheme="red"
-            variant="outline"
-            onClick={onClickCheckRemove}
-          >
-            선택삭제
-          </Button>
-        </>
-      ) : (
-        <Flex
-          my="2rem"
-          p="1.5rem"
-          border="1px"
-          borderRadius="lg"
-          borderColor="gray.300"
-          boxShadow="base"
+      <>
+        <Table variant="simple" borderTop="1px" borderColor="gray.400">
+          <Thead>
+            <Tr>
+              <Th w="64px">
+                <Checkbox />
+              </Th>
+              <Th w="123px"></Th>
+              <Th textAlign="center">상품 정보</Th>
+              <Th w="110px" textAlign="center">
+                수량
+              </Th>
+              <Th w="148px" isNumeric>
+                금액
+              </Th>
+              <Th w="64px" textAlign="center"></Th>
+            </Tr>
+          </Thead>
+          {user?.cart?.map((cart) => (
+            <CartList key={cart?.id} cart={cart} />
+          ))}
+        </Table>
+        <Button
+          m="1rem"
+          size="sm"
+          colorScheme="red"
+          variant="outline"
+          onClick={onClickCheckRemove}
         >
-          장바구니가 비었습니다.
-        </Flex>
-      )}
+          선택삭제
+        </Button>
+      </>
+      <Flex
+        my="2rem"
+        p="1.5rem"
+        border="1px"
+        borderRadius="lg"
+        borderColor="gray.300"
+        boxShadow="base"
+      >
+        장바구니가 비었습니다.
+      </Flex>
       <Flex
         w="100%"
         my="1rem"
