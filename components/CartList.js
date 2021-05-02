@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Tbody,
   Tr,
@@ -13,11 +14,24 @@ import {
   Icon,
 } from '@chakra-ui/react';
 import { CgClose } from 'react-icons/cg';
+import { updateCartRequestAction } from '../reducers/user';
 
 export default function CartList({ cart }) {
+  // 상태관리
+  const { user } = useSelector((state) => state.user);
+
+  // 개수 수정
+  const dispatch = useDispatch();
+  const [count, setCount] = useState(cart.itemCount);
+  const onChangeCount = (e) => {
+    setCount(e);
+    console.log(`count : ${count}, e : ${e}`);
+  };
+
   // 단품삭제 버튼
-  const onClickRemove = (e) => {
+  const onClickRemoveItem = (e) => {
     // TODO 단품삭제
+    console.log(cart.itemCount, count);
   };
 
   return (
@@ -27,11 +41,21 @@ export default function CartList({ cart }) {
           <Checkbox />
         </Td>
         <Td>
-          <Image boxSize="75px" src="image/item/5600x.jpg" alt="5600x" />
+          <Image
+            boxSize="75px"
+            src={cart.itemImage?.src}
+            alt={cart.itemImage?.alt}
+          />
         </Td>
-        <Td>{cart.item.itemName}</Td>
+        <Td>{cart.itemName}</Td>
         <Td>
-          <NumberInput size="sm" defaultValue={1} min={1} max={99}>
+          <NumberInput
+            size="sm"
+            min={1}
+            max={99}
+            value={count}
+            onChange={onChangeCount}
+          >
             <NumberInputField />
             <NumberInputStepper>
               <NumberIncrementStepper />
@@ -39,14 +63,14 @@ export default function CartList({ cart }) {
             </NumberInputStepper>
           </NumberInput>
         </Td>
-        <Td isNumeric>700,000원</Td>
+        <Td isNumeric>{cart.itemAmount?.toLocaleString('ko-KR')}원</Td>
         <Td>
           <Icon
             as={CgClose}
             boxSize={4}
             color="gray.500"
             cursor="pointer"
-            // onClick={deleteCartItem}
+            onClick={onClickRemoveItem}
           />
         </Td>
       </Tr>

@@ -1,5 +1,6 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useCallback, useEffect, useState } from 'react';
+import Router from 'next/router';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Text,
   Flex,
@@ -13,6 +14,7 @@ import {
   NumberDecrementStepper,
   Button,
 } from '@chakra-ui/react';
+import { addCartRequestAction } from '../reducers/user';
 
 export default function ItemList({ item }) {
   // 상태관리
@@ -27,8 +29,27 @@ export default function ItemList({ item }) {
     item?.endDate?.substr(4, 2)
   )}월 ${Number(item?.endDate?.substr(6, 2))}일`;
 
+  // 개수
+  const [count, setCount] = useState(1);
+  const onChangeCount = (e) => {
+    setCount(e);
+  };
+
   // 금액
   const price = `${item?.price?.toLocaleString('ko-KR')}원`;
+
+  // 장바구니 추가
+  const dispatch = useDispatch();
+  const onClickAddCart = useCallback(
+    (e) => {
+      if (user) {
+        dispatch(addCartRequestAction({ item, count }));
+      } else {
+        Router.push('/signin');
+      }
+    },
+    [count]
+  );
 
   return (
     <>
@@ -71,9 +92,10 @@ export default function ItemList({ item }) {
             w="100px"
             mt="0.5rem"
             size="sm"
-            defaultValue={1}
             min={1}
             max={99}
+            value={count}
+            onChange={onChangeCount}
           >
             <NumberInputField />
             <NumberInputStepper>
@@ -87,6 +109,7 @@ export default function ItemList({ item }) {
             size="sm"
             colorScheme="blue"
             variant="outline"
+            onClick={onClickAddCart}
           >
             장바구니
           </Button>
