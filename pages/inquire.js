@@ -1,4 +1,6 @@
+import React from 'react';
 import Link from 'next/link';
+import { useSelector } from 'react-redux';
 import {
   Button,
   Flex,
@@ -11,8 +13,12 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import AppLayout from '../components/AppLayout';
+import InquireList from '../components/InquireList';
 
 export default function inquire() {
+  // 상태관리
+  const { mainInquire } = useSelector((state) => state.inquire);
+
   return (
     <AppLayout>
       <Heading
@@ -25,7 +31,7 @@ export default function inquire() {
       >
         문의하기
       </Heading>
-      <Table mb="1rem" size="sm" borderTop="1px">
+      <Table mb="1rem" size="sm" borderTop="1px" borderColor="gray.400">
         <Thead>
           <Tr>
             <Th w="60px" textAlign="center" bgColor="gray.200">
@@ -46,15 +52,17 @@ export default function inquire() {
           </Tr>
         </Thead>
         <Tbody>
-          <Tr>
-            <Td textAlign="center">99999</Td>
-            <Td>
-              일이삼사오육칠팔구십일이삼사오육칠팔구십일이삼사오육칠팔구십
-            </Td>
-            <Td textAlign="center">작성자</Td>
-            <Td textAlign="center">2021-04-11</Td>
-            <Td textAlign="center">미완료</Td>
-          </Tr>
+          {mainInquire?.length ? (
+            mainInquire.map((inquire) => (
+              <InquireList key={inquire.id} inquire={inquire} />
+            ))
+          ) : (
+            <Tr h="100px">
+              <Td colSpan="5" textAlign="center">
+                문의글이 없습니다.
+              </Td>
+            </Tr>
+          )}
         </Tbody>
       </Table>
       <Flex mt="2rem" justifyContent="flex-end">

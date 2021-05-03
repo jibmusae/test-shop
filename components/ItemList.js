@@ -15,6 +15,7 @@ import {
   Button,
 } from '@chakra-ui/react';
 import { addCartRequestAction } from '../reducers/user';
+import { removeItemRequestAction } from '../reducers/item';
 
 export default function ItemList({ item }) {
   // 상태관리
@@ -50,6 +51,11 @@ export default function ItemList({ item }) {
     },
     [count]
   );
+
+  // 상품 삭제(관리자)
+  const onClickRemoveCart = useCallback((e) => {
+    dispatch(removeItemRequestAction(item.id));
+  }, []);
 
   return (
     <>
@@ -117,7 +123,13 @@ export default function ItemList({ item }) {
             구매하기
           </Button>
           {user?.isAdmin && (
-            <Button w="100px" mt="0.5rem" size="sm" colorScheme="red">
+            <Button
+              w="100px"
+              mt="0.5rem"
+              size="sm"
+              colorScheme="red"
+              onClick={onClickRemoveCart}
+            >
               삭제
             </Button>
           )}

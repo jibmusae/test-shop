@@ -14,7 +14,10 @@ import {
   Icon,
 } from '@chakra-ui/react';
 import { CgClose } from 'react-icons/cg';
-import { updateCartRequestAction } from '../reducers/user';
+import {
+  updateCartRequestAction,
+  removeCartRequestAction,
+} from '../reducers/user';
 
 export default function CartList({ cart }) {
   // 상태관리
@@ -25,14 +28,12 @@ export default function CartList({ cart }) {
   const [count, setCount] = useState(cart.itemCount);
   const onChangeCount = (e) => {
     setCount(e);
-    console.log(`count : ${count}, e : ${e}`);
   };
 
   // 단품삭제 버튼
-  const onClickRemoveItem = (e) => {
-    // TODO 단품삭제
-    console.log(cart.itemCount, count);
-  };
+  const onClickRemoveItem = useCallback((e) => {
+    dispatch(removeCartRequestAction(cart.itemId));
+  }, []);
 
   return (
     <Tbody>

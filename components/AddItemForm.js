@@ -29,14 +29,14 @@ import { addItemRequestAction } from '../reducers/item';
 // yup
 const addItemSchema = yup.object().shape({
   title: yup.string().required('상품명을 입력해주세요'),
-  image: yup.string().required('상품이미지를 선택해주세요'),
+  imageName: yup.string().required('상품이미지를 선택해주세요'),
   price: yup.string().required('금액을 입력해주세요'),
   startDate: yup.string().required('시작일을 입력해주세요'),
   endDate: yup.string().required('종료일을 입력해주세요'),
   content: yup.string().required('상품설명을 입력해주세요'),
 });
 
-export default function AddItemForm(props) {
+export default function AddItemForm() {
   // 모달
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -100,6 +100,7 @@ export default function AddItemForm(props) {
     }
   };
 
+  // form 초기화
   useEffect(() => {
     if (addItemDone) {
       setInputs({
@@ -181,7 +182,6 @@ export default function AddItemForm(props) {
               {/* 상품 이미지 */}
               <Box my={2}>상품 이미지</Box>
               <Input
-                {...register('image')}
                 type="file"
                 ref={fileRef}
                 onChange={onChangeImage}
@@ -189,7 +189,12 @@ export default function AddItemForm(props) {
                 d="none"
               />
               <InputGroup>
-                <Input placeholder="이미지 선택" value={imageName} readOnly />
+                <Input
+                  {...register('imageName')}
+                  placeholder="이미지 선택"
+                  value={imageName}
+                  readOnly
+                />
                 <InputRightElement width="100px">
                   <Button
                     size="sm"
@@ -276,10 +281,10 @@ export default function AddItemForm(props) {
             <ModalFooter>
               <Flex justifyContent="center">
                 <Button
+                  type="submit"
                   w="150px"
                   size="md"
                   colorScheme="blue"
-                  type="submit"
                   isLoading={addItemLoading}
                 >
                   등록하기

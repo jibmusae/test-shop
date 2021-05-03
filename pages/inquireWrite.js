@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Router from 'next/router';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -21,6 +21,7 @@ import {
 } from '@chakra-ui/react';
 import AppLayout from '../components/AppLayout';
 import useInput from '../hooks/useInput';
+import { addInquireRequestAction } from '../reducers/inquire';
 
 const inquireSchema = yup.object().shape({
   name: yup.string().required('이름을 입력해주세요'),
@@ -35,18 +36,72 @@ const inquireSchema = yup.object().shape({
 export default function InquireWrite() {
   // 상태관리
   const { user } = useSelector((state) => state.user);
+  const { addInquireDone } = useSelector((state) => state.inquire);
 
   // Input
   const [inputs, onChangeInputs] = useInput({
-    name: user?.name,
-    email: user?.email,
-    tel1: user?.tel.substr(0, 3),
-    tel2: user?.tel.substr(3, 4),
-    tel3: user?.tel.substr(7, 4),
+    name: user ? user.name : '',
+    email: user ? user.email : '',
+    tel1: user ? user.tel.substr(0, 3) : '',
+    tel2: user ? user.tel.substr(3, 4) : '',
+    tel3: user ? user.tel.substr(7, 4) : '',
     title: '',
     contents: '',
   });
   const { name, email, tel1, tel2, tel3, title, contents } = inputs;
+
+  // 문의 작성
+  const dispatch = useDispatch();
+  const onSubmitForm = useCallback(() => {
+    // 휴대폰 번호
+    const tel = tel1 + tel2 + tel3;
+
+    // 작성 날짜
+    const today = new Date();
+    const todayYear = String(today.getFullYear());
+    let todayMonth = '';
+    let todayDate = '';
+
+    if (today.getMonth() + 1 >= 10) {
+      todayMonth = String(today.getMonth() + 1);
+    } else {
+      todayMonth = '0' + String(today.getMonth() + 1);
+    }
+    if (today.getDate() >= 10) {
+      todayDate = String(today.getDate());
+    } else {
+      todayDate = '0' + String(today.getDate());
+    }
+
+    const createDate = todayYear + todayMonth + todayDate;
+
+    console.log(addInquireDone);
+
+    dispatch(
+      addInquireRequestAction({
+        title,
+        name,
+        email,
+        tel,
+        contents,
+        createDate,
+      })
+    );
+
+    console.log(addInquireDone);
+
+    // 페이지 이동
+    if (addInquireDone) {
+      Router.push('/inquire');
+    }
+  }, [name, email, tel1, tel2, tel3, title, contents]);
+
+  // 페이지 이동
+  // useEffect(() => {
+  //   if (addInquireDone) {
+  //     Router.push('/inquire');
+  //   }
+  // }, [addInquireDone]);
 
   // react-hook-form
   const {
@@ -67,7 +122,7 @@ export default function InquireWrite() {
       >
         문의하기
       </Heading>
-      <form onSubmit={handleSubmit((data) => console.log(data))}>
+      <form onSubmit={handleSubmit(onSubmitForm)}>
         <Table my="2.5rem" size="sm" borderTop="1px">
           <Tbody>
             <Tr>
@@ -188,8 +243,6 @@ export default function InquireWrite() {
               돌아가기
             </Button>
           </Link>
-          {/* TODO */}
-          {/* 본인글일 경우 '수정하기'로 교체표시 */}
           <Button type="submit" w="150px" size="md" colorScheme="blue">
             등록하기
           </Button>

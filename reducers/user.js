@@ -1,4 +1,5 @@
 import shortid from 'shortid';
+import produce from 'immer';
 
 // 이전상태
 export const initialState = {
@@ -113,146 +114,110 @@ export const removeCartRequestAction = (data) => ({
 });
 
 const reducer = (state = initialState, action) => {
-  switch (action.type) {
-    // 로그인
-    case LOGIN_REQUEST:
-      return {
-        ...state,
-        loginLoading: true,
-        loginDone: false,
-        loginError: null,
-      };
-    case LOGIN_SUCCESS:
-      return {
-        ...state,
-        loginLoading: false,
-        loginDone: true,
-        user: dummyUser(action.data),
-      };
-    case LOGIN_FAILURE:
-      return {
-        ...state,
-        loginLoading: false,
-        loginError: action.error,
-      };
-    // 로그아웃
-    case LOGOUT_REQUEST:
-      return {
-        ...state,
-        logoutLoading: true,
-        logoutDone: false,
-        logoutError: null,
-      };
-    case LOGOUT_SUCCESS:
-      return {
-        ...state,
-        logoutLoading: false,
-        logoutDone: true,
-        user: null,
-      };
-    case LOGOUT_FAILURE:
-      return {
-        ...state,
-        logoutLoading: false,
-        logoutError: action.error,
-      };
-    // 회원가입
-    case SIGNUP_REQUEST:
-      return {
-        ...state,
-        signupLoading: true,
-        signupDone: false,
-        signupError: null,
-      };
-    case SIGNUP_SUCCESS:
-      return {
-        ...state,
-        signupLoading: false,
-        signupDone: true,
-      };
-    case SIGNUP_FAILURE:
-      return {
-        ...state,
-        signupLoading: false,
-        signupError: action.error,
-      };
-    // 장바구니 추가
-    case ADD_CART_REQUEST:
-      console.log('장바구니 추가 리퀘스트');
-      return {
-        ...state,
-        addCartLoading: true,
-        addCartDone: false,
-        addCartError: null,
-      };
-    case ADD_CART_SUCCESS:
-      console.log('장바구니 추가 성공');
-      return {
-        ...state,
-        user: {
-          ...state.user,
-          cart: [dummyCart(action.data), ...state.user.cart],
-        },
-        addCartLoading: false,
-        addCartDone: true,
-        // TODO 장바구니 추가
-      };
-    case ADD_CART_FAILURE:
-      console.log('장바구니 추가 실패');
-      return {
-        ...state,
-        addCartLoading: true,
-        addCartDone: false,
-        addCartError: null,
-      };
-    // 장바구니 수정
-    case UPDATE_CART_REQUEST:
-      console.log('장바구니 수정 리퀘스트', action.data);
-      return {
-        ...state,
-        updateCartLoading: true,
-        updateCartDone: false,
-        updateCartError: null,
-      };
-    case UPDATE_CART_SUCCESS:
-      return {
-        ...state,
-        updateCartLoading: false,
-        updateCartDone: true,
-        // TODO 장바구니 수정
-      };
-    case UPDATE_CART_FAILURE:
-      return {
-        ...state,
-        updateCartLoading: true,
-        updateCartDone: false,
-        updateCartError: null,
-      };
-    // 장바구니 삭제
-    case REMOVE_CART_REQUEST:
-      return {
-        ...state,
-        removeCartLoading: true,
-        removeCartDone: false,
-        removeCartError: null,
-      };
-    case REMOVE_CART_SUCCESS:
-      return {
-        ...state,
-        removeCartLoading: false,
-        removeCartDone: true,
-        // TODO 장바구니 삭제
-      };
-    case REMOVE_CART_FAILURE:
-      return {
-        ...state,
-        removeCartLoading: true,
-        removeCartDone: false,
-        removeCartError: null,
-      };
-    default:
-      return state;
-  }
+  return produce(state, (draft) => {
+    switch (action.type) {
+      // 로그인
+      case LOGIN_REQUEST:
+        draft.loginLoading = true;
+        draft.loginDone = false;
+        draft.loginError = null;
+        break;
+      case LOGIN_SUCCESS:
+        draft.loginLoading = false;
+        draft.loginDone = true;
+        draft.user = dummyUser(action.data);
+        break;
+      case LOGIN_FAILURE:
+        draft.loginLoading = false;
+        draft.loginError = action.error;
+        break;
+      // 로그아웃
+      case LOGOUT_REQUEST:
+        draft.logoutLoading = true;
+        draft.logoutDone = false;
+        draft.logoutError = null;
+        break;
+      case LOGOUT_SUCCESS:
+        draft.logoutLoading = false;
+        draft.logoutDone = true;
+        draft.user = null;
+        break;
+      case LOGOUT_FAILURE:
+        draft.logoutLoading = false;
+        draft.logoutError = action.error;
+        break;
+      // 회원가입
+      case SIGNUP_REQUEST:
+        draft.signupLoading = true;
+        draft.signupDone = false;
+        draft.signupError = null;
+        break;
+      case SIGNUP_SUCCESS:
+        draft.signupLoading = false;
+        draft.signupDone = true;
+        break;
+      case SIGNUP_FAILURE:
+        draft.signupLoading = false;
+        draft.signupError = action.error;
+        break;
+
+      // 장바구니 추가
+      case ADD_CART_REQUEST:
+        draft.addCartLoading = true;
+        draft.addCartDone = false;
+        draft.addCartError = null;
+        break;
+      case ADD_CART_SUCCESS:
+        draft.user.cart.unshift(dummyCart(action.data));
+        draft.addCartLoading = false;
+        draft.addCartDone = true;
+        break;
+      case ADD_CART_FAILURE:
+        draft.addCartLoading = true;
+        draft.addCartDone = false;
+        draft.addCartError = null;
+        break;
+      // 장바구니 수정
+      case UPDATE_CART_REQUEST:
+        draft.updateCartLoading = true;
+        draft.updateCartDone = false;
+        draft.updateCartError = null;
+        break;
+      case UPDATE_CART_SUCCESS:
+        const cartItem = draft.user.cart.find(
+          (v) => v.itemId === action.data.itemId
+        );
+        cartItem.itemCount = action.data.count;
+        draft.updateCartLoading = false;
+        draft.updateCartDone = true;
+        break;
+      case UPDATE_CART_FAILURE:
+        draft.updateCartLoading = true;
+        draft.updateCartDone = false;
+        draft.updateCartError = null;
+        break;
+      // 장바구니 제거
+      case REMOVE_CART_REQUEST:
+        draft.removeCartLoading = true;
+        draft.removeCartDone = false;
+        draft.removeCartError = null;
+        break;
+      case REMOVE_CART_SUCCESS:
+        draft.user.cart = draft.user.cart.filter(
+          (v) => v.itemId !== action.data
+        );
+        draft.removeCartLoading = false;
+        draft.removeCartDone = true;
+        break;
+      case REMOVE_CART_FAILURE:
+        draft.removeCartLoading = true;
+        draft.removeCartDone = false;
+        draft.removeCartError = null;
+        break;
+      default:
+        break;
+    }
+  });
 };
 
 export default reducer;

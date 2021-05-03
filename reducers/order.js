@@ -1,13 +1,11 @@
 import shortId from 'shortid';
+import produce from 'immer';
 
 // 이전상태
 export const initialState = {
   addOrderLoading: false,
   addOrderDone: false,
   addOrderError: null,
-  removeOrderLoading: false,
-  removeOrderDone: false,
-  removeOrderError: null,
   mainOrders: [
     {
       id: 2,
@@ -76,10 +74,6 @@ export const ADD_ORDER_REQUEST = 'ADD_ORDER_REQUEST';
 export const ADD_ORDER_SUCCESS = 'ADD_ORDER_SUCCESS';
 export const ADD_ORDER_FAILURE = 'ADD_ORDER_FAILURE';
 
-export const REMOVE_ORDER_REQUEST = 'REMOVE_ORDER_REQUEST';
-export const REMOVE_ORDER_SUCCESS = 'REMOVE_ORDER_SUCCESS';
-export const REMOVE_ORDER_FAILURE = 'REMOVE_ORDER_FAILURE';
-
 // 더미 주문내역 테스트
 const dummyOrders = (data) => ({
   id: shortId.generate(),
@@ -107,63 +101,28 @@ export const addOrderRequestAction = (data) => ({
   data,
 });
 
-// 주문내역 삭제 액션
-export const removeOrderRequestAction = (data) => ({
-  type: REMOVE_ORDER_REQUEST,
-  data,
-});
-
 const reducer = (state = initialState, action) => {
-  switch (action.type) {
-    // 주문내역 추가
-    case ADD_ORDER_REQUEST:
-      console.log('addOrder 주문이여유~');
-      return {
-        ...state,
-        addOrderLoading: true,
-        addOrderDone: false,
-        addOrderError: null,
-      };
-    case ADD_ORDER_SUCCESS:
-      console.log('addOrder 성공했어유~');
-      return {
-        ...state,
-        addOrderLoading: false,
-        addOrderDone: true,
-        mainOrders: [dummyOrders(action.data), ...state.mainOrders],
-      };
-    case ADD_ORDER_FAILURE:
-      console.log('addOrder 실패했어유~');
-      return {
-        ...state,
-        addOrderLoading: false,
-        addOrderError: action.error,
-      };
-    // 주문내역 삭제
-    case REMOVE_ORDER_REQUEST:
-      return {
-        ...state,
-        removeOrderLoading: true,
-        removeOrderDone: false,
-        removeOrderError: null,
-      };
-    case REMOVE_ORDER_SUCCESS:
-      return {
-        ...state,
-        removeOrderLoading: false,
-        removeOrderDone: true,
-        // TODO 주문내역 삭제
-        mainOrders: [...state.mainOrders],
-      };
-    case REMOVE_ORDER_FAILURE:
-      return {
-        ...state,
-        removeOrderLoading: false,
-        removeOrderError: action.error,
-      };
-    default:
-      return state;
-  }
+  return produce(state, (draft) => {
+    switch (action.type) {
+      // 주문내역 추가
+      case ADD_ORDER_REQUEST:
+        draft.addOrderLoading = true;
+        draft.addOrderDone = false;
+        draft.addOrderError = null;
+        break;
+      case ADD_ORDER_SUCCESS:
+        draft.addOrderLoading = false;
+        draft.addOrderDone = true;
+        draft.mainOrders.unshift(dummyOrders(action.data));
+        break;
+      case ADD_ORDER_FAILURE:
+        draft.addOrderLoading = false;
+        draft.addOrderError = action.error;
+        break;
+      default:
+        break;
+    }
+  });
 };
 
 export default reducer;

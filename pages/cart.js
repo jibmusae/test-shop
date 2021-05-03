@@ -16,7 +16,6 @@ import {
   Flex,
   Text,
   Td,
-  Box,
 } from '@chakra-ui/react';
 import { CgMathPlus, CgMathEqual } from 'react-icons/cg';
 import AppLayout from '../components/AppLayout';
@@ -32,7 +31,7 @@ export default function cart() {
   });
   const { count, amount, shipping, totalPrice } = totalValue;
   const onChangeTotalValue = (e) => {
-    // TODO
+    // TODO 금액 계산
   };
 
   // 상태관리
@@ -55,14 +54,6 @@ export default function cart() {
       >
         장바구니
       </Heading>
-
-      <Button
-        onClick={(e) => {
-          console.log(user?.cart);
-        }}
-      >
-        테스트
-      </Button>
 
       <Table variant="simple" borderTop="1px" borderColor="gray.400">
         <Thead>

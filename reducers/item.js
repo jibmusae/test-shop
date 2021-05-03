@@ -1,4 +1,5 @@
 import shortId from 'shortid';
+import produce from 'immer';
 
 // 이전상태
 export const initialState = {
@@ -105,56 +106,42 @@ export const removeItemRequestAction = (data) => ({
 });
 
 const reducer = (state = initialState, action) => {
-  switch (action.type) {
-    // 상품 추가
-    case ADD_ITEM_REQUEST:
-      console.log('addItem 주문이여유~');
-      return {
-        ...state,
-        addItemLoading: true,
-        addItemDone: false,
-        addItemError: null,
-      };
-    case ADD_ITEM_SUCCESS:
-      console.log('addItem 성공했어유~');
-      return {
-        ...state,
-        addItemLoading: false,
-        addItemDone: true,
-        mainItems: [dummyItems(action.data), ...state.mainItems],
-      };
-    case ADD_ITEM_FAILURE:
-      console.log('addItem 실패했어유~');
-      return {
-        ...state,
-        addItemLoading: false,
-        addItemError: action.error,
-      };
-    // 상품 제거
-    case REMOVE_ITEM_REQUEST:
-      return {
-        ...state,
-        removeItemLoading: true,
-        removeItemDone: false,
-        removeItemError: null,
-      };
-    case REMOVE_ITEM_SUCCESS:
-      return {
-        ...state,
-        removeItemLoading: false,
-        removeItemDone: true,
-        // TODO 상품 제거
-        mainItems: [...state.mainItems],
-      };
-    case REMOVE_ITEM_FAILURE:
-      return {
-        ...state,
-        removeItemLoading: false,
-        removeItemError: action.error,
-      };
-    default:
-      return state;
-  }
+  return produce(state, (draft) => {
+    switch (action.type) {
+      // 상품 추가
+      case ADD_ITEM_REQUEST:
+        draft.addItemLoading = true;
+        draft.addItemDone = false;
+        draft.addItemError = null;
+        break;
+      case ADD_ITEM_SUCCESS:
+        draft.addItemLoading = false;
+        draft.addItemDone = true;
+        draft.mainItems.unshift(dummyItems(action.data));
+        break;
+      case ADD_ITEM_FAILURE:
+        draft.addItemLoading = false;
+        draft.addItemError = action.error;
+        break;
+      // 상품 제거
+      case REMOVE_ITEM_REQUEST:
+        draft.removeItemLoading = true;
+        draft.removeItemDone = false;
+        draft.removeItemError = null;
+        break;
+      case REMOVE_ITEM_SUCCESS:
+        draft.removeItemLoading = false;
+        draft.removeItemDone = true;
+        draft.mainItems = draft.mainItems.filter((v) => v.id !== action.data);
+        break;
+      case REMOVE_ITEM_FAILURE:
+        draft.removeItemLoading = false;
+        draft.removeItemError = action.error;
+        break;
+      default:
+        break;
+    }
+  });
 };
 
 export default reducer;
