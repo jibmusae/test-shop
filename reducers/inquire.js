@@ -32,11 +32,11 @@ export const initialState = {
         tel: '01012345678',
       },
       createDate: '20210411',
-      status: 0,
+      status: 1,
       content: '문의하기 텍스트필드 테스트',
       answer: {
-        // date: '20210503',
-        // content: '테스트 답변내용',
+        date: '20210503',
+        content: '테스트 답변내용',
       },
     },
   ],
@@ -71,12 +71,13 @@ const dummyInquire = (data) => ({
   createDate: data.createDate,
   status: 0,
   content: data.content,
+  answer: {},
 });
 
 // 더미 답변 테스트
 const dummyAnswer = (data) => ({
-  date: data.date,
-  content: data.content,
+  date: data.createDate,
+  content: data.answer,
 });
 
 // 문의 작성 액션
@@ -176,8 +177,12 @@ const reducer = (state = initialState, action) => {
         draft.addAnswerError = null;
         break;
       case ADD_ANSWER_SUCCESS:
-        const inquire = draft.mainInquire.find((v) => v.id === action.data.id);
-        inquire.answer.unshift(dummyAnswer(action.data));
+        console.log(action.data);
+        const addTarget = draft.mainInquire.find(
+          (v) => v.id === action.data.inquireId
+        );
+        addTarget.answer = dummyAnswer(action.data);
+        addTarget.status = 1;
         draft.addAnswerLoading = false;
         draft.addAnswerDone = true;
         break;
@@ -192,7 +197,10 @@ const reducer = (state = initialState, action) => {
         draft.updateAnswerError = null;
         break;
       case UPDATE_ANSWER_SUCCESS:
-        // TODO 수정
+        const updateTarget = draft.mainInquire.find(
+          (v) => v.id === action.data.inquireId
+        );
+        updateTarget.answer = dummyAnswer(action.data);
         draft.updateAnswerLoading = false;
         draft.updateAnswerDone = true;
         break;

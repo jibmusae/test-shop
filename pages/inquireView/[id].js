@@ -1,8 +1,9 @@
 import React, { useCallback, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
+  Box,
   Button,
   Flex,
   Heading,
@@ -15,6 +16,10 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import AppLayout from '../../components/AppLayout';
+import {
+  addAnswerRequestAction,
+  updateAnswerRequestAction,
+} from '../../reducers/inquire';
 
 export default function inquireView() {
   // 동적 라우팅
@@ -25,7 +30,26 @@ export default function inquireView() {
   const { mainInquire } = useSelector((state) => state.inquire);
   const inquire = mainInquire.find((v) => v.id == router.query.id);
 
+  // 작성 일시
+  const today = new Date();
+  const todayYear = String(today.getFullYear());
+  let todayMonth = '';
+  let todayDate = '';
+
+  if (today.getMonth() + 1 >= 10) {
+    todayMonth = String(today.getMonth() + 1);
+  } else {
+    todayMonth = '0' + String(today.getMonth() + 1);
+  }
+  if (today.getDate() >= 10) {
+    todayDate = String(today.getDate());
+  } else {
+    todayDate = '0' + String(today.getDate());
+  }
+  const createDate = todayYear + todayMonth + todayDate;
+
   // 답변 내용(관리자)
+  const inquireId = inquire?.id;
   const answerContent = inquire?.status === 1 ? inquire?.answer?.content : '';
   const [answer, setAnswer] = useState(answerContent);
   const onChangeAnswer = useCallback(
@@ -34,20 +58,33 @@ export default function inquireView() {
     },
     [answer]
   );
+  const dispatch = useDispatch();
+  const onClickAnswer = () => {
+    if (inquire?.status === 1) {
+      dispatch(
+        updateAnswerRequestAction({
+          inquireId,
+          createDate,
+          answer,
+        })
+      );
+    } else {
+      dispatch(
+        addAnswerRequestAction({
+          inquireId,
+          createDate,
+          answer,
+        })
+      );
+    }
+  };
 
   return (
     <AppLayout>
-      <Heading
-        as="h1"
-        size="lg"
-        fontFamily="noto"
-        textAlign="center"
-        mb="2rem"
-        color="#212529" // GRAY 9
-      >
+      <Heading as="h1" size="md" mb="1.5rem">
         문의내용
       </Heading>
-      <Table my="2.5rem" size="sm" borderTop="1px">
+      <Table mb="2.5rem" size="sm" borderTop="1px">
         <Tbody>
           <Tr>
             <Th w="200px" bgColor="gray.200">
@@ -71,37 +108,54 @@ export default function inquireView() {
       </Table>
 
       {inquire?.status === 1 && (
-        <Table my="2.5rem" size="sm" borderTop="1px">
-          <Tbody>
-            <Tr>
-              <Th w="200px" bgColor="gray.200">
-                답변일시
-              </Th>
-              <Td>{inquire?.answer?.date}</Td>
-            </Tr>
-            <Tr>
-              <Th bgColor="gray.200">답변내용</Th>
-              <Td>{inquire?.answer?.content}</Td>
-            </Tr>
-          </Tbody>
-        </Table>
+        <>
+          <Heading as="h1" size="md" mb="1.5rem">
+            답변내용
+          </Heading>
+          <Table mb="2.5rem" size="sm" borderTop="1px">
+            <Tbody>
+              <Tr>
+                <Th w="200px" bgColor="gray.200">
+                  답변일시
+                </Th>
+                <Td>{inquire?.answer?.date}</Td>
+              </Tr>
+              <Tr h="200px">
+                <Th bgColor="gray.200">답변내용</Th>
+                <Td>{inquire?.answer?.content}</Td>
+              </Tr>
+            </Tbody>
+          </Table>
+        </>
       )}
 
       {user?.isAdmin && (
-        <>
+        <Box
+          p="1rem"
+          border="1px"
+          borderColor="gray.300"
+          borderRadius="lg"
+          boxShadow="sm"
+        >
           <Textarea
             placeholder="문의내용에 대한 답변을 달아주세요."
             minH="150px"
             resize="none"
             value={answer}
             onChange={onChangeAnswer}
+            borderColor="gray.200"
           />
-          <Flex justifyContent="flex-end">
-            <Button size="sm" w="150px" colorScheme="blue">
+          <Flex mt="0.5rem" justifyContent="flex-end">
+            <Button
+              size="sm"
+              w="150px"
+              colorScheme="blue"
+              onClick={onClickAnswer}
+            >
               {inquire?.status === 1 ? '수정' : '등록'}
             </Button>
           </Flex>
-        </>
+        </Box>
       )}
 
       <Flex mt="2rem" justifyContent="space-between">
