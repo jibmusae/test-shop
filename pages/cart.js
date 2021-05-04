@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Router from 'next/router';
 import { useSelector } from 'react-redux';
@@ -22,20 +22,22 @@ import AppLayout from '../components/AppLayout';
 import CartList from '../components/CartList';
 
 export default function cart() {
-  // 전체 정보
-  const [totalValue, setTotalValue] = useState({
-    count: 0,
-    amount: 0,
-    shipping: 0,
-    totalPrice: 0,
-  });
-  const { count, amount, shipping, totalPrice } = totalValue;
-  const onChangeTotalValue = (e) => {
-    // TODO 금액 계산
-  };
-
   // 상태관리
   const { user } = useSelector((state) => state.user);
+
+  let totalCount = 0;
+  let totalAmount = 0;
+  let deliveryCharge = 0;
+  let totalPrice = 0;
+
+  if (user?.cart?.length) {
+    user.cart.map((cart) => {
+      totalCount += Number(cart.itemCount);
+      totalAmount += Number(cart.itemAmount);
+      deliveryCharge = 3000;
+      totalPrice = totalAmount + deliveryCharge;
+    });
+  }
 
   // 선택삭제 버튼
   const onClickCheckRemove = (e) => {
@@ -107,19 +109,19 @@ export default function cart() {
       >
         <Text mr="0.5rem">전체</Text>
         <Text fontWeight="bold" color="red">
-          {count}
+          {totalCount.toLocaleString('ko-KR')}
         </Text>
         <Text ml="0.25rem" mr="0.5rem">
           개의 상품금액
         </Text>
         <Text fontWeight="bold" color="red">
-          {amount}
+          {totalAmount.toLocaleString('ko-KR')}
         </Text>
         <Text ml="0.25rem">원</Text>
         <Icon mx="0.25rem" boxSize="20px" as={CgMathPlus} />
         <Text mr="0.5rem">배송비</Text>
         <Text fontWeight="bold" color="red">
-          {shipping}
+          {deliveryCharge.toLocaleString('ko-KR')}
         </Text>
         <Text ml="0.25rem">원</Text>
         <Icon mx="0.25rem" boxSize="20px" as={CgMathEqual} />

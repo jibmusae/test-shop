@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Router from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -14,7 +14,10 @@ import {
   NumberDecrementStepper,
   Button,
 } from '@chakra-ui/react';
-import { addCartRequestAction } from '../reducers/user';
+import {
+  addCartRequestAction,
+  updateCartRequestAction,
+} from '../reducers/user';
 import { removeItemRequestAction } from '../reducers/item';
 
 export default function ItemList({ item }) {
@@ -41,21 +44,38 @@ export default function ItemList({ item }) {
 
   // 장바구니 추가
   const dispatch = useDispatch();
-  const onClickAddCart = useCallback(
-    (e) => {
-      if (user) {
-        dispatch(addCartRequestAction({ item, count }));
+  const onClickAddCart = (e) => {
+    if (user) {
+      // 현재 장바구니에 존재하는 상품
+      const preexistingCartItem = user.cart?.find((v) => v.itemId === item.id);
+
+      if (preexistingCartItem) {
+        const itemId = item.id;
+        const count = count + preexistingCartItem.itemCount;
+
+        console.log(
+          itemId,
+          count,
+          count,
+          preexistingCartItem,
+          preexistingCartItem.itemCount
+        );
+
+        // 장바구니 수정
+        dispatch(updateCartRequestAction({ itemId, count }));
       } else {
-        Router.push('/signin');
+        // 장바구니 추가
+        dispatch(addCartRequestAction({ item, count }));
       }
-    },
-    [count]
-  );
+    } else {
+      Router.push('/signin');
+    }
+  };
 
   // 상품 삭제(관리자)
-  const onClickRemoveCart = useCallback((e) => {
+  const onClickRemoveCart = (e) => {
     dispatch(removeItemRequestAction(item.id));
-  }, []);
+  };
 
   return (
     <>

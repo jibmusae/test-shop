@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import { useDispatch } from 'react-redux';
 import {
   Tbody,
   Tr,
@@ -20,20 +20,24 @@ import {
 } from '../reducers/user';
 
 export default function CartList({ cart }) {
-  // 상태관리
-  const { user } = useSelector((state) => state.user);
+  // cart
+  const { itemId, itemName, itemImage, itemCount, itemAmount } = cart;
 
   // 개수 수정
   const dispatch = useDispatch();
-  const [count, setCount] = useState(cart.itemCount);
-  const onChangeCount = (e) => {
-    setCount(e);
+  const onChangeCount = (count) => {
+    dispatch(
+      updateCartRequestAction({
+        itemId,
+        count,
+      })
+    );
   };
 
   // 단품삭제 버튼
-  const onClickRemoveItem = useCallback((e) => {
-    dispatch(removeCartRequestAction(cart.itemId));
-  }, []);
+  const onClickRemoveItem = (e) => {
+    dispatch(removeCartRequestAction(itemId));
+  };
 
   return (
     <Tbody>
@@ -42,19 +46,15 @@ export default function CartList({ cart }) {
           <Checkbox />
         </Td>
         <Td>
-          <Image
-            boxSize="75px"
-            src={cart.itemImage?.src}
-            alt={cart.itemImage?.alt}
-          />
+          <Image boxSize="75px" src={itemImage?.src} alt={itemImage?.alt} />
         </Td>
-        <Td>{cart.itemName}</Td>
+        <Td>{itemName}</Td>
         <Td>
           <NumberInput
             size="sm"
             min={1}
             max={99}
-            value={count}
+            value={itemCount}
             onChange={onChangeCount}
           >
             <NumberInputField />
@@ -64,7 +64,7 @@ export default function CartList({ cart }) {
             </NumberInputStepper>
           </NumberInput>
         </Td>
-        <Td isNumeric>{cart.itemAmount?.toLocaleString('ko-KR')}원</Td>
+        <Td isNumeric>{itemAmount?.toLocaleString('ko-KR')}원</Td>
         <Td>
           <Icon
             as={CgClose}

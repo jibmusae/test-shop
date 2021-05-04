@@ -28,14 +28,14 @@ export const initialState = {
 
 // 더미 장바구니
 const dummyCart = (data) => ({
-  // itemId: data.item.id,
-  itemId: shortid.generate(),
+  itemId: data.item.id,
   itemName: data.item.title,
   itemImage: {
     src: data.item.image.src,
     alt: data.item.image.alt,
   },
   itemCount: data.count,
+  itemPrice: data.item.price,
   itemAmount: data.item.price * data.count,
 });
 
@@ -163,6 +163,7 @@ const reducer = (state = initialState, action) => {
 
       // 장바구니 추가
       case ADD_CART_REQUEST:
+        console.log(action);
         draft.addCartLoading = true;
         draft.addCartDone = false;
         draft.addCartError = null;
@@ -179,6 +180,7 @@ const reducer = (state = initialState, action) => {
         break;
       // 장바구니 수정
       case UPDATE_CART_REQUEST:
+        console.log(action);
         draft.updateCartLoading = true;
         draft.updateCartDone = false;
         draft.updateCartError = null;
@@ -188,6 +190,7 @@ const reducer = (state = initialState, action) => {
           (v) => v.itemId === action.data.itemId
         );
         cartItem.itemCount = action.data.count;
+        cartItem.itemAmount = action.data.count * cartItem.itemPrice;
         draft.updateCartLoading = false;
         draft.updateCartDone = true;
         break;
