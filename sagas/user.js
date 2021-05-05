@@ -19,6 +19,12 @@ import {
   REMOVE_CART_REQUEST,
   REMOVE_CART_SUCCESS,
   REMOVE_CART_FAILURE,
+  ITEM_CHECK_REQUEST,
+  ITEM_CHECK_SUCCESS,
+  ITEM_CHECK_FAILURE,
+  ALL_CHECK_REQUEST,
+  ALL_CHECK_SUCCESS,
+  ALL_CHECK_FAILURE,
 } from '../reducers/user';
 
 // API
@@ -39,6 +45,12 @@ function updateCartAPI(data) {
 }
 function removeCartAPI(data) {
   return axios.post('/api/removeCart', data);
+}
+function itemCheckAPI(data) {
+  return axios.post('/api/itemCheck', data);
+}
+function allCheckAPI(data) {
+  return axios.post('/api/allCheck', data);
 }
 
 // 로그인
@@ -160,6 +172,46 @@ function* removeCart(action) {
   }
 }
 
+// 장바구니 상품 체크
+function* itemCheck(action) {
+  try {
+    // 서버 필요
+    // const result = yield call(itemCheckAPI, action.data);
+    // yield delay(1000);
+    yield put({
+      type: ITEM_CHECK_SUCCESS,
+      // 서버 필요
+      // data: result.data,
+      data: action.data,
+    });
+  } catch (err) {
+    yield put({
+      type: ITEM_CHECK_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// 장바구니 전체 체크
+function* allCheck(action) {
+  try {
+    // 서버 필요
+    // const result = yield call(allCheckAPI, action.data);
+    // yield delay(1000);
+    yield put({
+      type: ALL_CHECK_SUCCESS,
+      // 서버 필요
+      // data: result.data,
+      data: action.data,
+    });
+  } catch (err) {
+    yield put({
+      type: ALL_CHECK_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
 // 리퀘스트
 function* watchLogin() {
   yield takeLatest(LOGIN_REQUEST, login);
@@ -179,6 +231,12 @@ function* watchUpdateCart() {
 function* watchRemoveCart() {
   yield takeLatest(REMOVE_CART_REQUEST, removeCart);
 }
+function* watchItemCheck() {
+  yield takeLatest(ITEM_CHECK_REQUEST, itemCheck);
+}
+function* watchAllCheck() {
+  yield takeLatest(ALL_CHECK_REQUEST, allCheck);
+}
 
 export default function* userSaga() {
   yield all([
@@ -188,5 +246,7 @@ export default function* userSaga() {
     fork(watchAddCart),
     fork(watchUpdateCart),
     fork(watchRemoveCart),
+    fork(watchItemCheck),
+    fork(watchAllCheck),
   ]);
 }

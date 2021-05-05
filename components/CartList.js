@@ -17,19 +17,20 @@ import { CgClose } from 'react-icons/cg';
 import {
   updateCartRequestAction,
   removeCartRequestAction,
+  itemCheckRequestAction,
 } from '../reducers/user';
 
 export default function CartList({ cart }) {
   // cart
-  const { itemId, itemName, itemImage, itemCount, itemAmount } = cart;
+  const { itemId, itemName, itemImage, itemAmount } = cart;
 
   // 개수 수정
   const dispatch = useDispatch();
-  const onChangeCount = (count) => {
+  const onChangeCount = (itemCount) => {
     dispatch(
       updateCartRequestAction({
         itemId,
-        count,
+        itemCount,
       })
     );
   };
@@ -39,11 +40,22 @@ export default function CartList({ cart }) {
     dispatch(removeCartRequestAction(itemId));
   };
 
+  // 상품 체크
+  const onClickItemCheck = (e) => {
+    const itemChecked = e.target.checked;
+    dispatch(
+      itemCheckRequestAction({
+        itemId,
+        itemChecked,
+      })
+    );
+  };
+
   return (
     <Tbody>
       <Tr>
         <Td>
-          <Checkbox />
+          <Checkbox isChecked={cart?.itemChecked} onChange={onClickItemCheck} />
         </Td>
         <Td>
           <Image boxSize="75px" src={itemImage?.src} alt={itemImage?.alt} />
@@ -54,7 +66,7 @@ export default function CartList({ cart }) {
             size="sm"
             min={1}
             max={99}
-            value={itemCount}
+            value={cart?.itemCount}
             onChange={onChangeCount}
           >
             <NumberInputField />

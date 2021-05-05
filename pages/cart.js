@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Router from 'next/router';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Heading,
   Table,
@@ -20,6 +20,7 @@ import {
 import { CgMathPlus, CgMathEqual } from 'react-icons/cg';
 import AppLayout from '../components/AppLayout';
 import CartList from '../components/CartList';
+import { allCheckRequestAction } from '../reducers/user';
 
 export default function cart() {
   // 상태관리
@@ -32,16 +33,27 @@ export default function cart() {
 
   if (user?.cart?.length) {
     user.cart.map((cart) => {
-      totalCount += Number(cart.itemCount);
-      totalAmount += Number(cart.itemAmount);
-      deliveryCharge = 3000;
-      totalPrice = totalAmount + deliveryCharge;
+      if (cart.itemChecked) {
+        totalCount += Number(cart.itemCount);
+        totalAmount += Number(cart.itemAmount);
+        if (totalAmount >= 500000) {
+          deliveryCharge = 0;
+        } else {
+          deliveryCharge = 3000;
+        }
+        totalPrice = totalAmount + deliveryCharge;
+      }
     });
   }
 
-  // 선택삭제 버튼
-  const onClickCheckRemove = (e) => {
-    // TODO 선택삭제
+  // 전체 체크
+  const checkedItems = user?.cart?.filter((v) => v.itemChecked);
+  const allChecked =
+    user?.cart?.length && checkedItems?.length === user?.cart?.length;
+
+  const dispatch = useDispatch();
+  const onClickAllCheck = (e) => {
+    dispatch(allCheckRequestAction(!allChecked));
   };
 
   return (
@@ -61,7 +73,11 @@ export default function cart() {
         <Thead>
           <Tr>
             <Th w="64px">
-              <Checkbox isDisabled={!user?.cart?.length} />
+              <Checkbox
+                isDisabled={!user?.cart?.length}
+                onChange={onClickAllCheck}
+                isChecked={allChecked}
+              />
             </Th>
             <Th w="123px"></Th>
             <Th textAlign="center">상품 정보</Th>
@@ -86,16 +102,6 @@ export default function cart() {
           </Tbody>
         )}
       </Table>
-      <Button
-        m="1rem"
-        size="sm"
-        colorScheme="red"
-        variant="outline"
-        onClick={onClickCheckRemove}
-        isDisabled={!user?.cart?.length}
-      >
-        선택삭제
-      </Button>
 
       <Flex
         my="1rem"
@@ -138,18 +144,9 @@ export default function cart() {
         colorScheme="blue"
         spacing="3"
       >
-        {user?.cart?.length ? (
-          <>
-            <Button w="150px" variant="outline">
-              선택구매
-            </Button>
-            <Button w="150px">전체구매</Button>
-          </>
-        ) : (
-          <Button w="150px" disabled>
-            전체구매
-          </Button>
-        )}
+        <Button w="150px" disabled={!user?.cart?.length}>
+          선택구매
+        </Button>
       </ButtonGroup>
     </AppLayout>
   );

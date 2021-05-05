@@ -51,18 +51,10 @@ export default function ItemList({ item }) {
 
       if (preexistingCartItem) {
         const itemId = item.id;
-        const count = count + preexistingCartItem.itemCount;
-
-        console.log(
-          itemId,
-          count,
-          count,
-          preexistingCartItem,
-          preexistingCartItem.itemCount
-        );
+        const itemCount = Number(count) + Number(preexistingCartItem.itemCount);
 
         // 장바구니 수정
-        dispatch(updateCartRequestAction({ itemId, count }));
+        dispatch(updateCartRequestAction({ itemId, itemCount }));
       } else {
         // 장바구니 추가
         dispatch(addCartRequestAction({ item, count }));

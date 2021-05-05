@@ -1,4 +1,3 @@
-import shortid from 'shortid';
 import produce from 'immer';
 
 // 이전상태
@@ -21,6 +20,12 @@ export const initialState = {
   removeCartLoading: false,
   removeCartDone: false,
   removeCartError: null,
+  itemCheckLoading: false,
+  itemCheckDone: false,
+  itemCheckError: null,
+  allCheckLoading: false,
+  allCheckDone: false,
+  allCheckError: null,
   user: null,
   signUpData: {},
   loginData: {},
@@ -37,6 +42,7 @@ const dummyCart = (data) => ({
   itemCount: data.count,
   itemPrice: data.item.price,
   itemAmount: data.item.price * data.count,
+  itemChecked: true,
 });
 
 // 더미 유저
@@ -78,6 +84,13 @@ export const REMOVE_CART_REQUEST = 'REMOVE_CART_REQUEST';
 export const REMOVE_CART_SUCCESS = 'REMOVE_CART_SUCCESS';
 export const REMOVE_CART_FAILURE = 'REMOVE_CART_FAILURE';
 
+export const ITEM_CHECK_REQUEST = 'ITEM_CHECK_REQUEST';
+export const ITEM_CHECK_SUCCESS = 'ITEM_CHECK_SUCCESS';
+export const ITEM_CHECK_FAILURE = 'ITEM_CHECK_FAILURE';
+export const ALL_CHECK_REQUEST = 'ALL_CHECK_REQUEST';
+export const ALL_CHECK_SUCCESS = 'ALL_CHECK_SUCCESS';
+export const ALL_CHECK_FAILURE = 'ALL_CHECK_FAILURE';
+
 // 로그인 액션
 export const loginRequestAction = (data) => ({
   type: LOGIN_REQUEST,
@@ -110,6 +123,18 @@ export const updateCartRequestAction = (data) => ({
 // 장바구니 삭제 액션
 export const removeCartRequestAction = (data) => ({
   type: REMOVE_CART_REQUEST,
+  data,
+});
+
+// 장바구니 상품 체크 액션
+export const itemCheckRequestAction = (data) => ({
+  type: ITEM_CHECK_REQUEST,
+  data,
+});
+
+// 장바구니 전체 체크 액션
+export const allCheckRequestAction = (data) => ({
+  type: ALL_CHECK_REQUEST,
   data,
 });
 
@@ -174,9 +199,8 @@ const reducer = (state = initialState, action) => {
         draft.addCartDone = true;
         break;
       case ADD_CART_FAILURE:
-        draft.addCartLoading = true;
-        draft.addCartDone = false;
-        draft.addCartError = null;
+        draft.addCartLoading = false;
+        draft.addCartError = action.error;
         break;
       // 장바구니 수정
       case UPDATE_CART_REQUEST:
@@ -189,15 +213,14 @@ const reducer = (state = initialState, action) => {
         const cartItem = draft.user.cart.find(
           (v) => v.itemId === action.data.itemId
         );
-        cartItem.itemCount = action.data.count;
-        cartItem.itemAmount = action.data.count * cartItem.itemPrice;
+        cartItem.itemCount = action.data.itemCount;
+        cartItem.itemAmount = action.data.itemCount * cartItem.itemPrice;
         draft.updateCartLoading = false;
         draft.updateCartDone = true;
         break;
       case UPDATE_CART_FAILURE:
-        draft.updateCartLoading = true;
-        draft.updateCartDone = false;
-        draft.updateCartError = null;
+        draft.updateCartLoading = false;
+        draft.updateCartError = action.error;
         break;
       // 장바구니 제거
       case REMOVE_CART_REQUEST:
@@ -213,9 +236,46 @@ const reducer = (state = initialState, action) => {
         draft.removeCartDone = true;
         break;
       case REMOVE_CART_FAILURE:
-        draft.removeCartLoading = true;
-        draft.removeCartDone = false;
-        draft.removeCartError = null;
+        draft.removeCartLoading = false;
+        draft.removeCartError = action.error;
+        break;
+
+      // 장바구니 상품 체크
+      case ITEM_CHECK_REQUEST:
+        draft.itemCheckLoading = true;
+        draft.itemCheckDone = false;
+        draft.itemCheckError = null;
+        break;
+      case ITEM_CHECK_SUCCESS:
+        console.log(action);
+        const itemCheckTargetCart = draft.user.cart.find(
+          (v) => v.itemId === action.data.itemId
+        );
+        itemCheckTargetCart.itemChecked = action.data.itemChecked;
+        draft.itemCheckLoading = false;
+        draft.itemCheckDone = true;
+        break;
+      case ITEM_CHECK_FAILURE:
+        draft.itemCheckLoading = false;
+        draft.itemCheckError = action.error;
+        break;
+
+      // 장바구니 전체 체크
+      case ALL_CHECK_REQUEST:
+        console.log(action);
+        draft.allCheckLoading = true;
+        draft.allCheckDone = false;
+        draft.allCheckError = null;
+        break;
+      case ALL_CHECK_SUCCESS:
+        console.log(action);
+        draft.user.cart.map((v) => (v.itemChecked = action.data));
+        draft.allCheckLoading = false;
+        draft.allCheckDone = true;
+        break;
+      case ALL_CHECK_FAILURE:
+        draft.allCheckLoading = false;
+        draft.allCheckError = action.error;
         break;
       default:
         break;
