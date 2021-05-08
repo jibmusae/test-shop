@@ -1,6 +1,8 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Link from 'next/link';
-import { useForm, Controller } from 'react-hook-form';
+import Router from 'next/router';
+import { useDispatch, useSelector } from 'react-redux';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import {
@@ -22,6 +24,7 @@ import SignLayout from '../components/SignLayout';
 import Modal from '../components/Modal';
 import PostCode from '../components/PostCode';
 import useInput from '../hooks/useInput';
+import { signupRequestAction } from '../reducers/user';
 
 // yup
 const signupSchema = yup.object().shape({
@@ -113,6 +116,61 @@ export default function signup() {
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
 
+  // 회원가입 상태관리
+  const dispatch = useDispatch();
+  const { signupLoading, signupDone, signupError } = useSelector(
+    (state) => state.user
+  );
+  const onSubmitForm = useCallback(() => {
+    const corporateId =
+      String(corporateId1) + String(corporateId2) + String(corporateId3);
+    const tel = String(tel1) + String(tel2) + String(tel3);
+
+    dispatch(
+      signupRequestAction({
+        id,
+        password,
+        corporateName,
+        name,
+        corporateId,
+        zipCode,
+        address,
+        addressDetail,
+        email,
+        tel,
+      })
+    );
+  }, [
+    id,
+    password,
+    corporateName,
+    name,
+    corporateId1,
+    corporateId2,
+    corporateId3,
+    zipCode,
+    address,
+    addressDetail,
+    email,
+    tel1,
+    tel2,
+    tel3,
+  ]);
+
+  // 페이지 이동
+  useEffect(() => {
+    if (signupDone) {
+      Router.push('/');
+    }
+  }, [signupDone]);
+
+  // 서버 에러 표시
+  useEffect(() => {
+    if (signupError) {
+      alert(signupError);
+    }
+  }, [signupError]);
+
   // react-hook-form
   const {
     register,
@@ -133,7 +191,7 @@ export default function signup() {
       >
         회원가입
       </Heading>
-      <form onSubmit={handleSubmit((data) => console.log(data))}>
+      <form onSubmit={handleSubmit(onSubmitForm)}>
         {/* 아이디 */}
         <Box my={2}>아이디</Box>
         <Input
@@ -450,6 +508,7 @@ export default function signup() {
           mb={3}
           colorScheme="blue"
           size="md"
+          isLoading={signupLoading}
           isFullWidth
         >
           회원가입

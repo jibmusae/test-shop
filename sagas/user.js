@@ -28,15 +28,6 @@ import {
 } from '../reducers/user';
 
 // API
-function loginAPI(data) {
-  return axios.post('/api/login', data);
-}
-function logoutAPI() {
-  return axios.post('/api/logout');
-}
-function signupAPI(data) {
-  return axios.post('/api/signup', data);
-}
 function addCartAPI(data) {
   return axios.post('/api/addCart', data);
 }
@@ -54,16 +45,18 @@ function allCheckAPI(data) {
 }
 
 // 로그인
+function loginAPI(data) {
+  return axios.post('/user/login', data);
+}
 function* login(action) {
   try {
     // 서버 필요
-    // const result = yield call(loginAPI, action.data);
-    yield delay(1000);
+    const result = yield call(loginAPI, action.data);
     yield put({
       type: LOGIN_SUCCESS,
       // 서버 필요
       // data: result.data,
-      data: action.data,
+      data: result.data,
     });
   } catch (err) {
     yield put({
@@ -74,6 +67,9 @@ function* login(action) {
 }
 
 // 로그아웃
+function logoutAPI() {
+  return axios.post('/user/logout');
+}
 function* logout(action) {
   try {
     // 서버 필요
@@ -93,11 +89,14 @@ function* logout(action) {
 }
 
 // 회원가입
+function signupAPI(data) {
+  return axios.post('/user/signup', data);
+}
 function* signup(action) {
   try {
     // 서버 필요
-    // const result = yield call(signupAPI, action.data);
-    yield delay(1000);
+    const result = yield call(signupAPI, action.data);
+    console.log(result);
     yield put({
       type: SIGNUP_SUCCESS,
       // 서버 필요
