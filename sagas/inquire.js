@@ -22,17 +22,11 @@ import {
 } from '../reducers/inquire';
 
 // API
-function addInquireAPI(data) {
-  return axios.post('/api/addInquire', data);
-}
 function updateInquireAPI(data) {
   return axios.post('/api/updateInquire', data);
 }
 function removeInquireAPI(data) {
   return axios.post('/api/removeInquire', data);
-}
-function addAnswerAPI(data) {
-  return axios.post('/api/addAnswer', data);
 }
 function updateAnswerAPI(data) {
   return axios.post('/api/updateAnswer', data);
@@ -42,16 +36,15 @@ function removeAnswerAPI(data) {
 }
 
 // 문의 작성
+function addInquireAPI(data) {
+  return axios.post('/inquire', data);
+}
 function* addInquire(action) {
   try {
-    // 서버 필요
-    // const result = yield call(addInquireAPI, action.data);
-    yield delay(1000);
+    const result = yield call(addInquireAPI, action.data);
     yield put({
       type: ADD_INQUIRE_SUCCESS,
-      // 서버 필요
-      // data: result.data,
-      data: action.data,
+      data: result.data,
     });
   } catch (err) {
     yield put({
@@ -101,16 +94,15 @@ function* removeInquire(action) {
 }
 
 // 답변 등록
+function addAnswerAPI(data) {
+  return axios.post(`/inquire/${data.inquireId}/answer`, data);
+}
 function* addAnswer(action) {
   try {
-    // 서버 필요
-    // const result = yield call(addAnswerAPI, action.data);
-    yield delay(1000);
+    const result = yield call(addAnswerAPI, action.data);
     yield put({
       type: ADD_ANSWER_SUCCESS,
-      // 서버 필요
-      // data: result.data,
-      data: action.data,
+      data: result.data,
     });
   } catch (err) {
     yield put({

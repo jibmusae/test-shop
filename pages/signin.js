@@ -37,7 +37,7 @@ export default function signin() {
   const [showPassword, setShowPassword] = useState(false);
 
   // 로그인 상태관리
-  const { loginLoading, user } = useSelector((state) => state.user);
+  const { loginLoading, user, loginError } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const onSubmitForm = useCallback(() => {
     dispatch(loginRequestAction({ id, password }));
@@ -49,6 +49,13 @@ export default function signin() {
       Router.push('/');
     }
   }, [user]);
+
+  // 로그인 실패시 에러 출력
+  useEffect(() => {
+    if (loginError) {
+      alert(loginError);
+    }
+  }, [loginError]);
 
   // react-hook-form
   const {

@@ -21,25 +21,7 @@ export const initialState = {
   removeAnswerLoading: false,
   removeAnswerDone: false,
   removeAnswerError: null,
-  mainInquire: [
-    {
-      id: 1,
-      title: '문의하기 테스트 타이틀',
-      user: {
-        id: 1,
-        name: '작성자1',
-        email: 'test@gmail.com',
-        tel: '01012345678',
-      },
-      createDate: '20210411',
-      status: 1,
-      content: '문의하기 텍스트필드 테스트',
-      answer: {
-        date: '20210503',
-        content: '테스트 답변내용',
-      },
-    },
-  ],
+  mainInquire: [],
 };
 
 // 변수
@@ -62,23 +44,6 @@ export const UPDATE_ANSWER_FAILURE = 'UPDATE_ANSWER_FAILURE';
 export const REMOVE_ANSWER_REQUEST = 'REMOVE_ANSWER_REQUEST';
 export const REMOVE_ANSWER_SUCCESS = 'REMOVE_ANSWER_SUCCESS';
 export const REMOVE_ANSWER_FAILURE = 'REMOVE_ANSWER_FAILURE';
-
-// 더미 문의 테스트
-const dummyInquire = (data) => ({
-  id: shortId.generate(),
-  title: data.title,
-  user: { name: data.name, email: data.email, tel: data.tel },
-  createDate: data.createDate,
-  status: 0,
-  content: data.content,
-  answer: {},
-});
-
-// 더미 답변 테스트
-const dummyAnswer = (data) => ({
-  date: data.createDate,
-  content: data.answer,
-});
 
 // 문의 작성 액션
 export const addInquireRequestAction = (data) => ({
@@ -128,7 +93,7 @@ const reducer = (state = initialState, action) => {
       case ADD_INQUIRE_SUCCESS:
         draft.addInquireLoading = false;
         draft.addInquireDone = true;
-        draft.mainInquire.unshift(dummyInquire(action.data));
+        draft.mainInquire.unshift(action.data);
         break;
       case ADD_INQUIRE_FAILURE:
         draft.addInquireLoading = false;
