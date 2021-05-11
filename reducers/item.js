@@ -1,4 +1,3 @@
-import shortId from 'shortid';
 import produce from 'immer';
 
 // 이전상태
@@ -20,21 +19,6 @@ export const ADD_ITEM_FAILURE = 'ADD_ITEM_FAILURE';
 export const REMOVE_ITEM_REQUEST = 'REMOVE_ITEM_REQUEST';
 export const REMOVE_ITEM_SUCCESS = 'REMOVE_ITEM_SUCCESS';
 export const REMOVE_ITEM_FAILURE = 'REMOVE_ITEM_FAILURE';
-
-// 더미 아이템 테스트
-const dummyItems = (data) => ({
-  id: shortId.generate(),
-  category: data.category,
-  title: data.title,
-  image: {
-    src: data.image,
-    alt: data.imageAlt,
-  },
-  price: data.price,
-  startDate: data.startDate,
-  endDate: data.endDate,
-  content: data.content,
-});
 
 // 상품 추가 액션
 export const addItemRequestAction = (data) => ({
@@ -60,7 +44,7 @@ const reducer = (state = initialState, action) => {
       case ADD_ITEM_SUCCESS:
         draft.addItemLoading = false;
         draft.addItemDone = true;
-        draft.mainItems.unshift(dummyItems(action.data));
+        draft.mainItems.unshift(action.data);
         break;
       case ADD_ITEM_FAILURE:
         draft.addItemLoading = false;

@@ -50,12 +50,9 @@ function loginAPI(data) {
 }
 function* login(action) {
   try {
-    // 서버 필요
     const result = yield call(loginAPI, action.data);
     yield put({
       type: LOGIN_SUCCESS,
-      // 서버 필요
-      // data: result.data,
       data: result.data,
     });
   } catch (err) {
@@ -72,7 +69,6 @@ function logoutAPI() {
 }
 function* logout() {
   try {
-    // 서버 필요
     yield call(logoutAPI);
     yield put({
       type: LOGOUT_SUCCESS,
@@ -91,14 +87,11 @@ function signupAPI(data) {
 }
 function* signup(action) {
   try {
-    // 서버 필요
     const result = yield call(signupAPI, action.data);
     console.log(result);
     yield put({
       type: SIGNUP_SUCCESS,
-      // 서버 필요
-      // data: result.data,
-      data: action.data,
+      data: result.data,
     });
   } catch (err) {
     yield put({

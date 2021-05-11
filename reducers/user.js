@@ -31,38 +31,6 @@ export const initialState = {
   loginData: {},
 };
 
-// 더미 장바구니
-const dummyCart = (data) => ({
-  itemId: data.item.id,
-  itemName: data.item.title,
-  itemImage: {
-    src: data.item.image.src,
-    alt: data.item.image.alt,
-  },
-  itemCount: data.count,
-  itemPrice: data.item.price,
-  itemAmount: data.item.price * data.count,
-  itemChecked: true,
-});
-
-// 더미 유저
-const dummyUser = (data) => ({
-  ...data,
-  id: 1,
-  userId: data.id,
-  password: data.password,
-  corporateName: '와이디커넥트',
-  name: '윤재원',
-  corporateId: '4210102162',
-  zipCode: '49103',
-  address: '부산광역시 영도구 와치로 213',
-  addressDetail: '상가 1층 105호',
-  tel: '01068888444',
-  email: 'ydconnectcorp@gmail.com',
-  isAdmin: true,
-  cart: [],
-});
-
 // 변수
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';

@@ -52,7 +52,7 @@ export default function InProgress() {
         >
           진행중인 상품
         </Heading>
-        {user?.isAdmin && (
+        {user?.admin_flag && (
           <AddItemForm setIsAddItem={setIsAddItem} isAddItem={isAddItem} />
         )}
       </Flex>

@@ -97,11 +97,11 @@ export default function InquireWrite() {
   }, [name, email, tel1, tel2, tel3, title, contents]);
 
   // 페이지 이동
-  // useEffect(() => {
-  //   if (addInquireDone) {
-  //     Router.push('/inquire');
-  //   }
-  // }, [addInquireDone]);
+  useEffect(() => {
+    if (addInquireDone) {
+      Router.push('/inquire');
+    }
+  }, [addInquireDone]);
 
   // react-hook-form
   const {
