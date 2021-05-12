@@ -55,18 +55,20 @@ export default function profile() {
   const { user } = useSelector((state) => state.user);
   const { mainOrders } = useSelector((state) => state.order);
 
+  console.log(user);
+
   // Input
   const [inputs, onChangeInputs] = useInput({
-    corporateName: user?.corporateName,
+    corporateName: user?.corporate_name,
     name: user?.name,
-    corporateId1: user?.corporateId.substr(0, 3),
-    corporateId2: user?.corporateId.substr(3, 2),
-    corporateId3: user?.corporateId.substr(5, 5),
-    addressDetail: user?.addressDetail,
+    corporateId1: user?.corporate_id?.substr(0, 3),
+    corporateId2: user?.corporate_id?.substr(3, 2),
+    corporateId3: user?.corporate_id?.substr(5, 5),
+    addressDetail: user?.address_detail,
     email: user?.email,
-    tel1: user?.tel.substr(0, 3),
-    tel2: user?.tel.substr(3, 4),
-    tel3: user?.tel.substr(7, 4),
+    tel1: user?.tel?.substr(0, 3),
+    tel2: user?.tel?.substr(3, 4),
+    tel3: user?.tel?.substr(7, 4),
   });
   const {
     corporateName,
@@ -83,7 +85,7 @@ export default function profile() {
 
   // 주소검색 모달
   const [showPostCodeModal, setShowPostCodeModal] = useState(false);
-  const [zipCode, setZipCode] = useState(user?.zipCode);
+  const [zipCode, setZipCode] = useState(user?.zip_code);
   const [address, setAddress] = useState(user?.address);
   const onChangeZipCode = useCallback((e) => {
     setZipCode(e.target.value);
@@ -145,7 +147,7 @@ export default function profile() {
             <Heading as="h1" size="md">
               개인정보 설정
             </Heading>
-            <form onSubmit={handleSubmit((data) => console.log(data))}>
+            <form onSubmit={handleSubmit(onSubmitForm)}>
               <Table my="1rem" size="sm" borderTop="1px">
                 <Tbody>
                   <Tr>
