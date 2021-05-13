@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Router from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,31 +17,27 @@ import {
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { loginRequestAction } from '../reducers/user';
 import SignLayout from '../components/SignLayout';
-import useInput from '../hooks/useInput';
 
 // yup
-const signinSchema = yup.object().shape({
+const loginSchema = yup.object().shape({
   id: yup.string().required('아이디를 입력해주세요'),
   password: yup.string().required('비밀번호를 입력해주세요'),
 });
 
-export default function signin() {
-  // Input
-  const [inputs, onChangeInputs] = useInput({
-    id: '',
-    password: '',
-  });
-  const { id, password } = inputs;
-
+export default function login() {
   // 비밀번호 보이기
   const [showPassword, setShowPassword] = useState(false);
 
   // 로그인 상태관리
   const { loginLoading, user, loginError } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const onSubmitForm = useCallback(() => {
+  const onSubmitForm = (data) => {
+    const id = data.id;
+    const password = data.password;
+
+    // 로그인 리퀘스트
     dispatch(loginRequestAction({ id, password }));
-  }, [id, password]);
+  };
 
   // 로그인 성공시 화면 이동
   useEffect(() => {
@@ -62,7 +58,7 @@ export default function signin() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ resolver: yupResolver(signinSchema) });
+  } = useForm({ resolver: yupResolver(loginSchema) });
 
   return (
     <SignLayout>
@@ -80,12 +76,7 @@ export default function signin() {
       <form onSubmit={handleSubmit(onSubmitForm)}>
         {/* 아이디 */}
         <Box my={2}>아이디</Box>
-        <Input
-          {...register('id')}
-          placeholder="아이디"
-          value={id}
-          onChange={onChangeInputs}
-        />
+        <Input {...register('id')} placeholder="아이디" />
         <Box pl={2} color="red" fontSize="0.85rem">
           {errors.id?.message}
         </Box>
@@ -97,8 +88,6 @@ export default function signin() {
             {...register('password')}
             type={showPassword ? 'text' : 'password'}
             placeholder="패스워드"
-            value={password}
-            onChange={onChangeInputs}
           />
           <InputRightElement
             children={
@@ -121,8 +110,8 @@ export default function signin() {
         {/* 아이디 / 패스워드 찾기 */}
         <Link href="/findUser">
           <Box
-            m={1}
-            textAlign="end"
+            m="0.5rem 0"
+            textAlign="right"
             color="gray"
             fontSize="0.85rem"
             cursor="pointer"

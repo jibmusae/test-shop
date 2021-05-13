@@ -102,7 +102,7 @@ export default function profile() {
   // 페이지 이동
   useEffect(() => {
     if (!user) {
-      Router.push('/signin');
+      Router.push('/login');
     }
   }, [user]);
 

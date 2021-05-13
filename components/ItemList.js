@@ -60,7 +60,7 @@ export default function ItemList({ item }) {
         dispatch(addCartRequestAction({ item, count }));
       }
     } else {
-      Router.push('/signin');
+      Router.push('/login');
     }
   };
 

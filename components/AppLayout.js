@@ -1,6 +1,5 @@
-import react, { useCallback, useEffect } from 'react';
+import react, { useCallback } from 'react';
 import Link from 'next/link';
-import Router from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Image, List, ListItem, Icon, Text } from '@chakra-ui/react';
 import {
@@ -27,7 +26,7 @@ export default function AppLayout({ children }) {
           </Box>
         ) : (
           <>
-            <Link href="/signin">
+            <Link href="/login">
               <Box cursor="pointer">로그인</Box>
             </Link>
             <Link href="/signup">
