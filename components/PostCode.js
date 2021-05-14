@@ -1,15 +1,14 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import DaumPostCode from 'react-daum-postcode';
-import Modal from './Modal';
 
 export default function PostCode(props) {
-  const { height, setShowPostCodeModal, setZipCode, setAddress } = props;
+  const { height, setValue, setShowPostCodeModal } = props;
 
   const PostCodeStyle = {
     height: height,
   };
 
-  const handleAddress = useCallback((data) => {
+  const handleAddress = (data) => {
     let allAddress = data.address;
     let extraAddress = '';
     let zoneCode = data.zonecode;
@@ -25,14 +24,10 @@ export default function PostCode(props) {
       allAddress += extraAddress !== '' ? ` (${extraAddress})` : '';
     }
 
-    setZipCode(zoneCode);
-    setAddress(allAddress);
+    setValue('zipCode', zoneCode);
+    setValue('address', allAddress);
     setShowPostCodeModal(false);
-  }, []);
+  };
 
-  return (
-    <>
-      <DaumPostCode style={PostCodeStyle} onComplete={handleAddress} />
-    </>
-  );
+  return <DaumPostCode style={PostCodeStyle} onComplete={handleAddress} />;
 }

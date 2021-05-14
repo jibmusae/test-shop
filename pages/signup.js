@@ -23,8 +23,7 @@ import { ViewIcon, ViewOffIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import SignLayout from '../components/SignLayout';
 import Modal from '../components/Modal';
 import PostCode from '../components/PostCode';
-import useInput from '../hooks/useInput';
-import { signupRequestAction } from '../reducers/user';
+import { loginRequestAction, signupRequestAction } from '../reducers/user';
 
 // yup
 const signupSchema = yup.object().shape({
@@ -47,62 +46,74 @@ const signupSchema = yup.object().shape({
     .string()
     .required('대표자명을 입력해주세요')
     .min(2, '대표자명은 최소 2문자로 입력해주세요'),
-  corporateId1: yup.string().required('사업자 등록번호를 입력해주세요'),
-  corporateId2: yup.string().required('사업자 등록번호를 입력해주세요'),
-  corporateId3: yup.string().required('사업자 등록번호를 입력해주세요'),
-  zipCode: yup.string().required('우편번호를 선택해주세요'),
-  address: yup.string().required('주소를 선택해주세요'),
+  corporateId: yup.string().required('사업자 등록번호를 입력해주세요'),
+  zipCode: yup.string().required('우편번호를 검색해주세요'),
+  address: yup.string().required('주소를 검색해주세요'),
   addressDetail: yup.string().required('상세주소를 입력해주세요'),
   email: yup.string().required('이메일 주소를 입력해주세요'),
-  tel1: yup.string().required('휴대폰 번호를 입력해주세요'),
-  tel2: yup.string().required('휴대폰 번호를 입력해주세요'),
-  tel3: yup.string().required('휴대폰 번호를 입력해주세요'),
+  tel: yup.string().required('휴대폰 번호를 입력해주세요'),
   termsCheck: yup.boolean().oneOf([true], '전체 이용약관에 동의해주세요'),
 });
 
+// Input
+const FormInput = ({ label, register, name, placeholder, errors }) => (
+  <>
+    <Box my={2}>{label}</Box>
+    <Input
+      {...register(name)}
+      placeholder={placeholder ? placeholder : label}
+    />
+    <Box pl={2} color="red" fontSize="0.85rem">
+      {errors?.message}
+    </Box>
+  </>
+);
+
 export default function signup() {
-  // Input
-  const [inputs, onChangeInputs] = useInput({
-    id: '',
-    password: '',
-    passwordConfirm: '',
-    corporateName: '',
-    name: '',
-    corporateId1: '',
-    corporateId2: '',
-    corporateId3: '',
-    addressDetail: '',
-    email: '',
-    tel1: '',
-    tel2: '',
-    tel3: '',
-  });
-  const {
-    id,
-    password,
-    passwordConfirm,
-    corporateName,
-    name,
-    corporateId1,
-    corporateId2,
-    corporateId3,
-    addressDetail,
-    email,
-    tel1,
-    tel2,
-    tel3,
-  } = inputs;
+  // 사업자 등록번호 입력(하이픈)
+  const [corporateId, setCorporateId] = useState('');
+  const onChangeCorporateId = (e) => {
+    const value = e.target.value.replace(/[^0-9]/g, '');
+    let result = '';
+
+    if (value.length < 4) {
+      result = value;
+    } else if (value.length < 6) {
+      result = `${value.substr(0, 3)}-${value.substr(3)}`;
+    } else if (value.length < 10) {
+      result = `${value.substr(0, 3)}-${value.substr(3, 2)}-${value.substr(5)}`;
+    } else {
+      result = `${value.substr(0, 3)}-${value.substr(3, 2)}-${value.substr(
+        5,
+        5
+      )}`;
+    }
+    setCorporateId(result);
+  };
+
+  // 휴대폰 번호 입력(하이픈)
+  const [tel, setTel] = useState('');
+  const onChangeTel = (e) => {
+    const value = e.target.value.replace(/[^0-9]/g, '');
+    let result = '';
+
+    if (value.length < 4) {
+      result = value;
+    } else if (value.length < 7) {
+      result = `${value.substr(0, 3)}-${value.substr(3)}`;
+    } else if (value.length < 11) {
+      result = `${value.substr(0, 3)}-${value.substr(3, 3)}-${value.substr(6)}`;
+    } else {
+      result = `${value.substr(0, 3)}-${value.substr(3, 4)}-${value.substr(
+        7,
+        4
+      )}`;
+    }
+    setTel(result);
+  };
 
   // 주소검색 모달
   const [showPostCodeModal, setShowPostCodeModal] = useState(false);
-  const [zipCode, setZipCode] = useState('');
-  const [address, setAddress] = useState('');
-  const onChangeZipCode = useCallback((e) => {
-    setZipCode(e.target.value);
-  }, []);
-  const onChangeAddress = useCallback((e) => {
-    setAddress(e.target.value);
-  }, []);
 
   // 비밀번호 보이기
   const [showPassword, setShowPassword] = useState([false, false]);
@@ -121,46 +132,15 @@ export default function signup() {
   const { signupLoading, signupDone, signupError } = useSelector(
     (state) => state.user
   );
-  const onSubmitForm = useCallback(() => {
-    const corporateId =
-      String(corporateId1) + String(corporateId2) + String(corporateId3);
-    const tel = String(tel1) + String(tel2) + String(tel3);
+  const onSubmitForm = (data) => {
+    dispatch(signupRequestAction(data));
+  };
 
-    dispatch(
-      signupRequestAction({
-        id,
-        password,
-        corporateName,
-        name,
-        corporateId,
-        zipCode,
-        address,
-        addressDetail,
-        email,
-        tel,
-      })
-    );
-  }, [
-    id,
-    password,
-    corporateName,
-    name,
-    corporateId1,
-    corporateId2,
-    corporateId3,
-    zipCode,
-    address,
-    addressDetail,
-    email,
-    tel1,
-    tel2,
-    tel3,
-  ]);
-
-  // 페이지 이동
+  // 회원가입 완료 표시 및 페이지 이동
   useEffect(() => {
     if (signupDone) {
-      Router.push('/');
+      alert('회원가입이 완료되었습니다.\n로그인 페이지로 이동합니다.');
+      Router.push('/login');
     }
   }, [signupDone]);
 
@@ -175,6 +155,7 @@ export default function signup() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm({ resolver: yupResolver(signupSchema) });
 
@@ -193,16 +174,12 @@ export default function signup() {
       </Heading>
       <form onSubmit={handleSubmit(onSubmitForm)}>
         {/* 아이디 */}
-        <Box my={2}>아이디</Box>
-        <Input
-          {...register('id')}
-          placeholder="아이디"
-          value={id}
-          onChange={onChangeInputs}
+        <FormInput
+          label="아이디"
+          register={register}
+          name="id"
+          errors={errors.id}
         />
-        <Box pl={2} color="red" fontSize="0.85rem">
-          {errors.id?.message}
-        </Box>
 
         {/* 비밀번호 */}
         <Box my={2}>비밀번호</Box>
@@ -211,8 +188,6 @@ export default function signup() {
             {...register('password')}
             type={showPassword[0] ? 'text' : 'password'}
             placeholder="비밀번호"
-            value={password}
-            onChange={onChangeInputs}
           />
           <InputRightElement
             children={
@@ -239,8 +214,6 @@ export default function signup() {
             {...register('passwordConfirm')}
             type={showPassword[1] ? 'text' : 'password'}
             placeholder="비밀번호 확인"
-            value={passwordConfirm}
-            onChange={onChangeInputs}
           />
           <InputRightElement
             children={
@@ -261,77 +234,38 @@ export default function signup() {
         </Box>
 
         {/* 업체명 */}
-        <Box my={2}>업체명</Box>
-        <Input
-          {...register('corporateName')}
-          placeholder="업체명"
-          value={corporateName}
-          onChange={onChangeInputs}
+        <FormInput
+          label="업체명"
+          register={register}
+          name="corporateName"
+          errors={errors.corporateName}
         />
-        <Box pl={2} color="red" fontSize="0.85rem">
-          {errors.corporateName?.message}
-        </Box>
 
         {/* 대표자명 */}
-        <Box my={2}>대표자명</Box>
-        <Input
-          {...register('name')}
-          placeholder="대표자명"
-          value={name}
-          onChange={onChangeInputs}
+        <FormInput
+          label="대표자명"
+          register={register}
+          name="name"
+          errors={errors.name}
         />
-        <Box pl={2} color="red" fontSize="0.85rem">
-          {errors.name?.message}
-        </Box>
 
         {/* 사업자 등록번호 */}
         <Box my={2}>사업자 등록번호</Box>
-        <HStack spacing="0.5rem">
-          <Input
-            {...register('corporateId1')}
-            w="61px"
-            type="number"
-            placeholder="123"
-            value={corporateId1}
-            onChange={onChangeInputs}
-          />
-          <Box>-</Box>
-          <Input
-            {...register('corporateId2')}
-            w="52px"
-            type="number"
-            placeholder="45"
-            value={corporateId2}
-            onChange={onChangeInputs}
-          />
-          <Box>-</Box>
-          <Input
-            {...register('corporateId3')}
-            w="79px"
-            type="number"
-            placeholder="67890"
-            value={corporateId3}
-            onChange={onChangeInputs}
-          />
-        </HStack>
+        <Input
+          {...register('corporateId')}
+          placeholder="123-45-67890"
+          value={corporateId}
+          onChange={onChangeCorporateId}
+        />
         <Box pl={2} color="red" fontSize="0.85rem">
-          {errors.corporateId1?.message ||
-            errors.corporateId2?.message ||
-            errors.corporateId3?.message}
+          {errors.corporateId?.message}
         </Box>
 
         {/* 주소 */}
         <Box my={2}>주소</Box>
         <VStack spacing="0.5rem">
           <InputGroup>
-            <Input
-              {...register('zipCode')}
-              type="number"
-              placeholder="우편번호"
-              value={zipCode}
-              onChange={onChangeZipCode}
-              isReadOnly
-            />
+            <Input {...register('zipCode')} placeholder="우편번호" isReadOnly />
             <InputRightElement w="7rem">
               <Button
                 size="sm"
@@ -350,77 +284,37 @@ export default function signup() {
                   <PostCode
                     height="500px"
                     setShowPostCodeModal={setShowPostCodeModal}
-                    setZipCode={setZipCode}
-                    setAddress={setAddress}
+                    setValue={setValue}
                   />
                 </Modal>
               )}
             </InputRightElement>
           </InputGroup>
-          <Input
-            {...register('address')}
-            placeholder="주소"
-            value={address}
-            onChange={onChangeAddress}
-            isReadOnly
-          />
-          <Input
-            {...register('addressDetail')}
-            placeholder="상세주소"
-            value={addressDetail}
-            onChange={onChangeInputs}
-          />
+          <Input {...register('address')} placeholder="주소" isReadOnly />
+          <Input {...register('addressDetail')} placeholder="상세주소" />
         </VStack>
         <Box pl={2} color="red" fontSize="0.85rem">
-          {errors.zipCode?.message ||
-            errors.address?.message ||
-            errors.addressDetail?.message}
+          {errors.test?.message || errors.addressDetail?.message}
         </Box>
 
         {/* 이메일 */}
-        <Box my={2}>이메일</Box>
-        <Input
-          {...register('email')}
-          placeholder="이메일"
-          value={email}
-          onChange={onChangeInputs}
+        <FormInput
+          label="이메일"
+          register={register}
+          name="email"
+          errors={errors.email}
         />
-        <Box pl={2} color="red" fontSize="0.85rem">
-          {errors.email?.message}
-        </Box>
 
         {/* 휴대폰 번호 */}
         <Box my={2}>휴대폰 번호</Box>
-        <HStack spacing="0.5rem">
-          <Input
-            {...register('tel1')}
-            w="61px"
-            type="number"
-            placeholder="010"
-            value={tel1}
-            onChange={onChangeInputs}
-          />
-          <Box>-</Box>
-          <Input
-            {...register('tel2')}
-            w="70px"
-            type="number"
-            placeholder="1234"
-            value={tel2}
-            onChange={onChangeInputs}
-          />
-          <Box>-</Box>
-          <Input
-            {...register('tel3')}
-            w="70px"
-            type="number"
-            placeholder="5678"
-            value={tel3}
-            onChange={onChangeInputs}
-          />
-        </HStack>
+        <Input
+          {...register('tel')}
+          placeholder="010-1234-5678"
+          value={tel}
+          onChange={onChangeTel}
+        />
         <Box pl={2} color="red" fontSize="0.85rem">
-          {errors.tel1?.message || errors.tel2?.message || errors.tel3?.message}
+          {errors.tel?.message}
         </Box>
 
         {/* 이용약관 */}
