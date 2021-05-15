@@ -26,18 +26,17 @@ const loginSchema = yup.object().shape({
 });
 
 export default function login() {
+  // 로그인 상태관리
+  const { loginLoading, user, loginError } = useSelector((state) => state.user);
+
   // 비밀번호 보이기
   const [showPassword, setShowPassword] = useState(false);
 
-  // 로그인 상태관리
-  const { loginLoading, user, loginError } = useSelector((state) => state.user);
+  // 로그인
   const dispatch = useDispatch();
   const onSubmitForm = (data) => {
-    const id = data.id;
-    const password = data.password;
-
     // 로그인 리퀘스트
-    dispatch(loginRequestAction({ id, password }));
+    dispatch(loginRequestAction(data));
   };
 
   // 로그인 성공시 화면 이동
@@ -79,7 +78,6 @@ export default function login() {
         <FormInput label="아이디" errors={errors.id}>
           <Input {...register('id')} placeholder="아이디" />
         </FormInput>
-        <Box my={2}>아이디</Box>
 
         {/* 비밀번호 */}
         <FormInput label="비밀번호" errors={errors.password}>
@@ -104,7 +102,6 @@ export default function login() {
             />
           </InputGroup>
         </FormInput>
-        <Box my={2}>비밀번호</Box>
 
         {/* 아이디 / 패스워드 찾기 */}
         <Link href="/findUser">

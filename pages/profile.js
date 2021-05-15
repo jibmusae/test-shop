@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Router from 'next/router';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -13,14 +13,10 @@ import {
   Heading,
   Table,
   Tbody,
-  Tr,
-  Th,
-  Td,
-  HStack,
   VStack,
-  Box,
   InputGroup,
   Input,
+  InputRightElement,
   Flex,
   Button,
   AlertDialog,
@@ -31,73 +27,105 @@ import {
 } from '@chakra-ui/react';
 import AppLayout from '../components/AppLayout';
 import PostCode from '../components/PostCode';
-import useInput from '../hooks/useInput';
-import Modal from '../components/Modal';
 import OrderList from '../components/OrderList';
+import Modal from '../components/Modal';
+import FormInput from '../components/FormInput';
 
 const profileSchema = yup.object().shape({
-  corporateName: yup.string().required('업체명을 입력해주세요'),
-  name: yup.string().required('대표자명을 입력해주세요'),
-  corporateId1: yup.string().required('사업자 등록번호를 입력해주세요'),
-  corporateId2: yup.string().required('사업자 등록번호를 입력해주세요'),
-  corporateId3: yup.string().required('사업자 등록번호를 입력해주세요'),
-  zipCode: yup.string().required('우편번호를 선택해주세요'),
-  address: yup.string().required('주소를 선택해주세요'),
-  addressDetail: yup.string().required('상세주소를 입력해주세요'),
-  email: yup.string().required('이메일 주소를 입력해주세요'),
-  tel1: yup.string().required('휴대폰 번호를 입력해주세요'),
-  tel2: yup.string().required('휴대폰 번호를 입력해주세요'),
-  tel3: yup.string().required('휴대폰 번호를 입력해주세요'),
+  corporateName: yup
+    .string()
+    .required('업체명을 입력해주세요')
+    .max(100, '업체명은 최대 100자 이내로 입력해주세요'),
+  name: yup
+    .string()
+    .required('대표자명을 입력해주세요')
+    .min(2, '대표자명은 최소 2자, 최대 100자로 입력해주세요')
+    .max(100, '대표자명은 최소 2자, 최대 100자로 입력해주세요'),
+  corporateId: yup
+    .string()
+    .required('사업자 등록번호를 입력해주세요')
+    .min(12, '사업자 등록번호는 하이픈 포함 12자로 입력해주세요')
+    .max(12, '사업자 등록번호는 하이픈 포함 12자로 입력해주세요'),
+  zipCode: yup
+    .string()
+    .required('우편번호를 검색해주세요')
+    .min(5, '우편번호는 5자로 입력해주세요')
+    .max(5, '우편번호는 5자로 입력해주세요'),
+  addressDetail: yup
+    .string()
+    .required('상세주소를 입력해주세요')
+    .max(100, '상세주소는 최대 100자 이내로 입력해주세요'),
+  email: yup
+    .string()
+    .required('이메일 주소를 입력해주세요')
+    .max(100, '이메일 주소는 최대 100자 이내로 입력해주세요'),
+  tel: yup
+    .string()
+    .required('휴대폰 번호를 입력해주세요')
+    .min(12, '휴대폰 번호는 하이픈 포함 최소 12자, 최대 13자로 입력해주세요')
+    .max(13, '휴대폰 번호는 하이픈 포함 최소 12자, 최대 13자로 입력해주세요'),
 });
 
 export default function profile() {
-  // 상태관리
+  // 개인정보 상태관리
   const { user } = useSelector((state) => state.user);
   const { mainOrders } = useSelector((state) => state.order);
 
-  console.log(user);
+  // 사업자 등록번호 입력(하이픈)
+  const [corporateId, setCorporateId] = useState(user?.corporate_id);
+  const onChangeCorporateId = (e) => {
+    const value = e.target.value.replace(/[^0-9]/g, '');
+    let result = '';
 
-  // Input
-  const [inputs, onChangeInputs] = useInput({
-    corporateName: user?.corporate_name,
-    name: user?.name,
-    corporateId1: user?.corporate_id?.substr(0, 3),
-    corporateId2: user?.corporate_id?.substr(3, 2),
-    corporateId3: user?.corporate_id?.substr(5, 5),
-    addressDetail: user?.address_detail,
-    email: user?.email,
-    tel1: user?.tel?.substr(0, 3),
-    tel2: user?.tel?.substr(3, 4),
-    tel3: user?.tel?.substr(7, 4),
-  });
-  const {
-    corporateName,
-    name,
-    corporateId1,
-    corporateId2,
-    corporateId3,
-    addressDetail,
-    email,
-    tel1,
-    tel2,
-    tel3,
-  } = inputs;
+    if (value.length < 4) {
+      result = value;
+    } else if (value.length < 6) {
+      result = `${value.substr(0, 3)}-${value.substr(3)}`;
+    } else if (value.length < 10) {
+      result = `${value.substr(0, 3)}-${value.substr(3, 2)}-${value.substr(5)}`;
+    } else {
+      result = `${value.substr(0, 3)}-${value.substr(3, 2)}-${value.substr(
+        5,
+        5
+      )}`;
+    }
+    setCorporateId(result);
+  };
+
+  // 휴대폰 번호 입력(하이픈)
+  const [tel, setTel] = useState(user?.tel);
+  const onChangeTel = (e) => {
+    const value = e.target.value.replace(/[^0-9]/g, '');
+    let result = '';
+
+    if (value.length < 4) {
+      result = value;
+    } else if (value.length < 7) {
+      result = `${value.substr(0, 3)}-${value.substr(3)}`;
+    } else if (value.length < 11) {
+      result = `${value.substr(0, 3)}-${value.substr(3, 3)}-${value.substr(6)}`;
+    } else {
+      result = `${value.substr(0, 3)}-${value.substr(3, 4)}-${value.substr(
+        7,
+        4
+      )}`;
+    }
+    setTel(result);
+  };
 
   // 주소검색 모달
   const [showPostCodeModal, setShowPostCodeModal] = useState(false);
-  const [zipCode, setZipCode] = useState(user?.zip_code);
-  const [address, setAddress] = useState(user?.address);
-  const onChangeZipCode = useCallback((e) => {
-    setZipCode(e.target.value);
-  }, []);
-  const onChangeAddress = useCallback((e) => {
-    setAddress(e.target.value);
-  }, []);
 
-  // AlertDialog
+  // 회원탈퇴 확인
   const [showAlert, setShowAlert] = useState(false);
   const closeAlert = () => setShowAlert(false);
   const cancelRef = useRef();
+
+  // 개인정보 수정
+  const dispatch = useDispatch();
+  const onSubmitForm = (data) => {
+    console.log(data);
+  };
 
   // 페이지 이동
   useEffect(() => {
@@ -150,103 +178,56 @@ export default function profile() {
             <form onSubmit={handleSubmit(onSubmitForm)}>
               <Table my="1rem" size="sm" borderTop="1px">
                 <Tbody>
-                  <Tr>
-                    <Th w="200px" bgColor="gray.200">
-                      업체명
-                    </Th>
-                    <Td>
-                      <Input
-                        {...register('corporateName')}
-                        size="sm"
-                        placeholder="업체명"
-                        value={corporateName}
-                        onChange={onChangeInputs}
-                      />
-                      <Box pl={2} color="red" fontSize="0.85rem">
-                        {errors.corporateName?.message}
-                      </Box>
-                    </Td>
-                  </Tr>
-                  <Tr>
-                    <Th w="200px" bgColor="gray.200">
-                      대표자명
-                    </Th>
-                    <Td>
-                      <Input
-                        {...register('name')}
-                        size="sm"
-                        placeholder="대표자명"
-                        value={name}
-                        onChange={onChangeInputs}
-                      />
-                      <Box pl={2} color="red" fontSize="0.85rem">
-                        {errors.name?.message}
-                      </Box>
-                    </Td>
-                  </Tr>
-                  <Tr>
-                    <Th w="200px" bgColor="gray.200">
-                      사업자 등록번호
-                    </Th>
-                    <Td>
-                      <HStack spacing="0.5rem">
+                  {/* 업체명 */}
+                  <FormInput label="업체명" errors={errors.corporateName} table>
+                    <Input
+                      {...register('corporateName')}
+                      placeholder="업체명"
+                      defaultValue={user?.corporate_name}
+                    />
+                  </FormInput>
+
+                  {/* 대표자명 */}
+                  <FormInput label="대표자명" errors={errors.name} table>
+                    <Input
+                      {...register('name')}
+                      placeholder="대표자명"
+                      defaultValue={user?.name}
+                    />
+                  </FormInput>
+
+                  {/* 사업자 등록번호 */}
+                  <FormInput
+                    label="사업자 등록번호"
+                    errors={errors.corporateId}
+                    table
+                  >
+                    <Input
+                      {...register('corporateId')}
+                      placeholder="123-45-67890"
+                      value={corporateId}
+                      onChange={onChangeCorporateId}
+                    />
+                  </FormInput>
+
+                  {/* 주소 */}
+                  <FormInput
+                    label="주소"
+                    errors={errors.zipCode}
+                    nextErrors={errors.addressDetail}
+                    table
+                  >
+                    <VStack spacing="0.5rem">
+                      <InputGroup>
                         <Input
-                          {...register('corporateId1')}
-                          size="sm"
-                          w="50px"
-                          type="number"
-                          placeholder="123"
-                          value={corporateId1}
-                          onChange={onChangeInputs}
+                          {...register('zipCode')}
+                          placeholder="우편번호"
+                          defaultValue={user?.zip_code}
+                          isReadOnly
                         />
-                        <Box>-</Box>
-                        <Input
-                          {...register('corporateId2')}
-                          size="sm"
-                          w="42px"
-                          type="number"
-                          placeholder="45"
-                          value={corporateId2}
-                          onChange={onChangeInputs}
-                        />
-                        <Box>-</Box>
-                        <Input
-                          {...register('corporateId3')}
-                          size="sm"
-                          w="66px"
-                          type="number"
-                          placeholder="67890"
-                          value={corporateId3}
-                          onChange={onChangeInputs}
-                        />
-                      </HStack>
-                      <Box pl={2} color="red" fontSize="0.85rem">
-                        {errors.corporateId1?.message ||
-                          errors.corporateId2?.message ||
-                          errors.corporateId3?.message}
-                      </Box>
-                    </Td>
-                  </Tr>
-                  <Tr>
-                    <Th w="200px" bgColor="gray.200">
-                      주소
-                    </Th>
-                    <Td>
-                      <VStack spacing="0.5rem">
-                        <InputGroup>
-                          <Input
-                            {...register('zipCode')}
-                            size="sm"
-                            type="number"
-                            placeholder="우편번호"
-                            value={zipCode}
-                            onChange={onChangeZipCode}
-                            isReadOnly
-                          />
+                        <InputRightElement w="7rem">
                           <Button
                             size="sm"
-                            w="120px"
-                            ml="0.25rem"
                             color="gray"
                             onClick={(e) => setShowPostCodeModal(true)}
                           >
@@ -262,95 +243,44 @@ export default function profile() {
                               <PostCode
                                 height="500px"
                                 setShowPostCodeModal={setShowPostCodeModal}
-                                setZipCode={setZipCode}
-                                setAddress={setAddress}
+                                setValue={setValue}
                               />
                             </Modal>
                           )}
-                        </InputGroup>
-                        <Input
-                          {...register('address')}
-                          size="sm"
-                          placeholder="주소"
-                          value={address}
-                          onChange={onChangeAddress}
-                          isReadOnly
-                        />
-                        <Input
-                          {...register('addressDetail')}
-                          size="sm"
-                          placeholder="상세주소"
-                          value={addressDetail}
-                          onChange={onChangeInputs}
-                        />
-                      </VStack>
-                      <Box pl={2} color="red" fontSize="0.85rem">
-                        {errors.zipCode?.message ||
-                          errors.address?.message ||
-                          errors.addressDetail?.message}
-                      </Box>
-                    </Td>
-                  </Tr>
-                  <Tr>
-                    <Th w="200px" bgColor="gray.200">
-                      이메일 주소
-                    </Th>
-                    <Td>
+                        </InputRightElement>
+                      </InputGroup>
                       <Input
-                        {...register('email')}
-                        size="sm"
-                        placeholder="이메일 주소"
-                        value={email}
-                        onChange={onChangeInputs}
+                        {...register('address')}
+                        placeholder="주소"
+                        defaultValue={user?.address}
+                        isReadOnly
                       />
-                      <Box pl={2} color="red" fontSize="0.85rem">
-                        {errors.email?.message}
-                      </Box>
-                    </Td>
-                  </Tr>
-                  <Tr>
-                    <Th w="200px" bgColor="gray.200">
-                      휴대폰 번호
-                    </Th>
-                    <Td>
-                      <HStack spacing="0.5rem">
-                        <Input
-                          {...register('tel1')}
-                          size="sm"
-                          w="50px"
-                          type="number"
-                          placeholder="010"
-                          value={tel1}
-                          onChange={onChangeInputs}
-                        />
-                        <Box>-</Box>
-                        <Input
-                          {...register('tel2')}
-                          size="sm"
-                          w="58px"
-                          type="number"
-                          placeholder="1234"
-                          value={tel2}
-                          onChange={onChangeInputs}
-                        />
-                        <Box>-</Box>
-                        <Input
-                          {...register('tel3')}
-                          size="sm"
-                          w="58px"
-                          type="number"
-                          placeholder="5678"
-                          value={tel3}
-                          onChange={onChangeInputs}
-                        />
-                      </HStack>
-                      <Box pl={2} color="red" fontSize="0.85rem">
-                        {errors.tel1?.message ||
-                          errors.tel2?.message ||
-                          errors.tel3?.message}
-                      </Box>
-                    </Td>
-                  </Tr>
+                      <Input
+                        {...register('addressDetail')}
+                        placeholder="상세주소"
+                        defaultValue={user?.address_detail}
+                      />
+                    </VStack>
+                  </FormInput>
+
+                  {/* 이메일 주소 */}
+                  <FormInput label="이메일 주소" errors={errors.email} table>
+                    <Input
+                      {...register('email')}
+                      placeholder="이메일 주소"
+                      defaultValue={user?.email}
+                    />
+                  </FormInput>
+
+                  {/* 휴대폰 번호 */}
+                  <FormInput label="휴대폰 번호" errors={errors.tel} table>
+                    <Input
+                      {...register('tel')}
+                      placeholder="010-1234-5678"
+                      value={tel}
+                      onChange={onChangeTel}
+                    />
+                  </FormInput>
                 </Tbody>
               </Table>
               <Flex mt="2rem" justifyContent="space-between">

@@ -10,7 +10,6 @@ import {
   InputGroup,
   Input,
   InputRightElement,
-  Box,
   Stack,
   Flex,
   Checkbox,
@@ -77,6 +76,11 @@ const signupSchema = yup.object().shape({
 });
 
 export default function signup() {
+  // 회원가입 상태관리
+  const { signupLoading, signupDone, signupError } = useSelector(
+    (state) => state.user
+  );
+
   // 사업자 등록번호 입력(하이픈)
   const [corporateId, setCorporateId] = useState('');
   const onChangeCorporateId = (e) => {
@@ -134,11 +138,8 @@ export default function signup() {
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
 
-  // 회원가입 상태관리
+  // 회원가입
   const dispatch = useDispatch();
-  const { signupLoading, signupDone, signupError } = useSelector(
-    (state) => state.user
-  );
   const onSubmitForm = (data) => {
     dispatch(signupRequestAction(data));
   };
@@ -295,15 +296,15 @@ export default function signup() {
           </VStack>
         </FormInput>
 
-        {/* 이메일 */}
-        <FormInput label="이메일" errors={errors.email}>
-          <Input {...register('email')} placeholder="이메일" />
+        {/* 이메일 주소 */}
+        <FormInput label="이메일 주소" errors={errors.email}>
+          <Input {...register('email')} placeholder="이메일 주소" />
         </FormInput>
 
         {/* 휴대폰 번호 */}
         <FormInput label="휴대폰 번호" errors={errors.tel}>
           <Input
-            {...register('email')}
+            {...register('tel')}
             placeholder="010-1234-5678"
             value={tel}
             onChange={onChangeTel}
