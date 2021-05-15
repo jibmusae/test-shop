@@ -15,8 +15,9 @@ import {
   Divider,
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
-import { loginRequestAction } from '../reducers/user';
 import SignLayout from '../components/SignLayout';
+import FormInput from '../components/FormInput';
+import { loginRequestAction } from '../reducers/user';
 
 // yup
 const loginSchema = yup.object().shape({
@@ -75,37 +76,35 @@ export default function login() {
       </Heading>
       <form onSubmit={handleSubmit(onSubmitForm)}>
         {/* 아이디 */}
+        <FormInput label="아이디" errors={errors.id}>
+          <Input {...register('id')} placeholder="아이디" />
+        </FormInput>
         <Box my={2}>아이디</Box>
-        <Input {...register('id')} placeholder="아이디" />
-        <Box pl={2} color="red" fontSize="0.85rem">
-          {errors.id?.message}
-        </Box>
 
         {/* 비밀번호 */}
+        <FormInput label="비밀번호" errors={errors.password}>
+          <InputGroup>
+            <Input
+              {...register('password')}
+              type={showPassword ? 'text' : 'password'}
+              placeholder="패스워드"
+            />
+            <InputRightElement
+              children={
+                showPassword ? (
+                  <ViewIcon color="gray.400" />
+                ) : (
+                  <ViewOffIcon color="gray.400" />
+                )
+              }
+              onClick={(e) => {
+                setShowPassword(!showPassword);
+              }}
+              cursor="pointer"
+            />
+          </InputGroup>
+        </FormInput>
         <Box my={2}>비밀번호</Box>
-        <InputGroup>
-          <Input
-            {...register('password')}
-            type={showPassword ? 'text' : 'password'}
-            placeholder="패스워드"
-          />
-          <InputRightElement
-            children={
-              showPassword ? (
-                <ViewIcon color="gray.400" />
-              ) : (
-                <ViewOffIcon color="gray.400" />
-              )
-            }
-            onClick={(e) => {
-              setShowPassword(!showPassword);
-            }}
-            cursor="pointer"
-          />
-        </InputGroup>
-        <Box pl={2} color="red" fontSize="0.85rem">
-          {errors.password?.message}
-        </Box>
 
         {/* 아이디 / 패스워드 찾기 */}
         <Link href="/findUser">
