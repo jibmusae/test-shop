@@ -1,17 +1,13 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useRef, forwardRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import DatePicker, { registerLocale } from 'react-datepicker';
+import ko from 'date-fns/locale/ko';
+import moment from 'moment';
+import 'react-datepicker/dist/react-datepicker.css';
 import * as yup from 'yup';
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  ModalCloseButton,
-  useDisclosure,
   IconButton,
   Box,
   Input,
@@ -24,105 +20,87 @@ import {
   InputRightElement,
 } from '@chakra-ui/react';
 import { EditIcon } from '@chakra-ui/icons';
+import Modal from '../components/Modal';
+import FormInput from './FormInput';
 import { addItemRequestAction } from '../reducers/item';
+
+// DatePicker 언어 설정
+registerLocale('ko', ko);
 
 // yup
 const addItemSchema = yup.object().shape({
-  title: yup.string().required('상품명을 입력해주세요'),
-  imageName: yup.string().required('상품이미지를 선택해주세요'),
-  price: yup.string().required('금액을 입력해주세요'),
-  startDate: yup.string().required('시작일을 입력해주세요'),
-  endDate: yup.string().required('종료일을 입력해주세요'),
+  category: yup.number().required('카테고리를 선택해주세요'),
+  name: yup
+    .string()
+    .required('상품명을 입력해주세요')
+    .max(100, '상품명은 최대 100자 이내로 입력해주세요'),
+  image: yup.string().required('상품이미지를 선택해주세요'),
+  price: yup
+    .string()
+    .required('금액을 입력해주세요')
+    .max(10, '상품 금액은 최대 10자 이내로 입력해주세요'),
+  startDate: yup
+    .string()
+    .required('시작일을 입력해주세요')
+    .min(10, '시작일은 하이픈 포함 10자로 입력해주세요')
+    .max(10, '시작일은 하이픈 포함 10자로 입력해주세요'),
+  endDate: yup
+    .string()
+    .required('종료일을 입력해주세요')
+    .min(10, '종료일은 하이픈 포함 10자로 입력해주세요')
+    .max(10, '종료일은 하이픈 포함 10자로 입력해주세요'),
   content: yup.string().required('상품설명을 입력해주세요'),
 });
 
 export default function AddItemForm() {
-  // 모달
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  // 상품 상태관리
+  const { addItemLoading } = useSelector((state) => state.item);
 
-  // 입력
-  const [inputs, setInputs] = useState({
-    title: '',
-    price: '',
-    startDate: '',
-    endDate: '',
-    content: '',
-  });
-  const onChangeInputs = (e) => {
-    const { name, value } = e.target;
-    setInputs({ ...inputs, [name]: value });
-  };
-
-  // 입력(카테고리)
-  const [category, setCategory] = useState(1);
-
-  // 입력(이미지)
-  const [image, setImage] = useState('');
-  const [imageName, setImageName] = useState('');
-  const [imageAlt, setImageAlt] = useState('');
-  const onChangeImage = useCallback((e) => {
-    if (e.target.value !== '') {
-      const imageNameSplit = e.target.files[0]?.name.split('.');
-
-      setImage(e.target.value);
-      setImageName(e.target.files[0]?.name);
-      setImageAlt(e.target.files[0] && imageNameSplit[0]);
-    }
-  }, []);
+  // 주소검색 모달
+  const [showAddItemModal, setShowAddItemModal] = useState(false);
 
   // 이미지 선택
+  const [imageFileName, setImageFileName] = useState('');
+  const onChangeImage = (e) => {
+    if (e.target && e.target.files[0]) {
+      setImageFileName(e.target.files[0].name);
+    } else {
+      setImageFileName('잘못된 시도입니다.');
+    }
+    setValue('image', 'TODOTODOTODOTODOTODOTODO이미지경로');
+  };
   const fileRef = useRef();
-  const onClickImageUpload = (e) => {
+  const onClickImageUpload = () => {
     fileRef.current.click();
   };
 
-  // 입력 값
-  const { title, price, startDate, endDate, content } = inputs;
-
-  // 상품 상태관리
-  const dispatch = useDispatch();
-  const { addItemLoading, addItemDone } = useSelector((state) => state.item);
-  const onSubmitForm = () => {
-    dispatch(
-      addItemRequestAction({
-        category,
-        title,
-        image,
-        imageAlt,
-        price,
-        startDate,
-        endDate,
-        content,
-      })
-    );
-    if (addItemDone) {
-      onClose();
-    }
+  // 시작일
+  const [startDate, setStartDate] = useState(null);
+  const onChangeStartDate = (date) => {
+    setStartDate(date);
+    setValue('startDate', moment(date).format('YYYY-MM-DD'));
   };
 
-  // form 초기화
-  useEffect(() => {
-    if (addItemDone) {
-      setInputs({
-        title: '',
-        price: '',
-        startDate: '',
-        endDate: '',
-        content: '',
-      });
-      setCategory(1);
-      setImage('');
-      setImageName('');
-      setImageAlt('');
+  // 종료일
+  const [endDate, setEndDate] = useState(null);
+  const onChangeEndDate = (date) => {
+    setEndDate(date);
+    setValue('endDate', moment(date).format('YYYY-MM-DD'));
+  };
 
-      onClose();
-    }
-  }, [addItemDone]);
+  // 상품 등록
+  const dispatch = useDispatch();
+  const onSubmitForm = (data) => {
+    dispatch(addItemRequestAction(data));
+  };
 
   // react-hook-form 유효성 검사
   const {
     register,
     handleSubmit,
+    control,
+    setValue,
+    getValues,
     formState: { errors },
   } = useForm({ resolver: yupResolver(addItemSchema) });
 
@@ -133,66 +111,52 @@ export default function AddItemForm() {
         aria-label="Add Item"
         fontSize="20px"
         icon={<EditIcon />}
-        onClick={onOpen}
+        onClick={(e) => setShowAddItemModal(true)}
       />
-      <Modal
-        isOpen={isOpen}
-        onClose={onClose}
-        isCentered
-        blockScrollOnMount={false}
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader m="0" p="1rem">
-            상품 추가
-          </ModalHeader>
-          <ModalCloseButton />
-          <form onSubmit={handleSubmit(onSubmitForm)}>
-            <ModalBody p="1.5rem">
-              {/* 카테고리 */}
-              <Box my={2}>카테고리</Box>
-              <RadioGroup
-                {...register('category')}
-                onChange={setCategory}
-                value={category}
-              >
-                <Flex justifyContent="space-around">
-                  <Radio value={1}>CPU</Radio>
-                  <Radio value={2}>메인보드</Radio>
-                  <Radio value={3}>그래픽카드</Radio>
-                  <Radio value={4}>그 외</Radio>
-                </Flex>
-              </RadioGroup>
-              <Box pl={2} color="red" fontSize="0.85rem">
-                {errors.category?.message}
-              </Box>
-
-              {/* 상품명 */}
-              <Box my={2}>상품명</Box>
-              <Input
-                {...register('title')}
-                onChange={onChangeInputs}
-                placeholder="상품명"
-                value={title}
+      {showAddItemModal && (
+        <Modal
+          width="450px"
+          padding="0.5rem 1.5rem"
+          title="상품 추가"
+          setShowModal={setShowAddItemModal}
+        >
+          <form onSubmit={handleSubmit(onSubmitForm)} autoComplete="off">
+            {/* 카테고리 */}
+            <FormInput label="카테고리" errors={errors.category}>
+              <Controller
+                control={control}
+                name="category"
+                render={({ field: { onChange, value } }) => (
+                  <RadioGroup value={Number(value)} onChange={onChange}>
+                    <Flex justifyContent="space-around">
+                      <Radio value={1}>CPU</Radio>
+                      <Radio value={2}>메인보드</Radio>
+                      <Radio value={3}>그래픽카드</Radio>
+                      <Radio value={4}>그 외</Radio>
+                    </Flex>
+                  </RadioGroup>
+                )}
               />
-              <Box pl={2} color="red" fontSize="0.85rem">
-                {errors.title?.message}
-              </Box>
+            </FormInput>
 
-              {/* 상품 이미지 */}
-              <Box my={2}>상품 이미지</Box>
+            {/* 상품명 */}
+            <FormInput label="상품명" errors={errors.name}>
+              <Input {...register('name')} placeholder="상품명" />
+            </FormInput>
+
+            {/* 상품 이미지 */}
+            <FormInput label="상품 이미지" errors={errors.image}>
               <Input
+                {...register('image')}
                 type="file"
                 ref={fileRef}
                 onChange={onChangeImage}
-                value={image}
                 d="none"
               />
               <InputGroup>
                 <Input
-                  {...register('imageName')}
                   placeholder="이미지 선택"
-                  value={imageName}
+                  value={imageFileName}
                   readOnly
                 />
                 <InputRightElement width="100px">
@@ -205,21 +169,12 @@ export default function AddItemForm() {
                   </Button>
                 </InputRightElement>
               </InputGroup>
-              <Box pl={2} color="red" fontSize="0.85rem">
-                {errors.image?.message}
-              </Box>
+            </FormInput>
 
-              {/* 금액 */}
-              <Box my={2}>금액</Box>
+            {/* 금액 */}
+            <FormInput label="금액" errors={errors.price}>
               <InputGroup>
-                <Input
-                  {...register('price')}
-                  type="number"
-                  placeholder="0"
-                  textAlign="end"
-                  onChange={onChangeInputs}
-                  value={price}
-                />
+                <Input {...register('price')} placeholder="0" textAlign="end" />
                 <InputRightElement
                   pr="0.5rem"
                   pointerEvents="none"
@@ -228,72 +183,59 @@ export default function AddItemForm() {
                   children="원"
                 />
               </InputGroup>
-              <Box pl={2} color="red" fontSize="0.85rem">
-                {errors.price?.message}
-              </Box>
+            </FormInput>
 
-              {/* 진행일시 */}
-              <Flex>
-                <Box mr={1}>
-                  <Box my={2}>시작일</Box>
-                  <Input
-                    {...register('startDate')}
-                    type="number"
-                    placeholder="YYYYMMDD"
-                    onChange={onChangeInputs}
-                    value={startDate}
+            {/* 진행일시 */}
+            <Flex>
+              <Box mr={1}>
+                <FormInput label="시작일" errors={errors.startDate}>
+                  <Input {...register('startDate')} d="none" />
+                  <DatePicker
+                    locale="ko"
+                    dateFormat="yyyy-MM-dd"
+                    placeholderText="YYYY-MM-DD"
+                    onChange={onChangeStartDate}
+                    selected={startDate}
+                    customInput={<Input />}
                   />
-                  <Box pl={2} color="red" fontSize="0.85rem">
-                    {errors.startDate?.message}
-                  </Box>
-                </Box>
-                <Box ml={1}>
-                  <Box my={2}>종료일</Box>
-                  <Input
-                    {...register('endDate')}
-                    type="number"
-                    placeholder="YYYYMMDD"
-                    onChange={onChangeInputs}
-                    value={endDate}
-                  />
-                  <Box pl={2} color="red" fontSize="0.85rem">
-                    {errors.endDate?.message}
-                  </Box>
-                </Box>
-              </Flex>
-
-              {/* 상품 설명 */}
-              <Box my={2}>상품 설명</Box>
-              <Textarea
-                {...register('content')}
-                minH="150px"
-                size="sm"
-                resize="none"
-                onChange={onChangeInputs}
-                value={content}
-              />
-              <Box pl={2} color="red" fontSize="0.85rem">
-                {errors.content?.message}
+                </FormInput>
               </Box>
+              <Box ml={1}>
+                <FormInput label="종료일" errors={errors.endDate}>
+                  <Input {...register('endDate')} d="none" />
+                  <DatePicker
+                    locale="ko"
+                    dateFormat="yyyy-MM-dd"
+                    placeholderText="YYYY-MM-DD"
+                    onChange={onChangeEndDate}
+                    selected={endDate}
+                    customInput={<Input />}
+                  />
+                </FormInput>
+              </Box>
+            </Flex>
 
-              {/* 상품 등록 버튼 */}
-            </ModalBody>
-            <ModalFooter>
-              <Flex justifyContent="center">
-                <Button
-                  type="submit"
-                  w="150px"
-                  size="md"
-                  colorScheme="blue"
-                  isLoading={addItemLoading}
-                >
-                  등록하기
-                </Button>
-              </Flex>
-            </ModalFooter>
+            {/* 상품 설명 */}
+            <FormInput label="상품 설명" erorrs={errors.content}>
+              <Textarea {...register('content')} minH="150px" resize="none" />
+            </FormInput>
+
+            {/* 상품 등록 버튼 */}
+            <Flex justifyContent="center">
+              <Button
+                type="submit"
+                w="150px"
+                m="0.5rem 0"
+                size="md"
+                colorScheme="blue"
+                isLoading={addItemLoading}
+              >
+                등록하기
+              </Button>
+            </Flex>
           </form>
-        </ModalContent>
-      </Modal>
+        </Modal>
+      )}
     </>
   );
 }
