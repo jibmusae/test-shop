@@ -2,6 +2,9 @@ import produce from 'immer';
 
 // 이전상태
 export const initialState = {
+  loadMyInfoLoading: false,
+  loadMyInfoDone: false,
+  loadMyInfoError: null,
   loginLoading: false,
   loginDone: false,
   loginError: null,
@@ -32,6 +35,10 @@ export const initialState = {
 };
 
 // 변수
+export const LOAD_MY_INFO_REQUEST = 'LOAD_MY_INFO_REQUEST';
+export const LOAD_MY_INFO_SUECCSS = 'LOAD_MY_INFO_SUCCESS';
+export const LOAD_MY_INFO_FAILURE = 'LOAD_MY_INFO_FAILURE';
+
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const LOGIN_FAILURE = 'LOGIN_FAILURE';
@@ -58,6 +65,11 @@ export const ITEM_CHECK_FAILURE = 'ITEM_CHECK_FAILURE';
 export const ALL_CHECK_REQUEST = 'ALL_CHECK_REQUEST';
 export const ALL_CHECK_SUCCESS = 'ALL_CHECK_SUCCESS';
 export const ALL_CHECK_FAILURE = 'ALL_CHECK_FAILURE';
+
+// 로그인 정보 불러오기 액션
+export const loadMyInfoRequest = (data) => ({
+  type: LOAD_MY_INFO_REQUEST,
+});
 
 // 로그인 액션
 export const loginRequestAction = (data) => ({
@@ -109,6 +121,22 @@ export const allCheckRequestAction = (data) => ({
 const reducer = (state = initialState, action) => {
   return produce(state, (draft) => {
     switch (action.type) {
+      // 로그인 정보 가져오기
+      case LOAD_MY_INFO_REQUEST:
+        draft.loadMyInfoLoading = true;
+        draft.loadMyInfoDone = false;
+        draft.loadMyInfoError = null;
+        break;
+      case LOAD_MY_INFO_SUECCSS:
+        draft.loadMyInfoLoading = false;
+        draft.loadMyInfoDone = true;
+        draft.user = action.data;
+        break;
+      case LOAD_MY_INFO_FAILURE:
+        draft.loadMyInfoLoading = false;
+        draft.loadMyInfoError = action.error;
+        break;
+
       // 로그인
       case LOGIN_REQUEST:
         draft.loginLoading = true;

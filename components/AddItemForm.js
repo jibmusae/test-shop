@@ -1,4 +1,4 @@
-import React, { useState, useRef, forwardRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -49,43 +49,71 @@ const addItemSchema = yup.object().shape({
     .required('종료일을 입력해주세요')
     .min(10, '종료일은 하이픈 포함 10자로 입력해주세요')
     .max(10, '종료일은 하이픈 포함 10자로 입력해주세요'),
-  content: yup.string().required('상품설명을 입력해주세요'),
+  description: yup.string('sex').required('상품설명을 입력해주세요'),
 });
 
 export default function AddItemForm() {
   // 상품 상태관리
-  const { addItemLoading } = useSelector((state) => state.item);
+  const { addItemLoading, addItemDone } = useSelector((state) => state.item);
 
   // 주소검색 모달
   const [showAddItemModal, setShowAddItemModal] = useState(false);
 
   // 이미지 선택
-  const [imageFileName, setImageFileName] = useState('');
-  const onChangeImage = (e) => {
-    if (e.target && e.target.files[0]) {
-      setImageFileName(e.target.files[0].name);
-    } else {
-      setImageFileName('잘못된 시도입니다.');
-    }
-    setValue('image', 'TODOTODOTODOTODOTODOTODO이미지경로');
-  };
   const fileRef = useRef();
   const onClickImageUpload = () => {
     fileRef.current.click();
   };
 
+  const [image, setImage] = useState('');
+  const onChangeImage = (image) => {
+    if (!image) {
+      setImage('');
+      setValue('image', '');
+    } else {
+      setImage(image.target.files[0]?.name);
+      setValue('image', image.target.value);
+    }
+  };
+
+  // 금액
+  const [price, setPrice] = useState('');
+  const onChangePrice = (e) => {
+    const value = e.target.value.replace(/[^0-9]/g, '');
+    let result = '';
+
+    if (value.length < 10) {
+      result = value;
+    } else {
+      result = value.substr(0, 10);
+    }
+
+    setPrice(result);
+    setValue('price', result);
+  };
+
   // 시작일
   const [startDate, setStartDate] = useState(null);
   const onChangeStartDate = (date) => {
-    setStartDate(date);
-    setValue('startDate', moment(date).format('YYYY-MM-DD'));
+    if (!date) {
+      setStartDate(null);
+      setValue('startDate', '');
+    } else {
+      setStartDate(date);
+      setValue('startDate', moment(date).format('YYYY-MM-DD'));
+    }
   };
 
   // 종료일
   const [endDate, setEndDate] = useState(null);
   const onChangeEndDate = (date) => {
-    setEndDate(date);
-    setValue('endDate', moment(date).format('YYYY-MM-DD'));
+    if (!date) {
+      setEndDate(null);
+      setValue('endDate', '');
+    } else {
+      setEndDate(date);
+      setValue('endDate', moment(date).format('YYYY-MM-DD'));
+    }
   };
 
   // 상품 등록
@@ -94,13 +122,19 @@ export default function AddItemForm() {
     dispatch(addItemRequestAction(data));
   };
 
+  // 모달 닫기
+  useEffect(() => {
+    if (addItemDone) {
+      setShowAddItemModal(false);
+    }
+  }, [addItemDone]);
+
   // react-hook-form 유효성 검사
   const {
     register,
     handleSubmit,
     control,
     setValue,
-    getValues,
     formState: { errors },
   } = useForm({ resolver: yupResolver(addItemSchema) });
 
@@ -146,19 +180,15 @@ export default function AddItemForm() {
 
             {/* 상품 이미지 */}
             <FormInput label="상품 이미지" errors={errors.image}>
+              <Input {...register('image')} d="none" />
               <Input
-                {...register('image')}
                 type="file"
                 ref={fileRef}
                 onChange={onChangeImage}
                 d="none"
               />
               <InputGroup>
-                <Input
-                  placeholder="이미지 선택"
-                  value={imageFileName}
-                  readOnly
-                />
+                <Input placeholder="이미지 선택" value={image} readOnly />
                 <InputRightElement width="100px">
                   <Button
                     size="sm"
@@ -174,7 +204,13 @@ export default function AddItemForm() {
             {/* 금액 */}
             <FormInput label="금액" errors={errors.price}>
               <InputGroup>
-                <Input {...register('price')} placeholder="0" textAlign="end" />
+                <Input
+                  {...register('price')}
+                  placeholder="0"
+                  value={price}
+                  onChange={onChangePrice}
+                  textAlign="end"
+                />
                 <InputRightElement
                   pr="0.5rem"
                   pointerEvents="none"
@@ -216,8 +252,12 @@ export default function AddItemForm() {
             </Flex>
 
             {/* 상품 설명 */}
-            <FormInput label="상품 설명" erorrs={errors.content}>
-              <Textarea {...register('content')} minH="150px" resize="none" />
+            <FormInput label="상품 설명" errors={errors.description}>
+              <Textarea
+                {...register('description')}
+                minH="150px"
+                resize="none"
+              />
             </FormInput>
 
             {/* 상품 등록 버튼 */}
