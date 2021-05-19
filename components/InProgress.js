@@ -17,6 +17,8 @@ export default function InProgress() {
   const { user } = useSelector((state) => state.user);
   const { mainItems } = useSelector((state) => state.item);
 
+  console.log(mainItems);
+
   // 상품추가 모달
   const [isAddItem, setIsAddItem] = useState(false);
 
@@ -27,11 +29,11 @@ export default function InProgress() {
   let etcArray = [];
 
   mainItems.map((item) => {
-    if (Number(item.category) === 1) {
+    if (Number(item.category_status) === 1) {
       cpuArray.push(item);
-    } else if (Number(item.category) === 2) {
+    } else if (Number(item.category_status) === 2) {
       mbArray.push(item);
-    } else if (Number(item.category) === 3) {
+    } else if (Number(item.category_status) === 3) {
       vgaArray.push(item);
     } else {
       etcArray.push(item);
@@ -70,7 +72,9 @@ export default function InProgress() {
           {/* CPU */}
           <TabPanel>
             {cpuArray.length !== 0 ? (
-              cpuArray.map((item) => <ItemList key={item.id} item={item} />)
+              cpuArray.map((item) => (
+                <ItemList key={item.item_id} item={item} />
+              ))
             ) : (
               <Flex
                 m="1rem"
@@ -88,7 +92,7 @@ export default function InProgress() {
           {/* 메인보드 */}
           <TabPanel>
             {mbArray.length !== 0 ? (
-              mbArray.map((item) => <ItemList key={item.id} item={item} />)
+              mbArray.map((item) => <ItemList key={item.item_id} item={item} />)
             ) : (
               <Flex
                 m="1rem"
@@ -106,7 +110,9 @@ export default function InProgress() {
           {/* 그래픽카드 */}
           <TabPanel>
             {vgaArray.length !== 0 ? (
-              vgaArray.map((item) => <ItemList key={item.id} item={item} />)
+              vgaArray.map((item) => (
+                <ItemList key={item.item_id} item={item} />
+              ))
             ) : (
               <Flex
                 m="1rem"
@@ -124,7 +130,9 @@ export default function InProgress() {
           {/* 그 외 */}
           <TabPanel>
             {etcArray.length !== 0 ? (
-              etcArray.map((item) => <ItemList key={item.id} item={item} />)
+              etcArray.map((item) => (
+                <ItemList key={item.item_id} item={item} />
+              ))
             ) : (
               <Flex
                 m="1rem"

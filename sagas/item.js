@@ -1,6 +1,9 @@
 import axios from 'axios';
 import { all, call, fork, put, takeLatest } from 'redux-saga/effects';
 import {
+  LOAD_ITEMS_REQUEST,
+  LOAD_ITEMS_SUCCESS,
+  LOAD_ITEMS_FAILURE,
   ADD_ITEM_REQUEST,
   ADD_ITEM_SUCCESS,
   ADD_ITEM_FAILURE,
@@ -8,6 +11,25 @@ import {
   REMOVE_ITEM_SUCCESS,
   REMOVE_ITEM_FAILURE,
 } from '../reducers/item';
+
+// 상품 리스트 불러오기
+function loadItemsAPI(data) {
+  return axios.get('/item', data);
+}
+function* loadItems(action) {
+  try {
+    const result = yield call(loadItemsAPI, action.data);
+    yield put({
+      type: LOAD_ITEMS_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    yield put({
+      type: LOAD_ITEMS_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
 
 // 상품 추가
 function addItemAPI(data) {
@@ -48,6 +70,9 @@ function* removeItem(action) {
 }
 
 // 리퀘스트
+function* watchLoadItems() {
+  yield takeLatest(LOAD_ITEMS_REQUEST, loadItems);
+}
 function* watchAddItem() {
   yield takeLatest(ADD_ITEM_REQUEST, addItem);
 }
@@ -56,5 +81,5 @@ function* watchRemoveItem() {
 }
 
 export default function* userSaga() {
-  yield all([fork(watchAddItem), fork(watchRemoveItem)]);
+  yield all([fork(watchLoadItems), fork(watchAddItem), fork(watchRemoveItem)]);
 }

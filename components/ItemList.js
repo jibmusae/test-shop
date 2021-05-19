@@ -14,6 +14,7 @@ import {
   NumberDecrementStepper,
   Button,
 } from '@chakra-ui/react';
+import moment from 'moment';
 import {
   addCartRequestAction,
   updateCartRequestAction,
@@ -25,22 +26,17 @@ export default function ItemList({ item }) {
   const { user } = useSelector((state) => state.user);
 
   // 진행일시
-  const startDate = `${Number(item?.startDate?.substr(0, 4))}년 ${Number(
-    item?.startDate?.substr(4, 2)
-  )}월 ${Number(item?.startDate?.substr(6, 2))}일`;
+  const startDate = moment(item.start_datetime).format('YYYY-MM-DD');
+  const endDate = moment(item.end_datetime).format('YYYY-MM-DD');
 
-  const endDate = `${Number(item?.endDate?.substr(0, 4))}년 ${Number(
-    item?.endDate?.substr(4, 2)
-  )}월 ${Number(item?.endDate?.substr(6, 2))}일`;
+  // 금액
+  const price = `${item.price.toLocaleString('ko-KR')}원`;
 
   // 개수
   const [count, setCount] = useState(1);
   const onChangeCount = (e) => {
     setCount(e);
   };
-
-  // 금액
-  const price = `${item?.price?.toLocaleString('ko-KR')}원`;
 
   // 장바구니 추가
   const dispatch = useDispatch();
@@ -50,7 +46,7 @@ export default function ItemList({ item }) {
       const preexistingCartItem = user.cart?.find((v) => v.itemId === item.id);
 
       if (preexistingCartItem) {
-        const itemId = item.id;
+        const itemId = item.item_id;
         const itemCount = Number(count) + Number(preexistingCartItem.itemCount);
 
         // 장바구니 수정
@@ -66,7 +62,7 @@ export default function ItemList({ item }) {
 
   // 상품 삭제(관리자)
   const onClickRemoveCart = (e) => {
-    dispatch(removeItemRequestAction(item.id));
+    dispatch(removeItemRequestAction(item.item_id));
   };
 
   return (
@@ -84,7 +80,7 @@ export default function ItemList({ item }) {
         boxShadow="base"
         alignItems="center"
       >
-        <Image boxSize="150px" src={item?.image?.src} alt={item?.image?.alt} />
+        <Image boxSize="150px" src={item.image} alt={item.image} />
         <Box w="476px" mx="2rem">
           <Heading
             as="h2"
@@ -95,9 +91,9 @@ export default function ItemList({ item }) {
             overflow="hidden"
             textOverflow="ellipsis"
           >
-            {item?.title}
+            {item.name}
           </Heading>
-          <Text>{item?.content}</Text>
+          <Text>{item.description}</Text>
         </Box>
         <Flex
           w="120px"
@@ -134,7 +130,7 @@ export default function ItemList({ item }) {
           <Button w="100px" mt="0.5rem" size="sm" colorScheme="blue">
             구매하기
           </Button>
-          {user?.isAdmin && (
+          {user?.admin_flag && (
             <Button
               w="100px"
               mt="0.5rem"
