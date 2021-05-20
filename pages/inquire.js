@@ -54,7 +54,7 @@ export default function inquire() {
         <Tbody>
           {mainInquire?.length ? (
             mainInquire.map((inquire) => (
-              <InquireList key={inquire.id} inquire={inquire} />
+              <InquireList key={inquire.inquire_id} inquire={inquire} />
             ))
           ) : (
             <Tr h="100px">

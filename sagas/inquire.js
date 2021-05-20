@@ -1,6 +1,9 @@
 import axios from 'axios';
 import { all, call, delay, fork, put, takeLatest } from 'redux-saga/effects';
 import {
+  LOAD_INQUIRES_REQUEST,
+  LOAD_INQUIRES_SUCCESS,
+  LOAD_INQUIRES_FAILURE,
   ADD_INQUIRE_REQUEST,
   ADD_INQUIRE_SUCCESS,
   ADD_INQUIRE_FAILURE,
@@ -35,9 +38,28 @@ function removeAnswerAPI(data) {
   return axios.post('/api/removeAnswer', data);
 }
 
+// 전체 문의글 불러오기
+function loadInquiresAPI(data) {
+  return axios.get('/inquire', data);
+}
+function* loadInquires(action) {
+  try {
+    const result = yield call(loadInquiresAPI, action.data);
+    yield put({
+      type: LOAD_INQUIRES_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    yield put({
+      type: LOAD_INQUIRES_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
 // 문의 작성
 function addInquireAPI(data) {
-  return axios.post('/inquire', data);
+  return axios.post('/inquire/addInquire', data);
 }
 function* addInquire(action) {
   try {
@@ -152,6 +174,9 @@ function* removeAnswer(action) {
 }
 
 // 리퀘스트
+function* watchLoadInquires() {
+  yield takeLatest(LOAD_INQUIRES_REQUEST, loadInquires);
+}
 function* watchAddInquire() {
   yield takeLatest(ADD_INQUIRE_REQUEST, addInquire);
 }
@@ -173,6 +198,7 @@ function* watchRemoveAnswer() {
 
 export default function* userSaga() {
   yield all([
+    fork(watchLoadInquires),
     fork(watchAddInquire),
     fork(watchUpdateInquire),
     fork(watchRemoveInquire),

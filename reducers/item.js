@@ -57,7 +57,7 @@ const reducer = (state = initialState, action) => {
       case LOAD_ITEMS_SUCCESS:
         draft.loadItemsLoading = false;
         draft.loadItemsDone = true;
-        draft.mainItems = action.data.concat(draft.mainItems);
+        draft.mainItems = action.data;
         break;
       case LOAD_ITEMS_FAILURE:
         draft.loadItemsLoading = false;

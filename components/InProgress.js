@@ -17,8 +17,6 @@ export default function InProgress() {
   const { user } = useSelector((state) => state.user);
   const { mainItems } = useSelector((state) => state.item);
 
-  console.log(mainItems);
-
   // 상품추가 모달
   const [isAddItem, setIsAddItem] = useState(false);
 

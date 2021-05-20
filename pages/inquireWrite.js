@@ -153,7 +153,7 @@ export default function InquireWrite() {
 
             {/* 문의내용 */}
             <FormInput label="문의내용" errors={errors.content} table>
-              <Textarea {...register('contents')} minH="210px" resize="none" />
+              <Textarea {...register('content')} minH="210px" resize="none" />
             </FormInput>
           </Tbody>
         </Table>

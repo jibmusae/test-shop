@@ -1,8 +1,10 @@
-import shortId from 'shortid';
 import produce from 'immer';
 
 // 이전상태
 export const initialState = {
+  loadInquiresLoading: false,
+  loadInquiresDone: false,
+  loadInquiresError: null,
   addInquireLoading: false,
   addInquireDone: false,
   addInquireError: null,
@@ -25,6 +27,10 @@ export const initialState = {
 };
 
 // 변수
+export const LOAD_INQUIRES_REQUEST = 'LOAD_INQUIRES_REQUEST';
+export const LOAD_INQUIRES_SUCCESS = 'LOAD_INQUIRES_SUCCESS';
+export const LOAD_INQUIRES_FAILURE = 'LOAD_INQUIRES_FAILURE';
+
 export const ADD_INQUIRE_REQUEST = 'ADD_INQUIRE_REQUEST';
 export const ADD_INQUIRE_SUCCESS = 'ADD_INQUIRE_SUCCESS';
 export const ADD_INQUIRE_FAILURE = 'ADD_INQUIRE_FAILURE';
@@ -44,6 +50,12 @@ export const UPDATE_ANSWER_FAILURE = 'UPDATE_ANSWER_FAILURE';
 export const REMOVE_ANSWER_REQUEST = 'REMOVE_ANSWER_REQUEST';
 export const REMOVE_ANSWER_SUCCESS = 'REMOVE_ANSWER_SUCCESS';
 export const REMOVE_ANSWER_FAILURE = 'REMOVE_ANSWER_FAILURE';
+
+// 전체 문의글 불러오기
+export const loadInquiresRequest = (data) => ({
+  type: LOAD_INQUIRES_REQUEST,
+  data,
+});
 
 // 문의 작성 액션
 export const addInquireRequestAction = (data) => ({
@@ -84,6 +96,22 @@ export const removeAnswerRequestAction = (data) => ({
 const reducer = (state = initialState, action) => {
   return produce(state, (draft) => {
     switch (action.type) {
+      // 문의글 불러오기
+      case LOAD_INQUIRES_REQUEST:
+        draft.loadInquiresLoading = true;
+        draft.loadInquiresDone = false;
+        draft.loadInquiresError = null;
+        break;
+      case LOAD_INQUIRES_SUCCESS:
+        draft.loadInquiresLoading = false;
+        draft.loadInquiresDone = true;
+        draft.mainInquire = action.data;
+        break;
+      case LOAD_INQUIRES_FAILURE:
+        draft.loadInquiresLoading = false;
+        draft.loadInquiresError = action.error;
+        break;
+
       // 문의 작성
       case ADD_INQUIRE_REQUEST:
         draft.addInquireLoading = true;
@@ -142,7 +170,6 @@ const reducer = (state = initialState, action) => {
         draft.addAnswerError = null;
         break;
       case ADD_ANSWER_SUCCESS:
-        console.log(action.data);
         const addTarget = draft.mainInquire.find(
           (v) => v.id === action.data.inquireId
         );
