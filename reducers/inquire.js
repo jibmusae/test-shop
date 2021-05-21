@@ -170,11 +170,6 @@ const reducer = (state = initialState, action) => {
         draft.addAnswerError = null;
         break;
       case ADD_ANSWER_SUCCESS:
-        const addTarget = draft.mainInquire.find(
-          (v) => v.id === action.data.inquireId
-        );
-        addTarget.answer = dummyAnswer(action.data);
-        addTarget.status = 1;
         draft.addAnswerLoading = false;
         draft.addAnswerDone = true;
         break;

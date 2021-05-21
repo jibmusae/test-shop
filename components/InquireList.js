@@ -8,7 +8,7 @@ export default function InquireList({ inquire }) {
   const today = moment().format('YYYY-MM-DD');
   const createdAt =
     today === moment(inquire.createdAt).format('YYYY-MM-DD')
-      ? moment(inquire.createdAt).format('hh:mm')
+      ? moment(inquire.createdAt).format('HH:mm')
       : moment(inquire.createdAt).format('YYYY-MM-DD');
 
   // 답변

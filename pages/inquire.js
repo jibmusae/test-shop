@@ -44,7 +44,7 @@ export default function inquire() {
               작성자
             </Th>
             <Th w="120px" textAlign="center" bgColor="gray.200">
-              작성일
+              작성일시
             </Th>
             <Th w="120px" textAlign="center" bgColor="gray.200">
               답변

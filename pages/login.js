@@ -13,6 +13,7 @@ import {
   Box,
   Button,
   Divider,
+  Flex,
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import SignLayout from '../components/SignLayout';
@@ -104,17 +105,19 @@ export default function login() {
         </FormInput>
 
         {/* 아이디 / 패스워드 찾기 */}
-        <Link href="/findUser">
-          <Box
-            m="0.5rem 0"
-            textAlign="right"
-            color="gray"
-            fontSize="0.85rem"
-            cursor="pointer"
-          >
-            아이디 / 비밀번호 찾기
-          </Box>
-        </Link>
+        <Flex justifyContent="flex-end">
+          <Link href="/findUser">
+            <Box
+              m="0.5rem 0"
+              textAlign="right"
+              color="gray"
+              fontSize="0.85rem"
+              cursor="pointer"
+            >
+              아이디 / 비밀번호 찾기
+            </Box>
+          </Link>
+        </Flex>
 
         {/* 로그인 버튼 */}
         <Button

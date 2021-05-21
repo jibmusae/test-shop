@@ -117,7 +117,8 @@ function* removeInquire(action) {
 
 // 답변 등록
 function addAnswerAPI(data) {
-  return axios.post(`/inquire/${data.inquireId}/answer`, data);
+  console.log(data);
+  return axios.patch(`/inquire/${data.inquireId}/answer`, data);
 }
 function* addAnswer(action) {
   try {

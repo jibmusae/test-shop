@@ -1,4 +1,4 @@
-import react, { useCallback } from 'react';
+import react, { useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Image, List, ListItem, Icon, Text } from '@chakra-ui/react';
@@ -8,11 +8,23 @@ import {
   RiShoppingCart2Line,
 } from 'react-icons/ri';
 import Footer from './Footer';
-import { logoutRequestAction } from '../reducers/user';
+import { loadMyInfoRequest, logoutRequestAction } from '../reducers/user';
+import { loadItemsRequestAction } from '../reducers/item';
+import { loadInquiresRequest } from '../reducers/inquire';
 
 export default function AppLayout({ children }) {
-  const { user } = useSelector((state) => state.user);
+  // 유저 상태관리
   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.user);
+
+  // 로그인 정보 및 각 데이터 불러오기
+  useEffect(() => {
+    dispatch(loadMyInfoRequest());
+    dispatch(loadItemsRequestAction());
+    dispatch(loadInquiresRequest());
+  }, []);
+
+  // 로그아웃
   const onLogout = useCallback(() => {
     dispatch(logoutRequestAction());
   }, []);

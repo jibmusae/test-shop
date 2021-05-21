@@ -23,24 +23,26 @@ import {
 } from '../../reducers/inquire';
 
 export default function inquireView() {
-  // 상태관리
+  // 라우터
   const router = useRouter();
+
+  // 상태관리
   const { user } = useSelector((state) => state.user);
   const { mainInquire } = useSelector((state) => state.inquire);
   const inquire = mainInquire.find((v) => v.inquire_id == router.query.id);
 
   // 작성일시
-  const createAt = moment(inquire.createdAt).format('YYYY-MM-DD hh:mm');
+  const createAt = moment(inquire?.createdAt).format('YYYY-MM-DD HH:mm');
 
   // 답변
-  const answerStatus = inquire.process_status ? '답변완료' : '미확인';
-  const answerButton = inquire.process_status ? '답변수정' : '답변등록';
-  const answeredAt = inquire.process_datetime
-    ? moment(inquire.process_datetime).format('YYYY-MM-DD hh:mm')
+  const answerStatus = inquire?.process_status ? '답변완료' : '미확인';
+  const answerButton = inquire?.process_status ? '답변수정' : '답변등록';
+  const answeredAt = inquire?.process_datetime
+    ? moment(inquire?.process_datetime).format('YYYY-MM-DD HH:mm')
     : '';
 
   // 답변 내용(관리자)
-  const answerContent = inquire.process_status ? inquire.answer_content : '';
+  const answerContent = inquire?.process_status ? inquire?.answer_content : '';
   const [answer, setAnswer] = useState(answerContent);
   const onChangeAnswer = (e) => {
     setAnswer(e.target.value);
@@ -49,10 +51,11 @@ export default function inquireView() {
   // 답변 등록(관리자)
   const dispatch = useDispatch();
   const onClickAnswer = () => {
-    if (inquire.status) {
-      dispatch(updateAnswerRequestAction(answer));
+    const inquireId = inquire?.inquire_id;
+    if (inquire.process_status) {
+      dispatch(updateAnswerRequestAction({ inquireId, answer }));
     } else {
-      dispatch(addAnswerRequestAction(answer));
+      dispatch(addAnswerRequestAction({ inquireId, answer }));
     }
   };
 
@@ -65,7 +68,7 @@ export default function inquireView() {
         <Tbody>
           <Tr>
             <Th w="200px" bgColor="gray.200">
-              등록일
+              작성일시
             </Th>
             <Td>{createAt}</Td>
             <Th w="200px" bgColor="gray.200">
@@ -75,16 +78,16 @@ export default function inquireView() {
           </Tr>
           <Tr>
             <Th bgColor="gray.200">타이틀</Th>
-            <Td colSpan="3">{inquire.title}</Td>
+            <Td colSpan="3">{inquire?.title}</Td>
           </Tr>
           <Tr h="200px">
             <Th bgColor="gray.200">문의내용</Th>
-            <Td colSpan="3">{inquire.content}</Td>
+            <Td colSpan="3">{inquire?.content}</Td>
           </Tr>
         </Tbody>
       </Table>
 
-      {inquire.process_status && (
+      {inquire?.process_status && (
         <>
           <Heading as="h1" size="md" mb="1.5rem">
             답변내용
@@ -99,7 +102,7 @@ export default function inquireView() {
               </Tr>
               <Tr h="200px">
                 <Th bgColor="gray.200">답변내용</Th>
-                <Td>{answer}</Td>
+                <Td>{answerContent}</Td>
               </Tr>
             </Tbody>
           </Table>
@@ -148,14 +151,14 @@ export default function inquireView() {
           </Button>
         </Link>
         <HStack spacing="1rem">
-          {user?.user_id === inquire.user_id && (
+          {user?.user_id === inquire?.user_id && (
             <>
               <Button
                 type="submit"
                 w="150px"
                 size="md"
                 colorScheme="red"
-                isDisabled={inquire.process_status}
+                isDisabled={inquire?.process_status}
               >
                 삭제하기
               </Button>
@@ -164,7 +167,7 @@ export default function inquireView() {
                 w="150px"
                 size="md"
                 colorScheme="blue"
-                isDisabled={inquire.process_status}
+                isDisabled={inquire?.process_status}
               >
                 수정하기
               </Button>
