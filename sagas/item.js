@@ -4,6 +4,9 @@ import {
   LOAD_ITEMS_REQUEST,
   LOAD_ITEMS_SUCCESS,
   LOAD_ITEMS_FAILURE,
+  UPLOAD_IMAGE_REQUEST,
+  UPLOAD_IMAGE_SUCCESS,
+  UPLOAD_IMAGE_FAILURE,
   ADD_ITEM_REQUEST,
   ADD_ITEM_SUCCESS,
   ADD_ITEM_FAILURE,
@@ -31,6 +34,25 @@ function* loadItems(action) {
   }
 }
 
+// 이미지 업로드
+function uploadImageAPI(data) {
+  return axios.post('/item/image', data);
+}
+function* uploadImage(action) {
+  try {
+    const result = yield call(uploadImageAPI, action.data);
+    yield put({
+      type: UPLOAD_IMAGE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    yield put({
+      type: UPLOAD_IMAGE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
 // 상품 추가
 function addItemAPI(data) {
   return axios.post('/item/addItem', data);
@@ -52,7 +74,7 @@ function* addItem(action) {
 
 // 상품 제거
 function removeItemAPI(data) {
-  return axios.post('/item/deleteItem', data);
+  return axios.delete('/item/deleteItem', data);
 }
 function* removeItem(action) {
   try {
@@ -73,6 +95,9 @@ function* removeItem(action) {
 function* watchLoadItems() {
   yield takeLatest(LOAD_ITEMS_REQUEST, loadItems);
 }
+function* watchUploadImage() {
+  yield takeLatest(UPLOAD_IMAGE_REQUEST, uploadImage);
+}
 function* watchAddItem() {
   yield takeLatest(ADD_ITEM_REQUEST, addItem);
 }
@@ -81,5 +106,10 @@ function* watchRemoveItem() {
 }
 
 export default function* userSaga() {
-  yield all([fork(watchLoadItems), fork(watchAddItem), fork(watchRemoveItem)]);
+  yield all([
+    fork(watchLoadItems),
+    fork(watchUploadImage),
+    fork(watchAddItem),
+    fork(watchRemoveItem),
+  ]);
 }

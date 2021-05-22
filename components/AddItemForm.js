@@ -22,7 +22,10 @@ import {
 import { EditIcon } from '@chakra-ui/icons';
 import Modal from '../components/Modal';
 import FormInput from './FormInput';
-import { addItemRequestAction } from '../reducers/item';
+import {
+  addItemRequestAction,
+  uploadImageRequestAction,
+} from '../reducers/item';
 
 // DatePicker 언어 설정
 registerLocale('ko', ko);
@@ -65,14 +68,16 @@ export default function AddItemForm() {
     fileRef.current.click();
   };
 
-  const [image, setImage] = useState('');
-  const onChangeImage = (image) => {
-    if (!image) {
-      setImage('');
+  // 이미지 업로드
+  const onChangeImage = (e) => {
+    if (!e.target.files.length) {
       setValue('image', '');
     } else {
-      setImage(image.target.files[0]?.name);
-      setValue('image', image.target.value);
+      const image = e.target.files[0];
+      const imageFormData = new FormData();
+      imageFormData.append('image', image);
+      setValue('image', image.name);
+      dispatch(uploadImageRequestAction(imageFormData));
     }
   };
 
@@ -154,7 +159,11 @@ export default function AddItemForm() {
           title="상품 추가"
           setShowModal={setShowAddItemModal}
         >
-          <form onSubmit={handleSubmit(onSubmitForm)} autoComplete="off">
+          <form
+            onSubmit={handleSubmit(onSubmitForm)}
+            encType="multipart/form-data"
+            autoComplete="off"
+          >
             {/* 카테고리 */}
             <FormInput label="카테고리" errors={errors.category}>
               <Controller
@@ -180,7 +189,6 @@ export default function AddItemForm() {
 
             {/* 상품 이미지 */}
             <FormInput label="상품 이미지" errors={errors.image}>
-              <Input {...register('image')} d="none" />
               <Input
                 type="file"
                 ref={fileRef}
@@ -188,7 +196,11 @@ export default function AddItemForm() {
                 d="none"
               />
               <InputGroup>
-                <Input placeholder="이미지 선택" value={image} readOnly />
+                <Input
+                  {...register('image')}
+                  placeholder="이미지 선택"
+                  readOnly
+                />
                 <InputRightElement width="100px">
                   <Button
                     size="sm"
