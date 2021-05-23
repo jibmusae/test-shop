@@ -14,6 +14,7 @@ import {
   RadioGroup,
   Radio,
   Flex,
+  Image,
   Textarea,
   Button,
   InputGroup,
@@ -52,12 +53,14 @@ const addItemSchema = yup.object().shape({
     .required('종료일을 입력해주세요')
     .min(10, '종료일은 하이픈 포함 10자로 입력해주세요')
     .max(10, '종료일은 하이픈 포함 10자로 입력해주세요'),
-  description: yup.string('sex').required('상품설명을 입력해주세요'),
+  description: yup.string().required('상품설명을 입력해주세요'),
 });
 
 export default function AddItemForm() {
   // 상품 상태관리
-  const { addItemLoading, addItemDone } = useSelector((state) => state.item);
+  const { addItemLoading, addItemDone, imagePath } = useSelector(
+    (state) => state.item
+  );
 
   // 주소검색 모달
   const [showAddItemModal, setShowAddItemModal] = useState(false);
@@ -188,30 +191,42 @@ export default function AddItemForm() {
             </FormInput>
 
             {/* 상품 이미지 */}
-            <FormInput label="상품 이미지" errors={errors.image}>
-              <Input
-                type="file"
-                ref={fileRef}
-                onChange={onChangeImage}
-                d="none"
-              />
-              <InputGroup>
-                <Input
-                  {...register('image')}
-                  placeholder="이미지 선택"
-                  readOnly
-                />
-                <InputRightElement width="100px">
-                  <Button
-                    size="sm"
-                    colorScheme="blue"
-                    onClick={onClickImageUpload}
-                  >
-                    이미지 선택
-                  </Button>
-                </InputRightElement>
-              </InputGroup>
-            </FormInput>
+            <Flex alignItems="flex-end">
+              <Box flex={1} mr="0.5rem">
+                <FormInput label="상품 이미지" errors={errors.image}>
+                  <Input
+                    type="file"
+                    ref={fileRef}
+                    onChange={onChangeImage}
+                    d="none"
+                  />
+                  <InputGroup>
+                    <Input
+                      {...register('image')}
+                      placeholder="이미지 선택"
+                      readOnly
+                    />
+                    <InputRightElement width="100px">
+                      <Button
+                        size="sm"
+                        colorScheme="blue"
+                        onClick={onClickImageUpload}
+                      >
+                        이미지 선택
+                      </Button>
+                    </InputRightElement>
+                  </InputGroup>
+                </FormInput>
+              </Box>
+              <Flex boxSize="70px">
+                {imagePath && (
+                  <Image
+                    src={`http://localhost:3065/${imagePath}`}
+                    alt={imagePath}
+                  />
+                )}
+              </Flex>
+            </Flex>
 
             {/* 금액 */}
             <FormInput label="금액" errors={errors.price}>

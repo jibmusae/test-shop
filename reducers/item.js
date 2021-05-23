@@ -15,6 +15,7 @@ export const initialState = {
   removeItemDone: false,
   removeItemError: null,
   mainItems: [],
+  imagePath: null,
 };
 
 // 변수
@@ -84,6 +85,7 @@ const reducer = (state = initialState, action) => {
         draft.uploadImageError = null;
         break;
       case UPLOAD_IMAGE_SUCCESS:
+        draft.imagePath = action.data;
         draft.uploadImageLoading = false;
         draft.uploadImageDone = true;
         break;
