@@ -38,7 +38,7 @@ const addItemSchema = yup.object().shape({
     .string()
     .required('상품명을 입력해주세요')
     .max(100, '상품명은 최대 100자 이내로 입력해주세요'),
-  image: yup.string().required('상품이미지를 선택해주세요'),
+  imageName: yup.string().required('상품이미지를 선택해주세요'),
   price: yup
     .string()
     .required('금액을 입력해주세요')
@@ -74,15 +74,22 @@ export default function AddItemForm() {
   // 이미지 업로드
   const onChangeImage = (e) => {
     if (!e.target.files.length) {
+      setValue('imageName', '');
       setValue('image', '');
     } else {
       const image = e.target.files[0];
       const imageFormData = new FormData();
       imageFormData.append('image', image);
-      setValue('image', image.name);
       dispatch(uploadImageRequestAction(imageFormData));
+
+      setValue('imageName', image.name);
+      setValue('image', imagePath);
     }
   };
+
+  useEffect(() => {
+    console.log(`imagePath : ${imagePath}`);
+  }, [imagePath]);
 
   // 금액
   const [price, setPrice] = useState('');
@@ -127,6 +134,7 @@ export default function AddItemForm() {
   // 상품 등록
   const dispatch = useDispatch();
   const onSubmitForm = (data) => {
+    console.log(data);
     dispatch(addItemRequestAction(data));
   };
 
@@ -143,6 +151,7 @@ export default function AddItemForm() {
     handleSubmit,
     control,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm({ resolver: yupResolver(addItemSchema) });
 
@@ -193,8 +202,9 @@ export default function AddItemForm() {
             {/* 상품 이미지 */}
             <Flex alignItems="flex-end">
               <Box flex={1} mr="0.5rem">
-                <FormInput label="상품 이미지" errors={errors.image}>
+                <FormInput label="상품 이미지" errors={errors.imageName}>
                   <Input
+                    {...register('image')}
                     type="file"
                     ref={fileRef}
                     onChange={onChangeImage}
@@ -202,7 +212,7 @@ export default function AddItemForm() {
                   />
                   <InputGroup>
                     <Input
-                      {...register('image')}
+                      {...register('imageName')}
                       placeholder="이미지 선택"
                       readOnly
                     />

@@ -60,6 +60,7 @@ export const removeItemRequestAction = (data) => ({
 });
 
 const reducer = (state = initialState, action) => {
+  console.log(action);
   return produce(state, (draft) => {
     switch (action.type) {
       // 상품 리스트 불러오기

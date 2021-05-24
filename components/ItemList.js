@@ -80,7 +80,11 @@ export default function ItemList({ item }) {
         boxShadow="base"
         alignItems="center"
       >
-        <Image boxSize="150px" src={item.image} alt={item.image} />
+        <Image
+          boxSize="150px"
+          src={`http://localhost:3065/${item.image}`}
+          alt={`http://localhost:3065/${item.image}`}
+        />
         <Box w="476px" mx="2rem">
           <Heading
             as="h2"
