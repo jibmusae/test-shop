@@ -75,21 +75,15 @@ export default function AddItemForm() {
   const onChangeImage = (e) => {
     if (!e.target.files.length) {
       setValue('imageName', '');
-      setValue('image', '');
     } else {
       const image = e.target.files[0];
       const imageFormData = new FormData();
-      imageFormData.append('image', image);
-      dispatch(uploadImageRequestAction(imageFormData));
 
       setValue('imageName', image.name);
-      setValue('image', imagePath);
+      imageFormData.append('image', image);
+      dispatch(uploadImageRequestAction(imageFormData));
     }
   };
-
-  useEffect(() => {
-    console.log(`imagePath : ${imagePath}`);
-  }, [imagePath]);
 
   // 금액
   const [price, setPrice] = useState('');
@@ -134,8 +128,18 @@ export default function AddItemForm() {
   // 상품 등록
   const dispatch = useDispatch();
   const onSubmitForm = (data) => {
-    console.log(data);
-    dispatch(addItemRequestAction(data));
+    dispatch(
+      addItemRequestAction({
+        category: data.category,
+        name: data.name,
+        price: data.price,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        description: data.description,
+        image: imagePath,
+        imageAlt: data.imageName,
+      })
+    );
   };
 
   // 모달 닫기
@@ -151,7 +155,6 @@ export default function AddItemForm() {
     handleSubmit,
     control,
     setValue,
-    getValues,
     formState: { errors },
   } = useForm({ resolver: yupResolver(addItemSchema) });
 
@@ -204,7 +207,6 @@ export default function AddItemForm() {
               <Box flex={1} mr="0.5rem">
                 <FormInput label="상품 이미지" errors={errors.imageName}>
                   <Input
-                    {...register('image')}
                     type="file"
                     ref={fileRef}
                     onChange={onChangeImage}

@@ -184,7 +184,6 @@ const reducer = (state = initialState, action) => {
 
       // 장바구니 추가
       case ADD_CART_REQUEST:
-        console.log(action);
         draft.addCartLoading = true;
         draft.addCartDone = false;
         draft.addCartError = null;
@@ -200,7 +199,6 @@ const reducer = (state = initialState, action) => {
         break;
       // 장바구니 수정
       case UPDATE_CART_REQUEST:
-        console.log(action);
         draft.updateCartLoading = true;
         draft.updateCartDone = false;
         draft.updateCartError = null;
@@ -243,7 +241,6 @@ const reducer = (state = initialState, action) => {
         draft.itemCheckError = null;
         break;
       case ITEM_CHECK_SUCCESS:
-        console.log(action);
         const itemCheckTargetCart = draft.user.cart.find(
           (v) => v.itemId === action.data.itemId
         );
@@ -258,13 +255,11 @@ const reducer = (state = initialState, action) => {
 
       // 장바구니 전체 체크
       case ALL_CHECK_REQUEST:
-        console.log(action);
         draft.allCheckLoading = true;
         draft.allCheckDone = false;
         draft.allCheckError = null;
         break;
       case ALL_CHECK_SUCCESS:
-        console.log(action);
         draft.user.cart.map((v) => (v.itemChecked = action.data));
         draft.allCheckLoading = false;
         draft.allCheckDone = true;
