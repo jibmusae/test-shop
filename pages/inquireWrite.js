@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Router from 'next/router';
+import Router, { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -45,9 +45,15 @@ const inquireSchema = yup.object().shape({
 });
 
 export default function InquireWrite() {
+  // 라우터
+  const router = useRouter();
+
   // 상태관리
   const { user } = useSelector((state) => state.user);
-  const { addInquireDone } = useSelector((state) => state.inquire);
+  const { mainInquire, addInquireDone } = useSelector((state) => state.inquire);
+  const inquire = mainInquire.find(
+    (v) => v.inquire_id == router.query.inquire_id
+  );
 
   // 휴대폰 번호 입력(하이픈)
   const [tel, setTel] = useState(user ? user.tel : '');

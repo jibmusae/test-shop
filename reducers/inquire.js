@@ -135,9 +135,9 @@ const reducer = (state = initialState, action) => {
         break;
       case UPDATE_INQUIRE_SUCCESS:
         const updateInquire = draft.mainInquire.find(
-          (v) => v.id === action.data.id
+          (v) => v.inquire_id === action.data.inquire_id
         );
-        updateInquire = dummyInquire(action.data);
+        updateInquire = action.data;
         draft.updateInquireLoading = false;
         draft.updateInquireDone = true;
         break;
@@ -153,7 +153,7 @@ const reducer = (state = initialState, action) => {
         break;
       case REMOVE_INQUIRE_SUCCESS:
         draft.mainInquire = draft.mainInquire.filter(
-          (v) => v.id !== action.data
+          (v) => v.inquire_id !== action.data.inquire_id
         );
         draft.removeInquireLoading = false;
         draft.removeInquireDone = true;

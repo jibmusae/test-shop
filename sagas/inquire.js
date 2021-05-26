@@ -25,12 +25,6 @@ import {
 } from '../reducers/inquire';
 
 // API
-function updateInquireAPI(data) {
-  return axios.post('/api/updateInquire', data);
-}
-function removeInquireAPI(data) {
-  return axios.post('/api/removeInquire', data);
-}
 function updateAnswerAPI(data) {
   return axios.post('/api/updateAnswer', data);
 }
@@ -77,15 +71,15 @@ function* addInquire(action) {
 }
 
 // 문의 수정
+function updateInquireAPI(data) {
+  return axios.patch(`/inquire/updateInquire`, { content: data });
+}
 function* updateInquire(action) {
   try {
-    // 서버 필요
-    // const result = yield call(updateInquireAPI, action.data);
-    yield delay(1000);
+    const result = yield call(updateInquireAPI, action.data);
     yield put({
       type: UPDATE_INQUIRE_SUCCESS,
-      // data: result.data,
-      data: action.data,
+      data: result.data,
     });
   } catch (err) {
     yield put({
@@ -96,16 +90,16 @@ function* updateInquire(action) {
 }
 
 // 문의 삭제
+function removeInquireAPI(data) {
+  return axios.delete(`/inquire/${data}`);
+}
 function* removeInquire(action) {
+  console.log(action);
   try {
-    // 서버 필요
-    // const result = yield call(removeInquireAPI, action.data);
-    yield delay(1000);
+    const result = yield call(removeInquireAPI, action.data);
     yield put({
       type: REMOVE_INQUIRE_SUCCESS,
-      // 서버 필요
-      // data: result.data,
-      data: action.data,
+      data: result.data,
     });
   } catch (err) {
     yield put({
@@ -118,7 +112,7 @@ function* removeInquire(action) {
 // 답변 등록
 function addAnswerAPI(data) {
   console.log(data);
-  return axios.patch(`/inquire/${data.inquireId}/answer`, data);
+  return axios.patch(`/inquire/${data.inquire_id}/answer`, data);
 }
 function* addAnswer(action) {
   try {

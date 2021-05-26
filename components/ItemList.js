@@ -82,8 +82,8 @@ export default function ItemList({ item }) {
       >
         <Image
           boxSize="150px"
-          src={`http://localhost:3065/${item.image.src}`}
-          alt={`http://localhost:3065/${item.image.alt}`}
+          src={`http://localhost:3065/${item.Image.src}`}
+          alt={`http://localhost:3065/${item.Image.alt}`}
         />
         <Box w="476px" mx="2rem">
           <Heading

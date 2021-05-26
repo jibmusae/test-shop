@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Box,
   Button,
   Flex,
@@ -19,6 +24,7 @@ import {
 import AppLayout from '../../components/AppLayout';
 import {
   addAnswerRequestAction,
+  removeInquireRequestAction,
   updateAnswerRequestAction,
 } from '../../reducers/inquire';
 
@@ -35,14 +41,14 @@ export default function inquireView() {
   const createAt = moment(inquire?.createdAt).format('YYYY-MM-DD HH:mm');
 
   // 답변
-  const answerStatus = inquire?.process_status ? '답변완료' : '미확인';
-  const answerButton = inquire?.process_status ? '답변수정' : '답변등록';
-  const answeredAt = inquire?.process_datetime
-    ? moment(inquire?.process_datetime).format('YYYY-MM-DD HH:mm')
+  const answerStatus = inquire?.answer_status ? '답변완료' : '미확인';
+  const answerButton = inquire?.answer_status ? '답변수정' : '답변등록';
+  const answeredAt = inquire?.Answer?.createdAt
+    ? moment(inquire?.Answer.createdAt).format('YYYY-MM-DD HH:mm')
     : '';
 
   // 답변 내용(관리자)
-  const answerContent = inquire?.process_status ? inquire?.answer_content : '';
+  const answerContent = inquire?.answer_status ? inquire?.answer_content : '';
   const [answer, setAnswer] = useState(answerContent);
   const onChangeAnswer = (e) => {
     setAnswer(e.target.value);
@@ -52,12 +58,25 @@ export default function inquireView() {
   const dispatch = useDispatch();
   const onClickAnswer = () => {
     const inquireId = inquire?.inquire_id;
-    if (inquire.process_status) {
+    if (inquire.answer_status) {
       dispatch(updateAnswerRequestAction({ inquireId, answer }));
     } else {
       dispatch(addAnswerRequestAction({ inquireId, answer }));
     }
   };
+
+  // 문의 삭제
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+  const closeDeleteAlert = () => setShowDeleteAlert(false);
+  const cancelRef = useRef();
+  const onClickDelete = () => {
+    dispatch(removeInquireRequestAction(inquire.inquire_id));
+    setShowDeleteAlert(false);
+    router.push('/inquire');
+  };
+
+  // 문의 수정
+  const onClickUpdate = () => {};
 
   return (
     <AppLayout>
@@ -87,7 +106,7 @@ export default function inquireView() {
         </Tbody>
       </Table>
 
-      {inquire?.process_status && (
+      {inquire?.answer_status && (
         <>
           <Heading as="h1" size="md" mb="1.5rem">
             답변내용
@@ -158,19 +177,65 @@ export default function inquireView() {
                 w="150px"
                 size="md"
                 colorScheme="red"
-                isDisabled={inquire?.process_status}
+                isDisabled={inquire?.answer_status}
+                onClick={(e) => setShowDeleteAlert(true)}
               >
                 삭제하기
               </Button>
-              <Button
-                type="submit"
-                w="150px"
-                size="md"
-                colorScheme="blue"
-                isDisabled={inquire?.process_status}
+              <AlertDialog
+                motionPreset="slideInBottom"
+                isOpen={showDeleteAlert}
+                leastDestructiveRef={cancelRef}
+                onClose={closeDeleteAlert}
+                blockScrollOnMount={false}
+                isCentered
               >
-                수정하기
-              </Button>
+                <AlertDialogOverlay>
+                  <AlertDialogContent>
+                    <AlertDialogHeader m="0" fontSize="lg" fontWeight="bold">
+                      문의 삭제
+                    </AlertDialogHeader>
+                    <AlertDialogBody>
+                      정말로 삭제하시겠습니까?
+                      <Flex my="1.5rem" justifyContent="space-between">
+                        <Button
+                          w="100px"
+                          size="sm"
+                          colorScheme="blue"
+                          ref={cancelRef}
+                          onClick={closeDeleteAlert}
+                        >
+                          취소
+                        </Button>
+                        <Button
+                          w="100px"
+                          size="sm"
+                          colorScheme="red"
+                          onClick={onClickDelete}
+                        >
+                          삭제
+                        </Button>
+                      </Flex>
+                    </AlertDialogBody>
+                  </AlertDialogContent>
+                </AlertDialogOverlay>
+              </AlertDialog>
+              <Link
+                href={{
+                  pathname: '/inquireWrite',
+                  query: { inquire_id: inquire.inquire_id },
+                }}
+              >
+                <Button
+                  type="submit"
+                  w="150px"
+                  size="md"
+                  colorScheme="blue"
+                  isDisabled={inquire?.answer_status}
+                >
+                  수정하기
+                </Button>
+              </Link>
             </>
           )}
         </HStack>

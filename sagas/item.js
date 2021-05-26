@@ -74,7 +74,7 @@ function* addItem(action) {
 
 // 상품 제거
 function removeItemAPI(data) {
-  return axios.delete('/item/deleteItem', data);
+  return axios.delete(`/item/${data}/deleteItem`);
 }
 function* removeItem(action) {
   try {

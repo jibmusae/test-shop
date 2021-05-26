@@ -26,6 +26,7 @@ export const LOAD_ITEMS_FAILURE = 'LOAD_ITEMS_FAILURE';
 export const UPLOAD_IMAGE_REQUEST = 'UPLOAD_IMAGE_REQUEST';
 export const UPLOAD_IMAGE_SUCCESS = 'UPLOAD_IMAGE_SUCCESS';
 export const UPLOAD_IMAGE_FAILURE = 'UPLOAD_IMAGE_FAILURE';
+export const REMOVE_IMAGE_PATH = 'REMOVE_IMAGE_PATH';
 
 export const ADD_ITEM_REQUEST = 'ADD_ITEM_REQUEST';
 export const ADD_ITEM_SUCCESS = 'ADD_ITEM_SUCCESS';
@@ -45,6 +46,11 @@ export const loadItemsRequestAction = (data) => ({
 export const uploadImageRequestAction = (data) => ({
   type: UPLOAD_IMAGE_REQUEST,
   data,
+});
+
+// 이미지 경로 제거 액션
+export const removeImagePathAction = () => ({
+  type: REMOVE_IMAGE_PATH,
 });
 
 // 상품 추가 액션
@@ -93,6 +99,10 @@ const reducer = (state = initialState, action) => {
         draft.uploadImageLoading = false;
         draft.uploadImageError = action.error;
         break;
+      // 이미지 경로 제거
+      case REMOVE_IMAGE_PATH:
+        draft.imagePath = null;
+        break;
 
       // 상품 추가
       case ADD_ITEM_REQUEST:
@@ -119,7 +129,9 @@ const reducer = (state = initialState, action) => {
       case REMOVE_ITEM_SUCCESS:
         draft.removeItemLoading = false;
         draft.removeItemDone = true;
-        draft.mainItems = draft.mainItems.filter((v) => v.id !== action.data);
+        draft.mainItems = draft.mainItems.filter(
+          (v) => v.item_id !== action.data.item_id
+        );
         break;
       case REMOVE_ITEM_FAILURE:
         draft.removeItemLoading = false;

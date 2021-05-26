@@ -25,6 +25,7 @@ import Modal from '../components/Modal';
 import FormInput from './FormInput';
 import {
   addItemRequestAction,
+  removeImagePathAction,
   uploadImageRequestAction,
 } from '../reducers/item';
 
@@ -62,7 +63,7 @@ export default function AddItemForm() {
     (state) => state.item
   );
 
-  // 주소검색 모달
+  // 모달 열기
   const [showAddItemModal, setShowAddItemModal] = useState(false);
 
   // 이미지 선택
@@ -148,6 +149,24 @@ export default function AddItemForm() {
       setShowAddItemModal(false);
     }
   }, [addItemDone]);
+
+  useEffect(() => {
+    if (!showAddItemModal) {
+      setValue('category', '');
+      setValue('name', '');
+      setValue('imageName', '');
+      setValue('price', '');
+      setValue('startDate', '');
+      setValue('endDate', '');
+      setValue('description', '');
+
+      setPrice('');
+      setStartDate('');
+      setEndDate('');
+
+      dispatch(removeImagePathAction());
+    }
+  }, [showAddItemModal]);
 
   // react-hook-form 유효성 검사
   const {
