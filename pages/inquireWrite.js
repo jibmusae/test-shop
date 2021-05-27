@@ -16,7 +16,10 @@ import {
 } from '@chakra-ui/react';
 import AppLayout from '../components/AppLayout';
 import FormInput from '../components/FormInput';
-import { addInquireRequestAction } from '../reducers/inquire';
+import {
+  addInquireRequestAction,
+  updateInquireRequestAction,
+} from '../reducers/inquire';
 
 const inquireSchema = yup.object().shape({
   corporateName: yup
@@ -55,8 +58,43 @@ export default function InquireWrite() {
     (v) => v.inquire_id == router.query.inquire_id
   );
 
+  // 입력 초기값 설정
+  let initialCorporateName = '';
+  let initialName = '';
+  let initialEmail = '';
+  let initialTel = '';
+  let initialTitle = '';
+  let initialContent = '';
+  let buttonName = '';
+
+  if (inquire) {
+    initialCorporateName = inquire.corporate_name;
+    initialName = inquire.name;
+    initialEmail = inquire.email;
+    initialTel = inquire.tel;
+    initialTitle = inquire.title;
+    initialContent = inquire.content;
+    buttonName = '수정하기';
+  } else if (user) {
+    initialCorporateName = user.corporate_name;
+    initialName = user.name;
+    initialEmail = user.email;
+    initialTel = user.tel;
+    initialTitle = '';
+    initialContent = '';
+    buttonName = '등록하기';
+  } else {
+    initialCorporateName = '';
+    initialName = '';
+    initialEmail = '';
+    initialTel = '';
+    initialTitle = '';
+    initialContent = '';
+    buttonName = '등록하기';
+  }
+
   // 휴대폰 번호 입력(하이픈)
-  const [tel, setTel] = useState(user ? user.tel : '');
+  const [tel, setTel] = useState(initialTel);
   const onChangeTel = (e) => {
     const value = e.target.value.replace(/[^0-9]/g, '');
     let result = '';
@@ -76,10 +114,14 @@ export default function InquireWrite() {
     setTel(result);
   };
 
-  // 문의 작성
+  // 문의 작성, 수정
   const dispatch = useDispatch();
   const onSubmitForm = (data) => {
-    dispatch(addInquireRequestAction(data));
+    if (inquire) {
+      dispatch(updateInquireRequestAction(data));
+    } else {
+      dispatch(addInquireRequestAction(data));
+    }
   };
 
   // 페이지 이동
@@ -116,7 +158,7 @@ export default function InquireWrite() {
               <Input
                 {...register('corporateName')}
                 placeholder="업체명"
-                defaultValue={user?.corporate_name}
+                defaultValue={initialCorporateName}
                 size="sm"
               />
             </FormInput>
@@ -126,7 +168,7 @@ export default function InquireWrite() {
               <Input
                 {...register('name')}
                 placeholder="이름"
-                defaultValue={user?.name}
+                defaultValue={initialName}
                 size="sm"
               />
             </FormInput>
@@ -136,7 +178,7 @@ export default function InquireWrite() {
               <Input
                 {...register('email')}
                 placeholder="이메일 주소"
-                defaultValue={user?.email}
+                defaultValue={initialEmail}
                 size="sm"
               />
             </FormInput>
@@ -154,12 +196,22 @@ export default function InquireWrite() {
 
             {/* 타이틀 */}
             <FormInput label="타이틀" errors={errors.title} table>
-              <Input {...register('title')} placeholder="타이틀" size="sm" />
+              <Input
+                {...register('title')}
+                placeholder="타이틀"
+                defaultValue={initialTitle}
+                size="sm"
+              />
             </FormInput>
 
             {/* 문의내용 */}
             <FormInput label="문의내용" errors={errors.content} table>
-              <Textarea {...register('content')} minH="210px" resize="none" />
+              <Textarea
+                {...register('content')}
+                defaultValue={initialContent}
+                minH="210px"
+                resize="none"
+              />
             </FormInput>
           </Tbody>
         </Table>
@@ -176,7 +228,7 @@ export default function InquireWrite() {
             </Button>
           </Link>
           <Button type="submit" w="150px" size="md" colorScheme="blue">
-            등록하기
+            {buttonName}
           </Button>
         </Flex>
       </form>

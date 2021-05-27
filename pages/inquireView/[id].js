@@ -41,14 +41,14 @@ export default function inquireView() {
   const createAt = moment(inquire?.createdAt).format('YYYY-MM-DD HH:mm');
 
   // 답변
-  const answerStatus = inquire?.answer_status ? '답변완료' : '미확인';
-  const answerButton = inquire?.answer_status ? '답변수정' : '답변등록';
+  const answerStatus = inquire?.Answer ? '답변완료' : '미확인';
+  const answerButton = inquire?.Answer ? '답변수정' : '답변등록';
   const answeredAt = inquire?.Answer?.createdAt
     ? moment(inquire?.Answer.createdAt).format('YYYY-MM-DD HH:mm')
     : '';
 
   // 답변 내용(관리자)
-  const answerContent = inquire?.answer_status ? inquire?.answer_content : '';
+  const answerContent = inquire?.Answer ? inquire?.Answer.content : '';
   const [answer, setAnswer] = useState(answerContent);
   const onChangeAnswer = (e) => {
     setAnswer(e.target.value);
@@ -106,7 +106,7 @@ export default function inquireView() {
         </Tbody>
       </Table>
 
-      {inquire?.answer_status && (
+      {inquire?.Answer && (
         <>
           <Heading as="h1" size="md" mb="1.5rem">
             답변내용
@@ -177,7 +177,7 @@ export default function inquireView() {
                 w="150px"
                 size="md"
                 colorScheme="red"
-                isDisabled={inquire?.answer_status}
+                isDisabled={inquire?.Answer}
                 onClick={(e) => setShowDeleteAlert(true)}
               >
                 삭제하기
@@ -223,7 +223,7 @@ export default function inquireView() {
               <Link
                 href={{
                   pathname: '/inquireWrite',
-                  query: { inquire_id: inquire.inquire_id },
+                  query: { inquire_id: inquire?.inquire_id },
                 }}
               >
                 <Button
@@ -231,7 +231,7 @@ export default function inquireView() {
                   w="150px"
                   size="md"
                   colorScheme="blue"
-                  isDisabled={inquire?.answer_status}
+                  isDisabled={inquire?.Answer}
                 >
                   수정하기
                 </Button>
