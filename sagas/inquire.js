@@ -72,7 +72,7 @@ function* addInquire(action) {
 
 // 문의 수정
 function updateInquireAPI(data) {
-  return axios.patch(`/inquire/updateInquire`, { content: data });
+  return axios.patch(`/inquire/updateInquire`, data);
 }
 function* updateInquire(action) {
   try {

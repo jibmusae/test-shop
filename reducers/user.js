@@ -30,8 +30,6 @@ export const initialState = {
   allCheckDone: false,
   allCheckError: null,
   user: null,
-  signUpData: {},
-  loginData: {},
 };
 
 // 변수

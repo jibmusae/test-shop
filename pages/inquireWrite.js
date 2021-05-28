@@ -58,6 +58,9 @@ export default function InquireWrite() {
     (v) => v.inquire_id == router.query.inquire_id
   );
 
+  console.log(user);
+  console.log(inquire);
+
   // 입력 초기값 설정
   let initialCorporateName = '';
   let initialName = '';
@@ -67,7 +70,7 @@ export default function InquireWrite() {
   let initialContent = '';
   let buttonName = '';
 
-  if (inquire) {
+  if (inquire && user?.user_id === inquire.user_id) {
     initialCorporateName = inquire.corporate_name;
     initialName = inquire.name;
     initialEmail = inquire.email;
@@ -94,25 +97,26 @@ export default function InquireWrite() {
   }
 
   // 휴대폰 번호 입력(하이픈)
-  const [tel, setTel] = useState(initialTel);
-  const onChangeTel = (e) => {
-    const value = e.target.value.replace(/[^0-9]/g, '');
-    let result = '';
+  // const [tel, setTel] = useState(initialTel);
+  // const onChangeTel = (e) => {
+  //   const value = e.target.value.replace(/[^0-9]/g, '');
+  //   let result = '';
 
-    if (value.length < 4) {
-      result = value;
-    } else if (value.length < 7) {
-      result = `${value.substr(0, 3)}-${value.substr(3)}`;
-    } else if (value.length < 11) {
-      result = `${value.substr(0, 3)}-${value.substr(3, 3)}-${value.substr(6)}`;
-    } else {
-      result = `${value.substr(0, 3)}-${value.substr(3, 4)}-${value.substr(
-        7,
-        4
-      )}`;
-    }
-    setTel(result);
-  };
+  //   if (value.length < 4) {
+  //     result = value;
+  //   } else if (value.length < 7) {
+  //     result = `${value.substr(0, 3)}-${value.substr(3)}`;
+  //   } else if (value.length < 11) {
+  //     result = `${value.substr(0, 3)}-${value.substr(3, 3)}-${value.substr(6)}`;
+  //   } else {
+  //     result = `${value.substr(0, 3)}-${value.substr(3, 4)}-${value.substr(
+  //       7,
+  //       4
+  //     )}`;
+  //   }
+  //   setTel(result);
+  //   setValue('tel', result);
+  // };
 
   // 문의 작성, 수정
   const dispatch = useDispatch();
@@ -135,6 +139,7 @@ export default function InquireWrite() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm({ resolver: yupResolver(inquireSchema) });
 
@@ -188,8 +193,7 @@ export default function InquireWrite() {
               <Input
                 {...register('tel')}
                 placeholder="010-1234-5678"
-                value={tel}
-                onChange={onChangeTel}
+                defaultValue={initialTel}
                 size="sm"
               />
             </FormInput>

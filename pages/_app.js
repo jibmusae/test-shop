@@ -1,7 +1,6 @@
 import Head from 'next/head';
 import '../styles/globals.css';
 import { ChakraProvider } from '@chakra-ui/react';
-import withReduxSaga from 'next-redux-saga';
 import wrapper from '../store/configureStore';
 
 const YDShop = ({ Component, pageProps }) => {
@@ -16,4 +15,4 @@ const YDShop = ({ Component, pageProps }) => {
   );
 };
 
-export default wrapper.withRedux(withReduxSaga(YDShop));
+export default wrapper.withRedux(YDShop);
