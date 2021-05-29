@@ -1,6 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { useSelector } from 'react-redux';
+import axios from 'axios';
+import { END } from '@redux-saga/core';
 import {
   Button,
   Flex,
@@ -14,8 +16,11 @@ import {
 } from '@chakra-ui/react';
 import AppLayout from '../components/AppLayout';
 import InquireList from '../components/InquireList';
+import wrapper from '../store/configureStore';
+import { loadInquiresRequest } from '../reducers/inquire';
+import { loadMyInfoRequest } from '../reducers/user';
 
-export default function inquire() {
+const Inquire = () => {
   // 상태관리
   const { mainInquire } = useSelector((state) => state.inquire);
 
@@ -74,4 +79,20 @@ export default function inquire() {
       </Flex>
     </AppLayout>
   );
-}
+};
+
+export const getServerSideProps = wrapper.getServerSideProps(
+  async (context) => {
+    const cookie = context.req ? context.req.headers.cookie : '';
+    axios.defaults.headers.Cookie = '';
+    if (context.req && cookie) {
+      axios.defaults.headers.Cookie = cookie;
+    }
+    context.store.dispatch(loadMyInfoRequest());
+    context.store.dispatch(loadInquiresRequest());
+    context.store.dispatch(END);
+    await context.store.sagaTask.toPromise();
+  }
+);
+
+export default Inquire;

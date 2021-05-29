@@ -12,7 +12,7 @@ export default function InquireList({ inquire }) {
       : moment(inquire.createdAt).format('YYYY-MM-DD');
 
   // 답변
-  const answerStatus = inquire.answer_status ? '답변완료' : '미확인';
+  const answerStatus = inquire.Answer ? '답변완료' : '미확인';
 
   return (
     <Link href="/inquireView/[id]" as={`/inquireView/${inquire.inquire_id}`}>

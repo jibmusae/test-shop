@@ -1,9 +1,12 @@
 import axios from 'axios';
-import { all, call, delay, fork, put, takeLatest } from 'redux-saga/effects';
+import { all, call, fork, put, takeLatest } from 'redux-saga/effects';
 import {
   LOAD_INQUIRES_REQUEST,
   LOAD_INQUIRES_SUCCESS,
   LOAD_INQUIRES_FAILURE,
+  LOAD_INQUIRE_BY_ID_REQUEST,
+  LOAD_INQUIRE_BY_ID_SUCCESS,
+  LOAD_INQUIRE_BY_ID_FAILURE,
   ADD_INQUIRE_REQUEST,
   ADD_INQUIRE_SUCCESS,
   ADD_INQUIRE_FAILURE,
@@ -24,14 +27,6 @@ import {
   REMOVE_ANSWER_FAILURE,
 } from '../reducers/inquire';
 
-// API
-function updateAnswerAPI(data) {
-  return axios.post('/api/updateAnswer', data);
-}
-function removeAnswerAPI(data) {
-  return axios.post('/api/removeAnswer', data);
-}
-
 // 전체 문의글 불러오기
 function loadInquiresAPI(data) {
   return axios.get('/inquire', data);
@@ -46,6 +41,25 @@ function* loadInquires(action) {
   } catch (err) {
     yield put({
       type: LOAD_INQUIRES_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// 문의글 불러오기
+function loadInquireByIdAPI(data) {
+  return axios.get(`/inquire/${data}`);
+}
+function* loadInquireById(action) {
+  try {
+    const result = yield call(loadInquireByIdAPI, action.data);
+    yield put({
+      type: LOAD_INQUIRE_BY_ID_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    yield put({
+      type: LOAD_INQUIRE_BY_ID_FAILURE,
       error: err.response.data,
     });
   }
@@ -112,7 +126,7 @@ function* removeInquire(action) {
 // 답변 등록
 function addAnswerAPI(data) {
   console.log(data);
-  return axios.patch(`/inquire/${data.inquire_id}/answer`, data);
+  return axios.post(`/inquire/${data.inquireId}/addAnswer`, data);
 }
 function* addAnswer(action) {
   try {
@@ -130,15 +144,15 @@ function* addAnswer(action) {
 }
 
 // 답변 수정
+function updateAnswerAPI(data) {
+  return axios.patch(`/inquire/${data.inquireId}/updateAnswer`, data);
+}
 function* updateAnswer(action) {
   try {
-    // 서버 필요
-    // const result = yield call(updateAnswerAPI, action.data);
-    yield delay(1000);
+    const result = yield call(updateAnswerAPI, action.data);
     yield put({
       type: UPDATE_ANSWER_SUCCESS,
-      // data: result.data,
-      data: action.data,
+      data: result.data,
     });
   } catch (err) {
     yield put({
@@ -149,16 +163,15 @@ function* updateAnswer(action) {
 }
 
 // 답변 삭제
+function removeAnswerAPI(data) {
+  return axios.delete(`/inquire/${data.answerId}/removeAnswer`);
+}
 function* removeAnswer(action) {
   try {
-    // 서버 필요
-    // const result = yield call(removeAnswerAPI, action.data);
-    yield delay(1000);
+    const result = yield call(removeAnswerAPI, action.data);
     yield put({
       type: REMOVE_ANSWER_SUCCESS,
-      // 서버 필요
-      // data: result.data,
-      data: action.data,
+      data: result.data,
     });
   } catch (err) {
     yield put({
@@ -171,6 +184,9 @@ function* removeAnswer(action) {
 // 리퀘스트
 function* watchLoadInquires() {
   yield takeLatest(LOAD_INQUIRES_REQUEST, loadInquires);
+}
+function* watchLoadInquireById() {
+  yield takeLatest(LOAD_INQUIRE_BY_ID_REQUEST, loadInquireById);
 }
 function* watchAddInquire() {
   yield takeLatest(ADD_INQUIRE_REQUEST, addInquire);
@@ -194,6 +210,7 @@ function* watchRemoveAnswer() {
 export default function* userSaga() {
   yield all([
     fork(watchLoadInquires),
+    fork(watchLoadInquireById),
     fork(watchAddInquire),
     fork(watchUpdateInquire),
     fork(watchRemoveInquire),

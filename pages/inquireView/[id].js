@@ -1,7 +1,9 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
+import { END } from '@redux-saga/core';
+import axios from 'axios';
 import moment from 'moment';
 import {
   AlertDialog,
@@ -22,47 +24,51 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import AppLayout from '../../components/AppLayout';
+import wrapper from '../../store/configureStore';
+import { loadMyInfoRequest } from '../../reducers/user';
 import {
-  addAnswerRequestAction,
+  loadInquireByIdRequest,
   removeInquireRequestAction,
+  addAnswerRequestAction,
   updateAnswerRequestAction,
+  removeAnswerRequestAction,
 } from '../../reducers/inquire';
 
-export default function inquireView() {
+const InquireView = () => {
   // 라우터
   const router = useRouter();
 
   // 상태관리
+  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
-  const { mainInquire } = useSelector((state) => state.inquire);
-  const inquire = mainInquire.find((v) => v.inquire_id == router.query.id);
+  const { thisInquire } = useSelector((state) => state.inquire);
 
-  // 작성일시
-  const createAt = moment(inquire?.createdAt).format('YYYY-MM-DD HH:mm');
+  // 초기값 설정
+  const inquireId = router.query.id;
+  let answerId = '';
+  let createdAt = '';
+  let answerStatus = '';
+  let inquireTitle = '';
+  let inquireContent = '';
+  let answeredAt = '';
+  let answerContent = '';
 
-  // 답변
-  const answerStatus = inquire?.Answer ? '답변완료' : '미확인';
-  const answerButton = inquire?.Answer ? '답변수정' : '답변등록';
-  const answeredAt = inquire?.Answer?.createdAt
-    ? moment(inquire?.Answer.createdAt).format('YYYY-MM-DD HH:mm')
-    : '';
+  if (thisInquire) {
+    answerId = thisInquire.Answer?.answer_id;
+    createdAt = moment(thisInquire.createdAt).format('YYYY-MM-DD HH:mm');
+    answerStatus = thisInquire.Answer ? '답변완료' : '미확인';
+    inquireTitle = thisInquire.title;
+    inquireContent = thisInquire.content;
+    answeredAt = thisInquire.Answer
+      ? moment(thisInquire.Answer.createdAt).format('YYYY-MM-DD HH:mm')
+      : '';
+    answerContent = thisInquire.Answer?.content;
+  }
 
   // 답변 내용(관리자)
-  const answerContent = inquire?.Answer ? inquire?.Answer.content : '';
-  const [answer, setAnswer] = useState(answerContent);
+  const [answer, setAnswer] = useState('');
   const onChangeAnswer = (e) => {
     setAnswer(e.target.value);
-  };
-
-  // 답변 등록(관리자)
-  const dispatch = useDispatch();
-  const onClickAnswer = () => {
-    const inquireId = inquire?.inquire_id;
-    if (inquire.answer_status) {
-      dispatch(updateAnswerRequestAction({ inquireId, answer }));
-    } else {
-      dispatch(addAnswerRequestAction({ inquireId, answer }));
-    }
   };
 
   // 문의 삭제
@@ -70,13 +76,10 @@ export default function inquireView() {
   const closeDeleteAlert = () => setShowDeleteAlert(false);
   const cancelRef = useRef();
   const onClickDelete = () => {
-    dispatch(removeInquireRequestAction(inquire.inquire_id));
+    dispatch(removeInquireRequestAction(inquireId));
     setShowDeleteAlert(false);
     router.push('/inquire');
   };
-
-  // 문의 수정
-  const onClickUpdate = () => {};
 
   return (
     <AppLayout>
@@ -89,7 +92,7 @@ export default function inquireView() {
             <Th w="200px" bgColor="gray.200">
               작성일시
             </Th>
-            <Td>{createAt}</Td>
+            <Td>{createdAt}</Td>
             <Th w="200px" bgColor="gray.200">
               처리상태
             </Th>
@@ -97,21 +100,21 @@ export default function inquireView() {
           </Tr>
           <Tr>
             <Th bgColor="gray.200">타이틀</Th>
-            <Td colSpan="3">{inquire?.title}</Td>
+            <Td colSpan="3">{inquireTitle}</Td>
           </Tr>
           <Tr h="200px">
             <Th bgColor="gray.200">문의내용</Th>
-            <Td colSpan="3">{inquire?.content}</Td>
+            <Td colSpan="3">{inquireContent}</Td>
           </Tr>
         </Tbody>
       </Table>
 
-      {inquire?.Answer && (
+      {thisInquire?.Answer && (
         <>
           <Heading as="h1" size="md" mb="1.5rem">
             답변내용
           </Heading>
-          <Table mb="2.5rem" size="sm" borderTop="1px">
+          <Table size="sm" borderTop="1px">
             <Tbody>
               <Tr>
                 <Th w="200px" bgColor="gray.200">
@@ -125,11 +128,27 @@ export default function inquireView() {
               </Tr>
             </Tbody>
           </Table>
+          {user?.admin_flag && (
+            <Flex mt="0.75rem" justifyContent="flex-start">
+              <Button
+                size="sm"
+                w="150px"
+                colorScheme="red"
+                variant="outline"
+                onClick={(e) => {
+                  dispatch(removeAnswerRequestAction({ inquireId, answerId }));
+                }}
+              >
+                삭제
+              </Button>
+            </Flex>
+          )}
         </>
       )}
 
       {user?.admin_flag && (
         <Box
+          mt="2rem"
           p="1rem"
           border="1px"
           borderColor="gray.300"
@@ -145,14 +164,29 @@ export default function inquireView() {
             borderColor="gray.200"
           />
           <Flex mt="0.5rem" justifyContent="flex-end">
-            <Button
-              size="sm"
-              w="150px"
-              colorScheme="blue"
-              onClick={onClickAnswer}
-            >
-              {answerButton}
-            </Button>
+            {thisInquire?.Answer ? (
+              <Button
+                size="sm"
+                w="150px"
+                colorScheme="blue"
+                onClick={(e) => {
+                  dispatch(updateAnswerRequestAction({ inquireId, answer }));
+                }}
+              >
+                수정
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                w="150px"
+                colorScheme="blue"
+                onClick={(e) => {
+                  dispatch(addAnswerRequestAction({ inquireId, answer }));
+                }}
+              >
+                등록
+              </Button>
+            )}
           </Flex>
         </Box>
       )}
@@ -170,14 +204,14 @@ export default function inquireView() {
           </Button>
         </Link>
         <HStack spacing="1rem">
-          {user?.user_id === inquire?.user_id && (
+          {user?.user_id === thisInquire?.user_id && (
             <>
               <Button
                 type="submit"
                 w="150px"
                 size="md"
                 colorScheme="red"
-                isDisabled={inquire?.Answer}
+                isDisabled={thisInquire?.Answer}
                 onClick={(e) => setShowDeleteAlert(true)}
               >
                 삭제하기
@@ -221,17 +255,15 @@ export default function inquireView() {
                 </AlertDialogOverlay>
               </AlertDialog>
               <Link
-                href={{
-                  pathname: '/inquireWrite',
-                  query: { inquire_id: inquire?.inquire_id },
-                }}
+                href="/inquireModify/[id]"
+                as={`/inquireModify/${inquireId}`}
               >
                 <Button
                   type="submit"
                   w="150px"
                   size="md"
                   colorScheme="blue"
-                  isDisabled={inquire?.Answer}
+                  isDisabled={thisInquire?.Answer}
                 >
                   수정하기
                 </Button>
@@ -242,4 +274,20 @@ export default function inquireView() {
       </Flex>
     </AppLayout>
   );
-}
+};
+
+export const getServerSideProps = wrapper.getServerSideProps(
+  async (context) => {
+    const cookie = context.req ? context.req.headers.cookie : '';
+    axios.defaults.headers.Cookie = '';
+    if (context.req && cookie) {
+      axios.defaults.headers.Cookie = cookie;
+    }
+    context.store.dispatch(loadMyInfoRequest());
+    context.store.dispatch(loadInquireByIdRequest(context.params.id));
+    context.store.dispatch(END);
+    await context.store.sagaTask.toPromise();
+  }
+);
+
+export default InquireView;

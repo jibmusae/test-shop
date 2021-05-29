@@ -5,6 +5,9 @@ export const initialState = {
   loadInquiresLoading: false,
   loadInquiresDone: false,
   loadInquiresError: null,
+  loadInquireByIdLoading: false,
+  loadInquireByIdDone: false,
+  loadInquireByIdError: null,
   addInquireLoading: false,
   addInquireDone: false,
   addInquireError: null,
@@ -24,9 +27,13 @@ export const initialState = {
   removeAnswerDone: false,
   removeAnswerError: null,
   mainInquire: [],
+  thisInquire: null,
 };
 
 // 변수
+export const LOAD_INQUIRE_BY_ID_REQUEST = 'LOAD_INQUIRE_BY_ID_REQUEST';
+export const LOAD_INQUIRE_BY_ID_SUCCESS = 'LOAD_INQUIRE_BY_ID_SUCCESS';
+export const LOAD_INQUIRE_BY_ID_FAILURE = 'LOAD_INQUIRE_BY_ID_FAILURE';
 export const LOAD_INQUIRES_REQUEST = 'LOAD_INQUIRES_REQUEST';
 export const LOAD_INQUIRES_SUCCESS = 'LOAD_INQUIRES_SUCCESS';
 export const LOAD_INQUIRES_FAILURE = 'LOAD_INQUIRES_FAILURE';
@@ -54,6 +61,12 @@ export const REMOVE_ANSWER_FAILURE = 'REMOVE_ANSWER_FAILURE';
 // 전체 문의글 불러오기
 export const loadInquiresRequest = (data) => ({
   type: LOAD_INQUIRES_REQUEST,
+  data,
+});
+
+// 문의글 불러오기
+export const loadInquireByIdRequest = (data) => ({
+  type: LOAD_INQUIRE_BY_ID_REQUEST,
   data,
 });
 
@@ -96,7 +109,7 @@ export const removeAnswerRequestAction = (data) => ({
 const reducer = (state = initialState, action) => {
   return produce(state, (draft) => {
     switch (action.type) {
-      // 문의글 불러오기
+      // 전체 문의글 불러오기
       case LOAD_INQUIRES_REQUEST:
         draft.loadInquiresLoading = true;
         draft.loadInquiresDone = false;
@@ -110,6 +123,21 @@ const reducer = (state = initialState, action) => {
       case LOAD_INQUIRES_FAILURE:
         draft.loadInquiresLoading = false;
         draft.loadInquiresError = action.error;
+        break;
+      // 문의글 불러오기
+      case LOAD_INQUIRE_BY_ID_REQUEST:
+        draft.loadInquireByIdLoading = true;
+        draft.loadInquireByIdDone = false;
+        draft.loadInquireByIdError = null;
+        break;
+      case LOAD_INQUIRE_BY_ID_SUCCESS:
+        draft.loadInquireByIdLoading = false;
+        draft.loadInquireByIdDone = true;
+        draft.thisInquire = action.data;
+        break;
+      case LOAD_INQUIRE_BY_ID_FAILURE:
+        draft.loadInquireByIdLoading = false;
+        draft.loadInquireByIdError = action.error;
         break;
 
       // 문의 작성
@@ -153,7 +181,7 @@ const reducer = (state = initialState, action) => {
         break;
       case REMOVE_INQUIRE_SUCCESS:
         draft.mainInquire = draft.mainInquire.filter(
-          (v) => v.inquire_id !== action.data.inquire_id
+          (v) => v.inquire_id !== action.data.inquireId
         );
         draft.removeInquireLoading = false;
         draft.removeInquireDone = true;
@@ -170,10 +198,7 @@ const reducer = (state = initialState, action) => {
         draft.addAnswerError = null;
         break;
       case ADD_ANSWER_SUCCESS:
-        const targetInquire = draft.mainInquire.find(
-          (v) => v.inquire_id === action.data.inquireId
-        );
-        targetInquire.Answer = action.data;
+        draft.thisInquire = action.data;
         draft.addAnswerLoading = false;
         draft.addAnswerDone = true;
         break;
@@ -188,10 +213,7 @@ const reducer = (state = initialState, action) => {
         draft.updateAnswerError = null;
         break;
       case UPDATE_ANSWER_SUCCESS:
-        const updateTarget = draft.mainInquire.find(
-          (v) => v.id === action.data.inquireId
-        );
-        updateTarget.answer = dummyAnswer(action.data);
+        draft.thisInquire = action.data;
         draft.updateAnswerLoading = false;
         draft.updateAnswerDone = true;
         break;
@@ -206,7 +228,7 @@ const reducer = (state = initialState, action) => {
         draft.removeAnswerError = null;
         break;
       case REMOVE_ANSWER_SUCCESS:
-        // TODO 삭제
+        draft.thisInquire = action.data;
         draft.removeAnswerLoading = false;
         draft.removeAnswerDone = true;
         break;
