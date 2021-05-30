@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
@@ -44,7 +44,7 @@ const InquireView = () => {
   const { thisInquire } = useSelector((state) => state.inquire);
 
   // 초기값 설정
-  const inquireId = router.query.id;
+  let inquireId = '';
   let answerId = '';
   let createdAt = '';
   let answerStatus = '';
@@ -54,6 +54,7 @@ const InquireView = () => {
   let answerContent = '';
 
   if (thisInquire) {
+    inquireId = thisInquire.inquire_id;
     answerId = thisInquire.Answer?.answer_id;
     createdAt = moment(thisInquire.createdAt).format('YYYY-MM-DD HH:mm');
     answerStatus = thisInquire.Answer ? '답변완료' : '미확인';
