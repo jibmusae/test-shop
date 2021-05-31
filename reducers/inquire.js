@@ -211,7 +211,7 @@ const reducer = (state = initialState, action) => {
         draft.updateAnswerError = null;
         break;
       case UPDATE_ANSWER_SUCCESS:
-        draft.thisInquire = action.data;
+        draft.thisInquire.Answer = action.data;
         draft.updateAnswerLoading = false;
         draft.updateAnswerDone = true;
         break;

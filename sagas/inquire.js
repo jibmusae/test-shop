@@ -143,7 +143,7 @@ function* addAnswer(action) {
 
 // 답변 수정
 function updateAnswerAPI(data) {
-  return axios.patch(`/inquire/${data.inquireId}/updateAnswer`, data);
+  return axios.patch(`/inquire/${data.inquireId}/${data.answerId}`, data);
 }
 function* updateAnswer(action) {
   try {

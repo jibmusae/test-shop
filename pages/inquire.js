@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
@@ -14,6 +14,15 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
+import { CgChevronLeft, CgChevronRight } from 'react-icons/cg';
+import {
+  Paginator,
+  Previous,
+  Next,
+  PageGroup,
+  Page,
+  usePaginator,
+} from 'chakra-paginator';
 import AppLayout from '../components/AppLayout';
 import InquireList from '../components/InquireList';
 import wrapper from '../store/configureStore';
@@ -23,6 +32,12 @@ import { loadMyInfoRequest } from '../reducers/user';
 const Inquire = () => {
   // 상태관리
   const { mainInquire } = useSelector((state) => state.inquire);
+
+  // 페이지네이션
+  const pagesQuantity = mainInquire.length;
+  const { currentPage, setCurrentPage } = usePaginator({
+    initialState: { currentPage: 1 },
+  });
 
   return (
     <AppLayout>
@@ -70,7 +85,23 @@ const Inquire = () => {
           )}
         </Tbody>
       </Table>
-      <Flex mt="2rem" justifyContent="flex-end">
+
+      <Flex mt="2rem" justifyContent="space-between">
+        <Paginator
+          pagesQuantity={pagesQuantity}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        >
+          <Container align="center" justify="space-between" w="full" p={4}>
+            <Previous>
+              <CgChevronLeft />
+            </Previous>
+            <Page key={`paginator_page_${page}`} page={page} />
+            <Next>
+              <CgChevronRight />
+            </Next>
+          </Container>
+        </Paginator>
         <Link href="/inquireWrite">
           <Button w="100px" size="sm" colorScheme="blue">
             글쓰기

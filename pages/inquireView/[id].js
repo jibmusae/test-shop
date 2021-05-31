@@ -1,10 +1,13 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 import { END } from '@redux-saga/core';
 import axios from 'axios';
 import moment from 'moment';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import {
   AlertDialog,
   AlertDialogBody,
@@ -34,6 +37,10 @@ import {
   removeAnswerRequestAction,
 } from '../../reducers/inquire';
 
+const inquireSchema = yup.object().shape({
+  answer: yup.string().required('답변내용을 입력해주세요'),
+});
+
 const InquireView = () => {
   // 라우터
   const router = useRouter();
@@ -41,7 +48,9 @@ const InquireView = () => {
   // 상태관리
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
-  const { thisInquire } = useSelector((state) => state.inquire);
+  const { thisInquire, addAnswerDone, updateAnswerDone } = useSelector(
+    (state) => state.inquire
+  );
 
   // 초기값 설정
   let inquireId = '';
@@ -52,6 +61,7 @@ const InquireView = () => {
   let inquireContent = '';
   let answeredAt = '';
   let answerContent = '';
+  let answerButtonName = '등록';
 
   if (thisInquire) {
     inquireId = thisInquire.inquire_id;
@@ -64,13 +74,8 @@ const InquireView = () => {
       ? moment(thisInquire.Answer.createdAt).format('YYYY-MM-DD HH:mm')
       : '';
     answerContent = thisInquire.Answer?.content;
+    answerButtonName = '수정';
   }
-
-  // 답변 내용(관리자)
-  const [answer, setAnswer] = useState('');
-  const onChangeAnswer = (e) => {
-    setAnswer(e.target.value);
-  };
 
   // 문의 삭제
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
@@ -81,6 +86,30 @@ const InquireView = () => {
     setShowDeleteAlert(false);
     router.push('/inquire');
   };
+
+  // 답변 등록 및 수정
+  const onSubmitAnswer = (data) => {
+    const answer = data.answer;
+    if (thisInquire.Answer) {
+      dispatch(updateAnswerRequestAction({ inquireId, answerId, answer }));
+    } else {
+      dispatch(addAnswerRequestAction({ inquireId, answer }));
+    }
+  };
+
+  useEffect(() => {
+    if (addAnswerDone || updateAnswerDone) {
+      setValue('answer', '');
+    }
+  }, [addAnswerDone, updateAnswerDone]);
+
+  // react-hook-form
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm({ resolver: yupResolver(inquireSchema) });
 
   return (
     <AppLayout>
@@ -148,48 +177,32 @@ const InquireView = () => {
       )}
 
       {user?.admin_flag && (
-        <Box
-          mt="2rem"
-          p="1rem"
-          border="1px"
-          borderColor="gray.300"
-          borderRadius="lg"
-          boxShadow="sm"
-        >
-          <Textarea
-            placeholder="문의내용에 대한 답변을 달아주세요."
-            minH="150px"
-            resize="none"
-            value={answer}
-            onChange={onChangeAnswer}
-            borderColor="gray.200"
-          />
-          <Flex mt="0.5rem" justifyContent="flex-end">
-            {thisInquire?.Answer ? (
-              <Button
-                size="sm"
-                w="150px"
-                colorScheme="blue"
-                onClick={(e) => {
-                  dispatch(updateAnswerRequestAction({ inquireId, answer }));
-                }}
-              >
-                수정
+        <form onSubmit={handleSubmit(onSubmitAnswer)}>
+          <Box
+            mt="2rem"
+            p="1rem"
+            border="1px"
+            borderColor="gray.300"
+            borderRadius="lg"
+            boxShadow="sm"
+          >
+            <Textarea
+              {...register('answer')}
+              placeholder="문의내용에 대한 답변을 달아주세요."
+              minH="150px"
+              resize="none"
+              borderColor="gray.200"
+            />
+            <Box pl={2} color="red" fontSize="0.85rem">
+              {errors.answer?.message}
+            </Box>
+            <Flex mt="0.5rem" justifyContent="flex-end">
+              <Button type="submit" size="sm" w="150px" colorScheme="blue">
+                {answerButtonName}
               </Button>
-            ) : (
-              <Button
-                size="sm"
-                w="150px"
-                colorScheme="blue"
-                onClick={(e) => {
-                  dispatch(addAnswerRequestAction({ inquireId, answer }));
-                }}
-              >
-                등록
-              </Button>
-            )}
-          </Flex>
-        </Box>
+            </Flex>
+          </Box>
+        </form>
       )}
 
       <Flex mt="2rem" justifyContent="space-between">

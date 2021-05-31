@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Router, { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
+import { END } from '@redux-saga/core';
+import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -14,12 +16,11 @@ import {
   Flex,
   Button,
 } from '@chakra-ui/react';
+import wrapper from '../store/configureStore';
 import AppLayout from '../components/AppLayout';
 import FormInput from '../components/FormInput';
-import {
-  addInquireRequestAction,
-  updateInquireRequestAction,
-} from '../reducers/inquire';
+import { addInquireRequestAction } from '../reducers/inquire';
+import { loadMyInfoRequest } from '../reducers/user';
 
 const inquireSchema = yup.object().shape({
   corporateName: yup
@@ -47,85 +48,48 @@ const inquireSchema = yup.object().shape({
   content: yup.string().required('문의내용을 입력해주세요'),
 });
 
-export default function InquireWrite() {
+const InquireWrite = () => {
   // 라우터
   const router = useRouter();
 
   // 상태관리
+  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
-  const { mainInquire, addInquireDone } = useSelector((state) => state.inquire);
-  const inquire = mainInquire.find(
-    (v) => v.inquire_id == router.query.inquire_id
-  );
+  const { addInquireDone } = useSelector((state) => state.inquire);
 
-  console.log(user);
-  console.log(inquire);
-
-  // 입력 초기값 설정
+  // 입력 초기값
   let initialCorporateName = '';
   let initialName = '';
   let initialEmail = '';
   let initialTel = '';
-  let initialTitle = '';
-  let initialContent = '';
-  let buttonName = '';
 
-  if (inquire && user?.user_id === inquire.user_id) {
-    initialCorporateName = inquire.corporate_name;
-    initialName = inquire.name;
-    initialEmail = inquire.email;
-    initialTel = inquire.tel;
-    initialTitle = inquire.title;
-    initialContent = inquire.content;
-    buttonName = '수정하기';
-  } else if (user) {
+  if (user) {
     initialCorporateName = user.corporate_name;
     initialName = user.name;
     initialEmail = user.email;
     initialTel = user.tel;
-    initialTitle = '';
-    initialContent = '';
-    buttonName = '등록하기';
-  } else {
-    initialCorporateName = '';
-    initialName = '';
-    initialEmail = '';
-    initialTel = '';
-    initialTitle = '';
-    initialContent = '';
-    buttonName = '등록하기';
   }
 
   // 휴대폰 번호 입력(하이픈)
-  // const [tel, setTel] = useState(initialTel);
-  // const onChangeTel = (e) => {
-  //   const value = e.target.value.replace(/[^0-9]/g, '');
-  //   let result = '';
+  const [tel, setTel] = useState(initialTel);
+  const onChangeTel = (e) => {
+    const value = e.target.value.replace(/[^0-9]/g, '');
+    let result = '';
 
-  //   if (value.length < 4) {
-  //     result = value;
-  //   } else if (value.length < 7) {
-  //     result = `${value.substr(0, 3)}-${value.substr(3)}`;
-  //   } else if (value.length < 11) {
-  //     result = `${value.substr(0, 3)}-${value.substr(3, 3)}-${value.substr(6)}`;
-  //   } else {
-  //     result = `${value.substr(0, 3)}-${value.substr(3, 4)}-${value.substr(
-  //       7,
-  //       4
-  //     )}`;
-  //   }
-  //   setTel(result);
-  //   setValue('tel', result);
-  // };
-
-  // 문의 작성, 수정
-  const dispatch = useDispatch();
-  const onSubmitForm = (data) => {
-    if (inquire) {
-      dispatch(updateInquireRequestAction(data));
+    if (value.length < 4) {
+      result = value;
+    } else if (value.length < 7) {
+      result = `${value.substr(0, 3)}-${value.substr(3)}`;
+    } else if (value.length < 11) {
+      result = `${value.substr(0, 3)}-${value.substr(3, 3)}-${value.substr(6)}`;
     } else {
-      dispatch(addInquireRequestAction(data));
+      result = `${value.substr(0, 3)}-${value.substr(3, 4)}-${value.substr(
+        7,
+        4
+      )}`;
     }
+    setTel(result);
+    setValue('tel', result);
   };
 
   // 페이지 이동
@@ -155,7 +119,11 @@ export default function InquireWrite() {
       >
         문의하기
       </Heading>
-      <form onSubmit={handleSubmit(onSubmitForm)}>
+      <form
+        onSubmit={handleSubmit((data) =>
+          dispatch(addInquireRequestAction(data))
+        )}
+      >
         <Table my="2.5rem" size="sm" borderTop="1px">
           <Tbody>
             {/* 업체명 */}
@@ -193,29 +161,20 @@ export default function InquireWrite() {
               <Input
                 {...register('tel')}
                 placeholder="010-1234-5678"
-                defaultValue={initialTel}
+                value={tel}
+                onChange={onChangeTel}
                 size="sm"
               />
             </FormInput>
 
             {/* 타이틀 */}
             <FormInput label="타이틀" errors={errors.title} table>
-              <Input
-                {...register('title')}
-                placeholder="타이틀"
-                defaultValue={initialTitle}
-                size="sm"
-              />
+              <Input {...register('title')} placeholder="타이틀" size="sm" />
             </FormInput>
 
             {/* 문의내용 */}
             <FormInput label="문의내용" errors={errors.content} table>
-              <Textarea
-                {...register('content')}
-                defaultValue={initialContent}
-                minH="210px"
-                resize="none"
-              />
+              <Textarea {...register('content')} minH="210px" resize="none" />
             </FormInput>
           </Tbody>
         </Table>
@@ -232,10 +191,25 @@ export default function InquireWrite() {
             </Button>
           </Link>
           <Button type="submit" w="150px" size="md" colorScheme="blue">
-            {buttonName}
+            등록하기
           </Button>
         </Flex>
       </form>
     </AppLayout>
   );
-}
+};
+
+export const getServerSideProps = wrapper.getServerSideProps(
+  async (context) => {
+    const cookie = context.req ? context.req.headers.cookie : '';
+    axios.defaults.headers.Cookie = '';
+    if (context.req && cookie) {
+      axios.defaults.headers.Cookie = cookie;
+    }
+    context.store.dispatch(loadMyInfoRequest());
+    context.store.dispatch(END);
+    await context.store.sagaTask.toPromise();
+  }
+);
+
+export default InquireWrite;
