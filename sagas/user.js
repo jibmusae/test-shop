@@ -22,30 +22,7 @@ import {
   REMOVE_CART_REQUEST,
   REMOVE_CART_SUCCESS,
   REMOVE_CART_FAILURE,
-  ITEM_CHECK_REQUEST,
-  ITEM_CHECK_SUCCESS,
-  ITEM_CHECK_FAILURE,
-  ALL_CHECK_REQUEST,
-  ALL_CHECK_SUCCESS,
-  ALL_CHECK_FAILURE,
 } from '../reducers/user';
-
-// API
-function addCartAPI(data) {
-  return axios.post('/api/addCart', data);
-}
-function updateCartAPI(data) {
-  return axios.post('/api/updateCart', data);
-}
-function removeCartAPI(data) {
-  return axios.post('/api/removeCart', data);
-}
-function itemCheckAPI(data) {
-  return axios.post('/api/itemCheck', data);
-}
-function allCheckAPI(data) {
-  return axios.post('/api/allCheck', data);
-}
 
 // 로그인 정보 불러오기
 function loadMyInfoAPI() {
@@ -55,12 +32,12 @@ function* loadMyInfo(action) {
   try {
     const result = yield call(loadMyInfoAPI, action.data);
     yield put({
-      type: LOGIN_SUCCESS,
+      type: LOAD_MY_INFO_SUECCSS,
       data: result.data,
     });
   } catch (err) {
     yield put({
-      type: LOGIN_FAILURE,
+      type: LOAD_MY_INFO_FAILURE,
       error: err.response.data,
     });
   }
@@ -124,16 +101,15 @@ function* signup(action) {
 }
 
 // 장바구니 추가
+function addCartAPI(data) {
+  return axios.post('/cart', data);
+}
 function* addCart(action) {
   try {
-    // 서버 필요
-    // const result = yield call(addCartAPI, action.data);
-    // yield delay(1000);
+    const result = yield call(addCartAPI, action.data);
     yield put({
       type: ADD_CART_SUCCESS,
-      // 서버 필요
-      // data: result.data,
-      data: action.data,
+      data: result.data,
     });
   } catch (err) {
     yield put({
@@ -144,16 +120,15 @@ function* addCart(action) {
 }
 
 // 장바구니 수정
+function updateCartAPI(data) {
+  return axios.patch(`/cart/${data.cartId}`, data);
+}
 function* updateCart(action) {
   try {
-    // 서버 필요
-    // const result = yield call(updateCartAPI, action.data);
-    // yield delay(1000);
+    const result = yield call(updateCartAPI, action.data);
     yield put({
       type: UPDATE_CART_SUCCESS,
-      // 서버 필요
-      // data: result.data,
-      data: action.data,
+      data: result.data,
     });
   } catch (err) {
     yield put({
@@ -164,60 +139,19 @@ function* updateCart(action) {
 }
 
 // 장바구니 삭제
+function removeCartAPI(data) {
+  return axios.delete(`/cart/${data.cartId}`, data);
+}
 function* removeCart(action) {
   try {
-    // 서버 필요
-    // const result = yield call(removeCartAPI, action.data);
-    // yield delay(1000);
+    const result = yield call(removeCartAPI, action.data);
     yield put({
       type: REMOVE_CART_SUCCESS,
-      // 서버 필요
-      // data: result.data,
-      data: action.data,
+      data: result.data,
     });
   } catch (err) {
     yield put({
       type: REMOVE_CART_FAILURE,
-      error: err.response.data,
-    });
-  }
-}
-
-// 장바구니 상품 체크
-function* itemCheck(action) {
-  try {
-    // 서버 필요
-    // const result = yield call(itemCheckAPI, action.data);
-    // yield delay(1000);
-    yield put({
-      type: ITEM_CHECK_SUCCESS,
-      // 서버 필요
-      // data: result.data,
-      data: action.data,
-    });
-  } catch (err) {
-    yield put({
-      type: ITEM_CHECK_FAILURE,
-      error: err.response.data,
-    });
-  }
-}
-
-// 장바구니 전체 체크
-function* allCheck(action) {
-  try {
-    // 서버 필요
-    // const result = yield call(allCheckAPI, action.data);
-    // yield delay(1000);
-    yield put({
-      type: ALL_CHECK_SUCCESS,
-      // 서버 필요
-      // data: result.data,
-      data: action.data,
-    });
-  } catch (err) {
-    yield put({
-      type: ALL_CHECK_FAILURE,
       error: err.response.data,
     });
   }
@@ -245,12 +179,6 @@ function* watchUpdateCart() {
 function* watchRemoveCart() {
   yield takeLatest(REMOVE_CART_REQUEST, removeCart);
 }
-function* watchItemCheck() {
-  yield takeLatest(ITEM_CHECK_REQUEST, itemCheck);
-}
-function* watchAllCheck() {
-  yield takeLatest(ALL_CHECK_REQUEST, allCheck);
-}
 
 export default function* userSaga() {
   yield all([
@@ -261,7 +189,5 @@ export default function* userSaga() {
     fork(watchAddCart),
     fork(watchUpdateCart),
     fork(watchRemoveCart),
-    fork(watchItemCheck),
-    fork(watchAllCheck),
   ]);
 }

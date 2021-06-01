@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import {
   Heading,
@@ -14,8 +14,15 @@ import ItemList from './itemList';
 
 export default function InProgress() {
   // 상태관리
-  const { user } = useSelector((state) => state.user);
+  const { user, addCartError } = useSelector((state) => state.user);
   const { mainItems } = useSelector((state) => state.item);
+
+  // 장바구니 최대개수 에러 메시지
+  useEffect(() => {
+    if (addCartError) {
+      alert(addCartError);
+    }
+  }, [addCartError]);
 
   // 상품추가 모달
   const [isAddItem, setIsAddItem] = useState(false);

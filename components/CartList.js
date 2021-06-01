@@ -17,20 +17,25 @@ import { CgClose } from 'react-icons/cg';
 import {
   updateCartRequestAction,
   removeCartRequestAction,
-  itemCheckRequestAction,
+  itemCheckAction,
 } from '../reducers/user';
 
 export default function CartList({ cart }) {
   // cart
-  const { itemId, itemName, itemImage, itemAmount } = cart;
+  const itemId = cart.item_id;
+  const count = cart.count;
+  const name = cart.Item.name;
+  const price = cart.Item.price;
+  const src = cart.Item.Image.src;
+  const alt = cart.Item.Image.alt;
 
   // 개수 수정
   const dispatch = useDispatch();
-  const onChangeCount = (itemCount) => {
+  const onChangeCount = (count) => {
     dispatch(
       updateCartRequestAction({
         itemId,
-        itemCount,
+        count,
       })
     );
   };
@@ -43,30 +48,37 @@ export default function CartList({ cart }) {
   // 상품 체크
   const onClickItemCheck = (e) => {
     const itemChecked = e.target.checked;
-    dispatch(
-      itemCheckRequestAction({
-        itemId,
-        itemChecked,
-      })
-    );
+    // dispatch(
+    //   itemCheckAction({
+    //     itemId,
+    //     itemChecked,
+    //   })
+    // );
   };
 
   return (
     <Tbody>
       <Tr>
         <Td>
-          <Checkbox isChecked={cart?.itemChecked} onChange={onClickItemCheck} />
+          <Checkbox
+            // isChecked={cart.itemChecked}
+            onChange={onClickItemCheck}
+          />
         </Td>
         <Td>
-          <Image boxSize="75px" src={itemImage?.src} alt={itemImage?.alt} />
+          <Image
+            boxSize="75px"
+            src={`http://localhost:3065/${src}`}
+            alt={alt}
+          />
         </Td>
-        <Td>{itemName}</Td>
+        <Td>{name}</Td>
         <Td>
           <NumberInput
             size="sm"
             min={1}
             max={99}
-            value={cart?.itemCount}
+            value={count}
             onChange={onChangeCount}
           >
             <NumberInputField />
@@ -76,7 +88,7 @@ export default function CartList({ cart }) {
             </NumberInputStepper>
           </NumberInput>
         </Td>
-        <Td isNumeric>{itemAmount?.toLocaleString('ko-KR')}원</Td>
+        <Td isNumeric>{price.toLocaleString('ko-KR')}원</Td>
         <Td>
           <Icon
             as={CgClose}

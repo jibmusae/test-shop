@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import Router from 'next/router';
+import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
+import { END } from '@redux-saga/core';
 import {
   Heading,
   Table,
@@ -18,43 +20,50 @@ import {
   Td,
 } from '@chakra-ui/react';
 import { CgMathPlus, CgMathEqual } from 'react-icons/cg';
+import wrapper from '../store/configureStore';
 import AppLayout from '../components/AppLayout';
 import CartList from '../components/CartList';
-import { allCheckRequestAction } from '../reducers/user';
+import { loadMyInfoRequest, allCheckAction } from '../reducers/user';
 
-export default function cart() {
+const Cart = () => {
   // 상태관리
   const { user } = useSelector((state) => state.user);
 
+  // 페이지 이동
+  useEffect(() => {
+    if (!user) {
+      Router.push('/login');
+    }
+  }, [user]);
+
+  // 초기값
   let totalCount = 0;
   let totalAmount = 0;
   let deliveryCharge = 0;
   let totalPrice = 0;
 
-  if (user?.cart?.length) {
-    user.cart.map((cart) => {
-      if (cart.itemChecked) {
-        totalCount += Number(cart.itemCount);
-        totalAmount += Number(cart.itemAmount);
-        if (totalAmount >= 500000) {
-          deliveryCharge = 0;
-        } else {
-          deliveryCharge = 3000;
-        }
-        totalPrice = totalAmount + deliveryCharge;
+  if (user?.Carts) {
+    user.Carts.map((cart) => {
+      totalCount += Number(cart.count);
+      totalAmount += Number(cart.Item.price);
+      if (totalAmount >= 500000) {
+        deliveryCharge = 0;
+      } else {
+        deliveryCharge = 3000;
       }
+      totalPrice = totalAmount + deliveryCharge;
     });
   }
 
   // 전체 체크
-  const checkedItems = user?.cart?.filter((v) => v.itemChecked);
-  const allChecked =
-    user?.cart?.length && checkedItems?.length === user?.cart?.length;
+  // const checkedItems = user?.cart?.filter((v) => v.itemChecked);
+  // const allChecked =
+  //   user?.cart?.length && checkedItems?.length === user?.cart?.length;
 
-  const dispatch = useDispatch();
-  const onClickAllCheck = (e) => {
-    dispatch(allCheckRequestAction(!allChecked));
-  };
+  // const dispatch = useDispatch();
+  // const onClickAllCheck = (e) => {
+  //   dispatch(allCheckAction(!allChecked));
+  // };
 
   return (
     <AppLayout>
@@ -74,9 +83,9 @@ export default function cart() {
           <Tr>
             <Th w="64px">
               <Checkbox
-                isDisabled={!user?.cart?.length}
-                onChange={onClickAllCheck}
-                isChecked={allChecked}
+                isDisabled={!user?.Carts}
+                // onChange={onClickAllCheck}
+                // isChecked={allChecked}
               />
             </Th>
             <Th w="123px"></Th>
@@ -90,8 +99,8 @@ export default function cart() {
             <Th w="64px" textAlign="center"></Th>
           </Tr>
         </Thead>
-        {user?.cart?.length ? (
-          user.cart.map((cart) => <CartList key={cart.itemId} cart={cart} />)
+        {user?.Carts ? (
+          user.Carts.map((cart) => <CartList key={cart.item_id} cart={cart} />)
         ) : (
           <Tbody>
             <Tr h="100px">
@@ -144,10 +153,25 @@ export default function cart() {
         colorScheme="blue"
         spacing="3"
       >
-        <Button w="150px" disabled={!user?.cart?.length}>
+        <Button w="150px" disabled={!user?.Carts}>
           선택구매
         </Button>
       </ButtonGroup>
     </AppLayout>
   );
-}
+};
+
+export const getServerSideProps = wrapper.getServerSideProps(
+  async (context) => {
+    const cookie = context.req ? context.req.headers.cookie : '';
+    axios.defaults.headers.Cookie = '';
+    if (context.req && cookie) {
+      axios.defaults.headers.Cookie = cookie;
+    }
+    context.store.dispatch(loadMyInfoRequest());
+    context.store.dispatch(END);
+    await context.store.sagaTask.toPromise();
+  }
+);
+
+export default Cart;

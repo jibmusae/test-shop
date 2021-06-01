@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Router from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
+import moment from 'moment';
 import {
   Text,
   Flex,
@@ -14,11 +15,7 @@ import {
   NumberDecrementStepper,
   Button,
 } from '@chakra-ui/react';
-import moment from 'moment';
-import {
-  addCartRequestAction,
-  updateCartRequestAction,
-} from '../reducers/user';
+import { addCartRequestAction } from '../reducers/user';
 import { removeItemRequestAction } from '../reducers/item';
 
 export default function ItemList({ item }) {
@@ -42,19 +39,8 @@ export default function ItemList({ item }) {
   const dispatch = useDispatch();
   const onClickAddCart = (e) => {
     if (user) {
-      // 현재 장바구니에 존재하는 상품
-      const preexistingCartItem = user.cart?.find((v) => v.itemId === item.id);
-
-      if (preexistingCartItem) {
-        const itemId = item.item_id;
-        const itemCount = Number(count) + Number(preexistingCartItem.itemCount);
-
-        // 장바구니 수정
-        dispatch(updateCartRequestAction({ itemId, itemCount }));
-      } else {
-        // 장바구니 추가
-        dispatch(addCartRequestAction({ item, count }));
-      }
+      const itemId = item.item_id;
+      dispatch(addCartRequestAction({ itemId, count }));
     } else {
       Router.push('/login');
     }

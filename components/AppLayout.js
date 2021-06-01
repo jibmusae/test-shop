@@ -80,20 +80,22 @@ export default function AppLayout({ children }) {
               <Text fontSize="12px">문의하기</Text>
             </ListItem>
           </Link>
-          <Link href="/cart">
-            <ListItem
-              ml="1.5rem"
-              d="flex"
-              flexDirection="column"
-              justifyContent="center"
-              alignItems="center"
-              cursor="pointer"
-              color="#495057"
-            >
-              <Icon as={RiShoppingCart2Line} boxSize="35px" />
-              <Text fontSize="12px">장바구니</Text>
-            </ListItem>
-          </Link>
+          {user && (
+            <Link href="/cart">
+              <ListItem
+                ml="1.5rem"
+                d="flex"
+                flexDirection="column"
+                justifyContent="center"
+                alignItems="center"
+                cursor="pointer"
+                color="#495057"
+              >
+                <Icon as={RiShoppingCart2Line} boxSize="35px" />
+                <Text fontSize="12px">장바구니</Text>
+              </ListItem>
+            </Link>
+          )}
         </List>
       </header>
       <main>
