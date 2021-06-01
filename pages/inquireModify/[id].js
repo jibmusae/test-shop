@@ -63,17 +63,24 @@ const InquireModify = () => {
 
   // 페이지 이동
   useEffect(() => {
-    if (!thisInquire || thisInquire.user_id !== user?.user_id) {
-      console.log(thisInquire, user);
+    if (!thisInquire) {
+      alert('해당 페이지가 존재하지 않습니다.\n문의하기 페이지로 이동합니다.');
       router.push('/inquire');
     }
+    if (!user?.admin_flag && thisInquire.user_id !== user?.user_id) {
+      alert('본인의 게시글이 아닙니다.\n문의하기 페이지로 이동합니다.');
+      router.push('/inquire');
+    }
+  }, [thisInquire, user]);
+
+  useEffect(() => {
     if (updateInquireDone) {
       router.push({
         pathname: '/inquireView/[id]',
         query: { id: router.query.id },
       });
     }
-  }, [user, thisInquire, updateInquireDone]);
+  }, [updateInquireDone]);
 
   // 휴대폰 번호 입력(하이픈)
   const [tel, setTel] = useState(thisInquire.tel);

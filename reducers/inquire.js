@@ -177,6 +177,7 @@ const reducer = (state = initialState, action) => {
         draft.removeInquireError = null;
         break;
       case REMOVE_INQUIRE_SUCCESS:
+        console.log(action);
         draft.mainInquire = draft.mainInquire.filter(
           (v) => v.inquire_id !== action.data.inquireId
         );
