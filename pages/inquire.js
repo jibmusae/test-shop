@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
@@ -17,11 +17,11 @@ import {
 import { CgChevronLeft, CgChevronRight } from 'react-icons/cg';
 import {
   Paginator,
+  Container,
   Previous,
+  usePaginator,
   Next,
   PageGroup,
-  Page,
-  usePaginator,
 } from 'chakra-paginator';
 import AppLayout from '../components/AppLayout';
 import InquireList from '../components/InquireList';
@@ -34,10 +34,42 @@ const Inquire = () => {
   const { mainInquire } = useSelector((state) => state.inquire);
 
   // 페이지네이션
-  const pagesQuantity = mainInquire.length;
-  const { currentPage, setCurrentPage } = usePaginator({
-    initialState: { currentPage: 1 },
+  const [inquireTotal, setInquireTotal] = useState(0);
+  const [currentInquires, setCurrentInquires] = useState([]);
+  const {
+    pagesQuantity,
+    offset,
+    currentPage,
+    setCurrentPage,
+    pageSize,
+  } = usePaginator({
+    total: inquireTotal,
+    initialState: {
+      pageSize: 15,
+      currentPage: 1,
+    },
   });
+
+  // effects
+  useEffect(() => {
+    setInquireTotal(mainInquire.length);
+    setCurrentInquires(
+      mainInquire.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+    );
+  }, [mainInquire, currentPage, pageSize]);
+
+  // styles
+  const activeStyles = {
+    w: 6,
+    fontSize: 'sm',
+  };
+  const normalStyles = {
+    ...activeStyles,
+    _hover: {
+      bg: 'gray.300',
+    },
+    bg: 'white',
+  };
 
   return (
     <AppLayout>
@@ -72,8 +104,8 @@ const Inquire = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {mainInquire?.length ? (
-            mainInquire.map((inquire) => (
+          {currentInquires?.length ? (
+            currentInquires.map((inquire) => (
               <InquireList key={inquire.inquire_id} inquire={inquire} />
             ))
           ) : (
@@ -85,23 +117,24 @@ const Inquire = () => {
           )}
         </Tbody>
       </Table>
-
-      <Flex mt="2rem" justifyContent="space-between">
+      <Container w="full" align="center" justify="space-between">
         <Paginator
-          pagesQuantity={pagesQuantity}
           currentPage={currentPage}
+          pagesQuantity={pagesQuantity}
+          normalStyles={normalStyles}
+          actioveStyles={activeStyles}
           onPageChange={setCurrentPage}
         >
-          <Container align="center" justify="space-between" w="full" p={4}>
-            <Previous>
-              <CgChevronLeft />
-            </Previous>
-            <Page key={`paginator_page_${page}`} page={page} />
-            <Next>
-              <CgChevronRight />
-            </Next>
-          </Container>
+          <Previous bg="white">
+            <CgChevronLeft />
+          </Previous>
+          <PageGroup isInline align="center" />
+          <Next bg="white">
+            <CgChevronRight />
+          </Next>
         </Paginator>
+      </Container>
+      <Flex mt="2rem" justifyContent="flex-end">
         <Link href="/inquireWrite">
           <Button w="100px" size="sm" colorScheme="blue">
             글쓰기

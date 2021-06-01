@@ -56,7 +56,7 @@ const InquireView = () => {
   let inquireId = '';
   let answerId = '';
   let createdAt = '';
-  let answerStatus = '';
+  let answerStatus = '미확인';
   let inquireTitle = '';
   let inquireContent = '';
   let answeredAt = '';
@@ -67,14 +67,16 @@ const InquireView = () => {
     inquireId = thisInquire.inquire_id;
     answerId = thisInquire.Answer?.answer_id;
     createdAt = moment(thisInquire.createdAt).format('YYYY-MM-DD HH:mm');
-    answerStatus = thisInquire.Answer ? '답변완료' : '미확인';
     inquireTitle = thisInquire.title;
     inquireContent = thisInquire.content;
-    answeredAt = thisInquire.Answer
-      ? moment(thisInquire.Answer.createdAt).format('YYYY-MM-DD HH:mm')
-      : '';
-    answerContent = thisInquire.Answer?.content;
-    answerButtonName = '수정';
+    if (thisInquire.Answer) {
+      answerStatus = '답변완료';
+      answeredAt = moment(thisInquire.Answer.createdAt).format(
+        'YYYY-MM-DD HH:mm'
+      );
+      answerContent = thisInquire.Answer.content;
+      answerButtonName = '수정';
+    }
   }
 
   // 문의 삭제
@@ -218,7 +220,7 @@ const InquireView = () => {
           </Button>
         </Link>
         <HStack spacing="1rem">
-          {user?.user_id === thisInquire?.user_id && (
+          {(user?.user_id === thisInquire?.user_id || user?.admin_flag) && (
             <>
               <Button
                 type="submit"
