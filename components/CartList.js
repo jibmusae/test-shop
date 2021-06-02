@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
   Tbody,
@@ -17,53 +17,39 @@ import { CgClose } from 'react-icons/cg';
 import {
   updateCartRequestAction,
   removeCartRequestAction,
-  itemCheckAction,
 } from '../reducers/user';
 
 export default function CartList({ cart }) {
   // cart
-  const itemId = cart.item_id;
+  const cartId = cart.cart_id;
   const count = cart.count;
+  const checked = cart.checked;
   const name = cart.Item.name;
-  const price = cart.Item.price;
+  const price = cart.Item.price * count;
   const src = cart.Item.Image.src;
   const alt = cart.Item.Image.alt;
 
-  // 개수 수정
-  const dispatch = useDispatch();
-  const onChangeCount = (count) => {
+  // 장바구니 수정
+  const onChangeChecked = (e) => {
     dispatch(
-      updateCartRequestAction({
-        itemId,
-        count,
-      })
+      updateCartRequestAction({ cartId, checked: e.target.checked, count })
     );
+  };
+  const onChangeCount = (value) => {
+    dispatch(updateCartRequestAction({ cartId, checked, count: value }));
   };
 
   // 단품삭제 버튼
-  const onClickRemoveItem = (e) => {
-    dispatch(removeCartRequestAction(itemId));
-  };
-
-  // 상품 체크
-  const onClickItemCheck = (e) => {
-    const itemChecked = e.target.checked;
-    // dispatch(
-    //   itemCheckAction({
-    //     itemId,
-    //     itemChecked,
-    //   })
-    // );
+  const dispatch = useDispatch();
+  const onClickRemoveCart = (e) => {
+    dispatch(removeCartRequestAction(cartId));
   };
 
   return (
     <Tbody>
       <Tr>
         <Td>
-          <Checkbox
-            // isChecked={cart.itemChecked}
-            onChange={onClickItemCheck}
-          />
+          <Checkbox isChecked={checked} onChange={onChangeChecked} />
         </Td>
         <Td>
           <Image
@@ -78,7 +64,7 @@ export default function CartList({ cart }) {
             size="sm"
             min={1}
             max={99}
-            value={count}
+            defaultValue={count}
             onChange={onChangeCount}
           >
             <NumberInputField />
@@ -95,7 +81,7 @@ export default function CartList({ cart }) {
             boxSize={4}
             color="gray.500"
             cursor="pointer"
-            onClick={onClickRemoveItem}
+            onClick={onClickRemoveCart}
           />
         </Td>
       </Tr>

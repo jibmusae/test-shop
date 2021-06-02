@@ -22,6 +22,9 @@ import {
   REMOVE_CART_REQUEST,
   REMOVE_CART_SUCCESS,
   REMOVE_CART_FAILURE,
+  ALL_CHECK_REQUEST,
+  ALL_CHECK_SUCCESS,
+  ALL_CHECK_FAILURE,
 } from '../reducers/user';
 
 // 로그인 정보 불러오기
@@ -140,7 +143,7 @@ function* updateCart(action) {
 
 // 장바구니 삭제
 function removeCartAPI(data) {
-  return axios.delete(`/cart/${data.cartId}`, data);
+  return axios.delete(`/cart/${data}`);
 }
 function* removeCart(action) {
   try {
@@ -152,6 +155,25 @@ function* removeCart(action) {
   } catch (err) {
     yield put({
       type: REMOVE_CART_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// 전체 체크
+function allCheckAPI(data) {
+  return axios.patch(`/cart/allCheck`, data);
+}
+function* allCheck(action) {
+  try {
+    const result = yield call(allCheckAPI, action.data);
+    yield put({
+      type: ALL_CHECK_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    yield put({
+      type: ALL_CHECK_FAILURE,
       error: err.response.data,
     });
   }
@@ -179,6 +201,9 @@ function* watchUpdateCart() {
 function* watchRemoveCart() {
   yield takeLatest(REMOVE_CART_REQUEST, removeCart);
 }
+function* watchAllCheck() {
+  yield takeLatest(ALL_CHECK_REQUEST, allCheck);
+}
 
 export default function* userSaga() {
   yield all([
@@ -189,5 +214,6 @@ export default function* userSaga() {
     fork(watchAddCart),
     fork(watchUpdateCart),
     fork(watchRemoveCart),
+    fork(watchAllCheck),
   ]);
 }

@@ -36,19 +36,15 @@ const Inquire = () => {
   // 페이지네이션
   const [inquireTotal, setInquireTotal] = useState(0);
   const [currentInquires, setCurrentInquires] = useState([]);
-  const {
-    pagesQuantity,
-    offset,
-    currentPage,
-    setCurrentPage,
-    pageSize,
-  } = usePaginator({
-    total: inquireTotal,
-    initialState: {
-      pageSize: 15,
-      currentPage: 1,
-    },
-  });
+  const { pagesQuantity, currentPage, setCurrentPage, pageSize } = usePaginator(
+    {
+      total: inquireTotal,
+      initialState: {
+        pageSize: 15,
+        currentPage: 1,
+      },
+    }
+  );
 
   // effects
   useEffect(() => {

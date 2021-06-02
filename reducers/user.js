@@ -23,6 +23,9 @@ export const initialState = {
   removeCartLoading: false,
   removeCartDone: false,
   removeCartError: null,
+  allCheckLoading: false,
+  allCheckDone: false,
+  allCheckError: null,
   user: null,
 };
 
@@ -51,8 +54,9 @@ export const REMOVE_CART_REQUEST = 'REMOVE_CART_REQUEST';
 export const REMOVE_CART_SUCCESS = 'REMOVE_CART_SUCCESS';
 export const REMOVE_CART_FAILURE = 'REMOVE_CART_FAILURE';
 
-export const ITEM_CHECK = 'ITEM_CHECK';
-export const ALL_CHECK = 'ALL_CHECK';
+export const ALL_CHECK_REQUEST = 'ALL_CHECK_REQUEST';
+export const ALL_CHECK_SUCCESS = 'ALL_CHECK_SUCCESS';
+export const ALL_CHECK_FAILURE = 'ALL_CHECK_FAILURE';
 
 // 로그인 정보 불러오기 액션
 export const loadMyInfoRequest = () => ({
@@ -94,15 +98,9 @@ export const removeCartRequestAction = (data) => ({
   data,
 });
 
-// 장바구니 상품 체크 액션
-export const itemCheckAction = (data) => ({
-  type: ITEM_CHECK,
-  data,
-});
-
 // 장바구니 전체 체크 액션
-export const allCheckAction = (data) => ({
-  type: ALL_CHECK,
+export const allCheckRequestAction = (data) => ({
+  type: ALL_CHECK_REQUEST,
   data,
 });
 
@@ -193,11 +191,7 @@ const reducer = (state = initialState, action) => {
         draft.updateCartError = null;
         break;
       case UPDATE_CART_SUCCESS:
-        const cartItem = draft.user.Carts.find(
-          (v) => v.itemId === action.data.itemId
-        );
-        cartItem.itemCount = action.data.itemCount;
-        cartItem.itemAmount = action.data.itemCount * cartItem.itemPrice;
+        draft.user.Carts = action.data;
         draft.updateCartLoading = false;
         draft.updateCartDone = true;
         break;
@@ -213,7 +207,7 @@ const reducer = (state = initialState, action) => {
         break;
       case REMOVE_CART_SUCCESS:
         draft.user.Carts = draft.user.Carts.filter(
-          (v) => v.itemId !== action.data
+          (v) => v.cart_id !== action.data.cart_id
         );
         draft.removeCartLoading = false;
         draft.removeCartDone = true;
@@ -223,17 +217,20 @@ const reducer = (state = initialState, action) => {
         draft.removeCartError = action.error;
         break;
 
-      // 장바구니 상품 체크
-      case ITEM_CHECK:
-        const itemCheckTargetCart = draft.user.Carts.find(
-          (v) => v.itemId === action.data.itemId
-        );
-        itemCheckTargetCart.itemChecked = action.data.itemChecked;
+      // 전체 체크
+      case ALL_CHECK_REQUEST:
+        draft.allCheckLoading = true;
+        draft.allCheckDone = false;
+        draft.allCheckError = null;
         break;
-      // 장바구니 전체 체크
-      case ALL_CHECK:
-        draft.user.Carts.map((v) => (v.itemChecked = action.data));
+      case ALL_CHECK_SUCCESS:
+        draft.user.Carts = action.data;
+        draft.allCheckLoading = false;
+        draft.allCheckDone = true;
         break;
+      case ALL_CHECK_FAILURE:
+        draft.allCheckLoading = false;
+        draft.allCheckError = action.error;
       default:
         break;
     }

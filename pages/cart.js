@@ -23,7 +23,7 @@ import { CgMathPlus, CgMathEqual } from 'react-icons/cg';
 import wrapper from '../store/configureStore';
 import AppLayout from '../components/AppLayout';
 import CartList from '../components/CartList';
-import { loadMyInfoRequest, allCheckAction } from '../reducers/user';
+import { allCheckRequestAction, loadMyInfoRequest } from '../reducers/user';
 
 const Cart = () => {
   // 상태관리
@@ -41,29 +41,34 @@ const Cart = () => {
   let totalAmount = 0;
   let deliveryCharge = 0;
   let totalPrice = 0;
+  let checkedCount = 0;
+  let allChecked = false;
 
   if (user?.Carts) {
     user.Carts.map((cart) => {
-      totalCount += Number(cart.count);
-      totalAmount += Number(cart.Item.price);
-      if (totalAmount >= 500000) {
+      if (cart.checked) {
+        totalCount += Number(cart.count);
+        totalAmount += Number(cart.Item.price) * Number(cart.count);
+        checkedCount += 1;
+      }
+      if (totalAmount >= 500000 || !totalCount) {
         deliveryCharge = 0;
       } else {
         deliveryCharge = 3000;
       }
       totalPrice = totalAmount + deliveryCharge;
     });
+
+    if (checkedCount === user.Carts.length) {
+      allChecked = true;
+    }
   }
 
   // 전체 체크
-  // const checkedItems = user?.cart?.filter((v) => v.itemChecked);
-  // const allChecked =
-  //   user?.cart?.length && checkedItems?.length === user?.cart?.length;
-
-  // const dispatch = useDispatch();
-  // const onClickAllCheck = (e) => {
-  //   dispatch(allCheckAction(!allChecked));
-  // };
+  const dispatch = useDispatch();
+  const onChangeAllChecked = (e) => {
+    dispatch(allCheckRequestAction({ checked: e.target.checked }));
+  };
 
   return (
     <AppLayout>
@@ -84,8 +89,8 @@ const Cart = () => {
             <Th w="64px">
               <Checkbox
                 isDisabled={!user?.Carts}
-                // onChange={onClickAllCheck}
-                // isChecked={allChecked}
+                onChange={onChangeAllChecked}
+                isChecked={allChecked}
               />
             </Th>
             <Th w="123px"></Th>
