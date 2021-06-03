@@ -1,27 +1,21 @@
 import axios from 'axios';
-import { all, call, delay, fork, put, takeLatest } from 'redux-saga/effects';
+import { all, call, fork, put, takeLatest } from 'redux-saga/effects';
 import {
   ADD_ORDER_REQUEST,
   ADD_ORDER_SUCCESS,
   ADD_ORDER_FAILURE,
 } from '../reducers/order';
 
-// API
+// 주문내역 추가
 function addOrderAPI(data) {
   return axios.post('/api/addOrder', data);
 }
-
-// 주문내역 추가
 function* addOrder(action) {
   try {
-    // 서버 필요
-    // const result = yield call(addOrderAPI, action.data);
-    yield delay(1000);
+    const result = yield call(addOrderAPI, action.data);
     yield put({
       type: ADD_ORDER_SUCCESS,
-      // 서버 필요
-      // data: result.data,
-      data: action.data,
+      data: result.data,
     });
   } catch (err) {
     yield put({

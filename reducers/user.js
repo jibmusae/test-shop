@@ -231,6 +231,7 @@ const reducer = (state = initialState, action) => {
       case ALL_CHECK_FAILURE:
         draft.allCheckLoading = false;
         draft.allCheckError = action.error;
+        break;
       default:
         break;
     }

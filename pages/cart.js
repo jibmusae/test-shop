@@ -59,7 +59,7 @@ const Cart = () => {
       totalPrice = totalAmount + deliveryCharge;
     });
 
-    if (checkedCount === user.Carts.length) {
+    if (user.Carts.length && checkedCount === user.Carts.length) {
       allChecked = true;
     }
   }
@@ -88,7 +88,7 @@ const Cart = () => {
           <Tr>
             <Th w="64px">
               <Checkbox
-                isDisabled={!user?.Carts}
+                isDisabled={!user?.Carts.length}
                 onChange={onChangeAllChecked}
                 isChecked={allChecked}
               />
@@ -104,11 +104,11 @@ const Cart = () => {
             <Th w="64px" textAlign="center"></Th>
           </Tr>
         </Thead>
-        {user?.Carts ? (
+        {user?.Carts.length ? (
           user.Carts.map((cart) => <CartList key={cart.item_id} cart={cart} />)
         ) : (
           <Tbody>
-            <Tr h="100px">
+            <Tr h="200px">
               <Td colSpan="6" textAlign="center">
                 장바구니가 비었습니다.
               </Td>
@@ -118,7 +118,7 @@ const Cart = () => {
       </Table>
 
       <Flex
-        my="1rem"
+        my="2rem"
         p="1rem 1.5rem"
         justifyContent="flex-end"
         alignItems="center"
@@ -158,9 +158,11 @@ const Cart = () => {
         colorScheme="blue"
         spacing="3"
       >
-        <Button w="150px" disabled={!user?.Carts}>
-          선택구매
-        </Button>
+        <Link href="/payment">
+          <Button w="150px" disabled={!user?.Carts}>
+            선택구매
+          </Button>
+        </Link>
       </ButtonGroup>
     </AppLayout>
   );

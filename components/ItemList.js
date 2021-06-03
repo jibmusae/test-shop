@@ -17,38 +17,46 @@ import {
 } from '@chakra-ui/react';
 import { addCartRequestAction } from '../reducers/user';
 import { removeItemRequestAction } from '../reducers/item';
+import { addTempOrderAction } from '../reducers/order';
 
 export default function ItemList({ item }) {
   // 상태관리
   const { user } = useSelector((state) => state.user);
 
-  // 진행일시
+  // 상품
+  const itemId = item.item_id;
   const startDate = moment(item.start_datetime).format('YYYY-MM-DD');
   const endDate = moment(item.end_datetime).format('YYYY-MM-DD');
-
-  // 금액
   const price = `${item.price.toLocaleString('ko-KR')}원`;
-
-  // 개수
   const [count, setCount] = useState(1);
   const onChangeCount = (e) => {
-    setCount(e);
+    setCount(Number(e));
   };
 
   // 장바구니 추가
   const dispatch = useDispatch();
-  const onClickAddCart = (e) => {
+  const onClickAddCart = () => {
     if (user) {
-      const itemId = item.item_id;
       dispatch(addCartRequestAction({ itemId, count }));
+      alert('장바구니에 담았습니다.');
+    } else {
+      Router.push('/login');
+    }
+  };
+
+  // 상품 구매하기
+  const onClickBuy = () => {
+    if (user) {
+      dispatch(addTempOrderAction({ itemId, count }));
+      Router.push('/payment');
     } else {
       Router.push('/login');
     }
   };
 
   // 상품 삭제(관리자)
-  const onClickRemoveCart = (e) => {
-    dispatch(removeItemRequestAction(item.item_id));
+  const onClickRemoveCart = () => {
+    dispatch(removeItemRequestAction(itemId));
   };
 
   return (
@@ -117,7 +125,13 @@ export default function ItemList({ item }) {
           >
             장바구니
           </Button>
-          <Button w="100px" mt="0.5rem" size="sm" colorScheme="blue">
+          <Button
+            w="100px"
+            mt="0.5rem"
+            size="sm"
+            colorScheme="blue"
+            onClick={onClickBuy}
+          >
             구매하기
           </Button>
           {user?.admin_flag && (

@@ -1,8 +1,12 @@
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useState } from 'react';
+import Router from 'next/router';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { END } from '@redux-saga/core';
 import {
-  Box,
   Button,
+  ButtonGroup,
   Flex,
   Heading,
   HStack,
@@ -11,14 +15,28 @@ import {
   Table,
   Tbody,
   Td,
-  Text,
   Th,
   Thead,
   Tr,
 } from '@chakra-ui/react';
+import wrapper from '../store/configureStore';
 import AppLayout from '../components/AppLayout';
+import DonePaying from '../components/DonePaying';
+import { loadMyInfoRequest } from '../reducers/user';
 
-export default function payment() {
+const Payment = () => {
+  // 상태관리
+  const { user } = useSelector((state) => state.user);
+  const { tempOrders } = useSelector((state) => state.order);
+  console.log(tempOrders);
+  // 페이지 이동
+  useEffect(() => {
+    if (!user) {
+      Router.push('/login');
+    }
+  }, [user]);
+
+  // 결제완료
   const [isFinishOrder, setIsFinishOrder] = useState(false);
   const onClickPayment = () => {
     setIsFinishOrder(true);
@@ -27,34 +45,7 @@ export default function payment() {
   return (
     <AppLayout>
       {isFinishOrder ? (
-        <>
-          <Heading
-            as="h1"
-            size="lg"
-            fontFamily="noto"
-            textAlign="center"
-            mb="2rem"
-            color="#212529" // GRAY 9
-          >
-            결제완료
-          </Heading>
-          <Box>
-            <Heading mt="2rem" mb="1rem" as="h1" size="md" textAlign="center">
-              주문이 완료되었습니다.
-            </Heading>
-            <Flex justifyContent="center">
-              <Text mr="1rem">주문일 : 2021/04/14</Text>
-              <Text>주문번호 : 1320210414001</Text>
-            </Flex>
-          </Box>
-          <Link href="/">
-            <Flex mt="3rem" justifyContent="center">
-              <Button w="180px" size="md" colorScheme="blue">
-                돌아가기
-              </Button>
-            </Flex>
-          </Link>
-        </>
+        <DonePaying />
       ) : (
         <>
           <Heading
@@ -76,42 +67,48 @@ export default function payment() {
                 <Th w="200px" bgColor="gray.200">
                   업체명
                 </Th>
-                <Td>와이디커넥트</Td>
+                <Td>{user?.corporate_name}</Td>
               </Tr>
               <Tr>
                 <Th w="200px" bgColor="gray.200">
                   대표자명
                 </Th>
-                <Td>윤재원</Td>
+                <Td>{user?.name}</Td>
               </Tr>
               <Tr>
                 <Th w="200px" bgColor="gray.200">
                   주소
                 </Th>
-                <Td>부산광역시 영도구 와치로213 상가 1층 105호</Td>
+                <Td>{`(${user?.zip_code}) ${user?.address} ${user?.address_detail}`}</Td>
               </Tr>
               <Tr>
                 <Th w="200px" bgColor="gray.200">
                   연락처
                 </Th>
-                <Td>010-6888-8444</Td>
+                <Td>{user?.tel}</Td>
               </Tr>
             </Tbody>
           </Table>
           <Heading mt="2rem" as="h1" size="md">
             결제상품
           </Heading>
-          <Table my="1rem" size="sm" borderTop="1px">
+          <Table
+            my="1rem"
+            size="sm"
+            variant="simple"
+            borderTop="1px"
+            borderColor="gray.400"
+          >
             <Thead>
               <Tr>
-                <Th textAlign="center" bgColor="gray.200" colSpan="2">
-                  상품
+                <Th colSpan="2" textAlign="center">
+                  상품 정보
                 </Th>
-                <Th w="75px" textAlign="center" bgColor="gray.200">
-                  개수
+                <Th w="150px" textAlign="center">
+                  수량
                 </Th>
-                <Th w="150px" textAlign="center" bgColor="gray.200">
-                  가격
+                <Th w="150px" textAlign="center">
+                  금액
                 </Th>
               </Tr>
             </Thead>
@@ -185,18 +182,39 @@ export default function payment() {
               </Tr>
             </Tbody>
           </Table>
-          <Flex mt="3rem" justifyContent="center">
-            <Button
-              w="180px"
-              size="md"
-              colorScheme="blue"
-              onClick={onClickPayment}
-            >
+          <ButtonGroup
+            w="100%"
+            mt="2rem"
+            d="flex"
+            justifyContent="space-between"
+            spacing="3"
+          >
+            <Link href="/">
+              <Button w="150px" colorScheme="red" variant="outline">
+                결제취소
+              </Button>
+            </Link>
+            <Button w="150px" colorScheme="blue" onClick={onClickPayment}>
               결제하기
             </Button>
-          </Flex>
+          </ButtonGroup>
         </>
       )}
     </AppLayout>
   );
-}
+};
+
+export const getServerSideProps = wrapper.getServerSideProps(
+  async (context) => {
+    const cookie = context.req ? context.req.headers.cookie : '';
+    axios.defaults.headers.Cookie = '';
+    if (context.req && cookie) {
+      axios.defaults.headers.Cookie = cookie;
+    }
+    context.store.dispatch(loadMyInfoRequest());
+    context.store.dispatch(END);
+    await context.store.sagaTask.toPromise();
+  }
+);
+
+export default Payment;
