@@ -5,6 +5,7 @@ import InProgress from '../components/InProgress';
 import wrapper from '../store/configureStore';
 import { loadMyInfoRequest } from '../reducers/user';
 import { loadItemsRequestAction } from '../reducers/item';
+import { initializeSequenceRequestAction } from '../reducers/order';
 
 const Home = () => {
   return (
@@ -21,6 +22,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
     if (context.req && cookie) {
       axios.defaults.headers.Cookie = cookie;
     }
+    context.store.dispatch(initializeSequenceRequestAction());
     context.store.dispatch(loadMyInfoRequest());
     context.store.dispatch(loadItemsRequestAction());
     context.store.dispatch(END);
