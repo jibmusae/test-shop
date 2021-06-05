@@ -114,7 +114,6 @@ const reducer = (state = initialState, action) => {
         draft.loadMyInfoError = null;
         break;
       case LOAD_MY_INFO_SUECCSS:
-        console.log(action.data);
         draft.loadMyInfoLoading = false;
         draft.loadMyInfoDone = true;
         draft.user = action.data;
@@ -163,6 +162,7 @@ const reducer = (state = initialState, action) => {
       case SIGNUP_SUCCESS:
         draft.signupLoading = false;
         draft.signupDone = true;
+        draft.user = action.data;
         break;
       case SIGNUP_FAILURE:
         draft.signupLoading = false;

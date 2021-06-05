@@ -24,6 +24,7 @@ import wrapper from '../store/configureStore';
 import AppLayout from '../components/AppLayout';
 import CartList from '../components/CartList';
 import { allCheckRequestAction, loadMyInfoRequest } from '../reducers/user';
+import { initializeSequenceRequestAction } from '../reducers/order';
 
 const Cart = () => {
   // 상태관리
@@ -175,6 +176,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
     if (context.req && cookie) {
       axios.defaults.headers.Cookie = cookie;
     }
+    context.store.dispatch(initializeSequenceRequestAction());
     context.store.dispatch(loadMyInfoRequest());
     context.store.dispatch(END);
     await context.store.sagaTask.toPromise();

@@ -28,7 +28,7 @@ const Payment = () => {
   // 상태관리
   const { user } = useSelector((state) => state.user);
   const { tempOrders } = useSelector((state) => state.order);
-  console.log(tempOrders);
+
   // 페이지 이동
   useEffect(() => {
     if (!user) {

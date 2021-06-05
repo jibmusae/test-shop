@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Router from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
+import wrapper from '../store/configureStore';
+import { END } from '@redux-saga/core';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -22,7 +25,7 @@ import SignLayout from '../components/SignLayout';
 import Modal from '../components/Modal';
 import PostCode from '../components/PostCode';
 import FormInput from '../components/FormInput';
-import { signupRequestAction } from '../reducers/user';
+import { loadMyInfoRequest, signupRequestAction } from '../reducers/user';
 
 // yup
 const signupSchema = yup.object().shape({
@@ -75,9 +78,9 @@ const signupSchema = yup.object().shape({
   termsCheck: yup.boolean().oneOf([true], '전체 이용약관에 동의해주세요'),
 });
 
-export default function signup() {
+const Signup = () => {
   // 회원가입 상태관리
-  const { signupLoading, signupDone, signupError } = useSelector(
+  const { user, signupLoading, signupDone, signupError } = useSelector(
     (state) => state.user
   );
 
@@ -144,20 +147,15 @@ export default function signup() {
     dispatch(signupRequestAction(data));
   };
 
-  // 회원가입 완료 표시 및 페이지 이동
-  useEffect(() => {
-    if (signupDone) {
-      alert('회원가입이 완료되었습니다.\n로그인 페이지로 이동합니다.');
-      Router.push('/login');
-    }
-  }, [signupDone]);
-
-  // 서버 에러 표시
+  // 회원가입 성공시 로그인 및 페이지 이동
   useEffect(() => {
     if (signupError) {
       alert(signupError);
     }
-  }, [signupError]);
+    if (user) {
+      Router.push('/');
+    }
+  }, [signupError, user]);
 
   // react-hook-form
   const {
@@ -416,4 +414,19 @@ export default function signup() {
       </form>
     </SignLayout>
   );
-}
+};
+
+export const getServerSideProps = wrapper.getServerSideProps(
+  async (context) => {
+    const cookie = context.req ? context.req.headers.cookie : '';
+    axios.defaults.headers.Cookie = '';
+    if (context.req && cookie) {
+      axios.defaults.headers.Cookie = cookie;
+    }
+    context.store.dispatch(loadMyInfoRequest());
+    context.store.dispatch(END);
+    await context.store.sagaTask.toPromise();
+  }
+);
+
+export default Signup;
