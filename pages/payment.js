@@ -5,9 +5,9 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { END } from '@redux-saga/core';
 import {
+  Image,
   Button,
   ButtonGroup,
-  Flex,
   Heading,
   HStack,
   Radio,
@@ -23,11 +23,26 @@ import wrapper from '../store/configureStore';
 import AppLayout from '../components/AppLayout';
 import DonePaying from '../components/DonePaying';
 import { loadMyInfoRequest } from '../reducers/user';
+import { loadOrdersRequestAction } from '../reducers/order';
 
 const Payment = () => {
   // 상태관리
   const { user } = useSelector((state) => state.user);
-  const { tempOrders } = useSelector((state) => state.order);
+  const { mainOrders } = useSelector((state) => state.order);
+
+  let orders = [];
+  let itemsAmount = 0;
+  let deliveryCharge = 0;
+  let totalAmount = 0;
+
+  mainOrders.map((order) => {
+    if (Number(order.status) === 0) {
+      itemsAmount += order.Item.price * order.count;
+      deliveryCharge = itemsAmount >= 500000 ? 0 : 3000;
+      totalAmount = itemsAmount + deliveryCharge;
+      orders.push(order);
+    }
+  });
 
   // 페이지 이동
   useEffect(() => {
@@ -112,32 +127,34 @@ const Payment = () => {
                 </Th>
               </Tr>
             </Thead>
-            <Tbody>
-              <Tr>
-                <Td w="120px" textAlign="center">
-                  이미지
-                </Td>
-                <Td>GIGABYTE B550m 어쩌고저쩌고</Td>
-                <Td textAlign="center">99</Td>
-                <Td textAlign="center">99,999,999원</Td>
-              </Tr>
-              <Tr>
-                <Td w="120px" textAlign="center">
-                  이미지
-                </Td>
-                <Td>GIGABYTE B550m 어쩌고저쩌고</Td>
-                <Td textAlign="center">99</Td>
-                <Td textAlign="center">99,999,999원</Td>
-              </Tr>
-              <Tr>
-                <Td w="120px" textAlign="center">
-                  이미지
-                </Td>
-                <Td>GIGABYTE B550m 어쩌고저쩌고</Td>
-                <Td textAlign="center">99</Td>
-                <Td textAlign="center">99,999,999원</Td>
-              </Tr>
-            </Tbody>
+            {orders.length ? (
+              orders.map((order) => (
+                <Tbody key={order.order_id}>
+                  <Tr>
+                    <Td w="120px" textAlign="center">
+                      <Image
+                        boxSize="75px"
+                        src={`http://localhost:3065/${order.Item.Image.src}`}
+                        alt={order.Item.Image.alt}
+                      />
+                    </Td>
+                    <Td>{order.Item.name}</Td>
+                    <Td textAlign="center">{order.count}</Td>
+                    <Td textAlign="center">
+                      {order.amount.toLocaleString('ko-KR')}원
+                    </Td>
+                  </Tr>
+                </Tbody>
+              ))
+            ) : (
+              <Tbody>
+                <Tr h="150px">
+                  <Td colSpan="4" textAlign="center">
+                    구매 상품이 없습니다.
+                  </Td>
+                </Tr>
+              </Tbody>
+            )}
           </Table>
           <Heading mt="2rem" as="h1" size="md">
             결제정보
@@ -148,19 +165,19 @@ const Payment = () => {
                 <Th w="200px" bgColor="gray.200">
                   전체 상품가격
                 </Th>
-                <Td>99,999,999원</Td>
+                <Td>{itemsAmount.toLocaleString('ko-KR')}원</Td>
               </Tr>
               <Tr>
                 <Th w="200px" bgColor="gray.200">
                   배송비
                 </Th>
-                <Td>2,500원</Td>
+                <Td>{deliveryCharge.toLocaleString('ko-KR')}원</Td>
               </Tr>
               <Tr>
                 <Th w="200px" bgColor="gray.200">
                   총 결제금액
                 </Th>
-                <Td>99,999,999원</Td>
+                <Td>{totalAmount.toLocaleString('ko-KR')}원</Td>
               </Tr>
               <Tr>
                 <Th w="200px" bgColor="gray.200">
@@ -194,7 +211,12 @@ const Payment = () => {
                 결제취소
               </Button>
             </Link>
-            <Button w="150px" colorScheme="blue" onClick={onClickPayment}>
+            <Button
+              w="150px"
+              colorScheme="blue"
+              onClick={onClickPayment}
+              disabled={!orders.length}
+            >
               결제하기
             </Button>
           </ButtonGroup>
@@ -212,6 +234,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
       axios.defaults.headers.Cookie = cookie;
     }
     context.store.dispatch(loadMyInfoRequest());
+    context.store.dispatch(loadOrdersRequestAction());
     context.store.dispatch(END);
     await context.store.sagaTask.toPromise();
   }

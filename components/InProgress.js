@@ -76,7 +76,7 @@ export default function InProgress() {
         <TabPanels>
           {/* CPU */}
           <TabPanel>
-            {cpuArray.length !== 0 ? (
+            {cpuArray.length ? (
               cpuArray.map((item) => (
                 <ItemList key={item.item_id} item={item} />
               ))
@@ -96,7 +96,7 @@ export default function InProgress() {
 
           {/* 메인보드 */}
           <TabPanel>
-            {mbArray.length !== 0 ? (
+            {mbArray.length ? (
               mbArray.map((item) => <ItemList key={item.item_id} item={item} />)
             ) : (
               <Flex
@@ -114,7 +114,7 @@ export default function InProgress() {
 
           {/* 그래픽카드 */}
           <TabPanel>
-            {vgaArray.length !== 0 ? (
+            {vgaArray.length ? (
               vgaArray.map((item) => (
                 <ItemList key={item.item_id} item={item} />
               ))
@@ -134,7 +134,7 @@ export default function InProgress() {
 
           {/* 그 외 */}
           <TabPanel>
-            {etcArray.length !== 0 ? (
+            {etcArray.length ? (
               etcArray.map((item) => (
                 <ItemList key={item.item_id} item={item} />
               ))

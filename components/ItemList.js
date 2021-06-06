@@ -15,9 +15,9 @@ import {
   NumberDecrementStepper,
   Button,
 } from '@chakra-ui/react';
-import { addCartRequestAction } from '../reducers/user';
 import { removeItemRequestAction } from '../reducers/item';
-import { addTempOrderAction } from '../reducers/order';
+import { addCartRequestAction } from '../reducers/user';
+import { addOrderRequestAction } from '../reducers/order';
 
 export default function ItemList({ item }) {
   // 상태관리
@@ -27,7 +27,6 @@ export default function ItemList({ item }) {
   const itemId = item.item_id;
   const startDate = moment(item.start_datetime).format('YYYY-MM-DD');
   const endDate = moment(item.end_datetime).format('YYYY-MM-DD');
-  const price = `${item.price.toLocaleString('ko-KR')}원`;
   const [count, setCount] = useState(1);
   const onChangeCount = (e) => {
     setCount(Number(e));
@@ -47,7 +46,7 @@ export default function ItemList({ item }) {
   // 상품 구매하기
   const onClickBuy = () => {
     if (user) {
-      dispatch(addTempOrderAction({ itemId, count }));
+      dispatch(addOrderRequestAction({ itemId, count }));
       Router.push('/payment');
     } else {
       Router.push('/login');
@@ -99,7 +98,11 @@ export default function ItemList({ item }) {
           justifyContent="center"
           alignItems="center"
         >
-          <Text fontSize="md">{user ? `${price}` : '금액 : 회원공개'}</Text>
+          <Text fontSize="md">
+            {user
+              ? `${item.price.toLocaleString('ko-KR')}원`
+              : '금액 : 회원공개'}
+          </Text>
           <NumberInput
             w="100px"
             mt="0.5rem"
