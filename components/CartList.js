@@ -17,7 +17,7 @@ import { CgClose } from 'react-icons/cg';
 import {
   updateCartRequestAction,
   removeCartRequestAction,
-} from '../reducers/user';
+} from '../reducers/cart';
 
 export default function CartList({ cart }) {
   // cart

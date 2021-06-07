@@ -16,7 +16,7 @@ import {
   Button,
 } from '@chakra-ui/react';
 import { removeItemRequestAction } from '../reducers/item';
-import { addCartRequestAction } from '../reducers/user';
+import { addCartRequestAction } from '../reducers/cart';
 import { addOrderRequestAction } from '../reducers/order';
 
 export default function ItemList({ item }) {
@@ -44,9 +44,11 @@ export default function ItemList({ item }) {
   };
 
   // 상품 구매하기
-  const onClickBuy = () => {
+  const onClickPayment = () => {
     if (user) {
-      dispatch(addOrderRequestAction({ itemId, count }));
+      const data = [];
+      data.push({ itemId: itemId, count: count, price: item.price });
+      dispatch(addOrderRequestAction(data));
       Router.push('/payment');
     } else {
       Router.push('/login');
@@ -54,7 +56,7 @@ export default function ItemList({ item }) {
   };
 
   // 상품 삭제(관리자)
-  const onClickRemoveCart = () => {
+  const onClickRemoveItem = () => {
     dispatch(removeItemRequestAction(itemId));
   };
 
@@ -133,7 +135,7 @@ export default function ItemList({ item }) {
             mt="0.5rem"
             size="sm"
             colorScheme="blue"
-            onClick={onClickBuy}
+            onClick={onClickPayment}
           >
             구매하기
           </Button>
@@ -143,7 +145,7 @@ export default function ItemList({ item }) {
               mt="0.5rem"
               size="sm"
               colorScheme="red"
-              onClick={onClickRemoveCart}
+              onClick={onClickRemoveItem}
             >
               삭제
             </Button>

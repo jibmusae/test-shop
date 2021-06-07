@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import Link from 'next/link';
 import Router from 'next/router';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,12 +22,20 @@ import { CgMathPlus, CgMathEqual } from 'react-icons/cg';
 import wrapper from '../store/configureStore';
 import AppLayout from '../components/AppLayout';
 import CartList from '../components/CartList';
-import { allCheckRequestAction, loadMyInfoRequest } from '../reducers/user';
-import { initializeSequenceRequestAction } from '../reducers/order';
+import { loadMyInfoRequest } from '../reducers/user';
+import {
+  allCheckRequestAction,
+  loadMyCartRequestAction,
+} from '../reducers/cart';
+import {
+  addOrderRequestAction,
+  initializeSequenceRequestAction,
+} from '../reducers/order';
 
 const Cart = () => {
   // 상태관리
   const { user } = useSelector((state) => state.user);
+  const { myCart } = useSelector((state) => state.cart);
 
   // 페이지 이동
   useEffect(() => {
@@ -45,8 +52,8 @@ const Cart = () => {
   let checkedCount = 0;
   let allChecked = false;
 
-  if (user?.Carts) {
-    user.Carts.map((cart) => {
+  if (myCart.length) {
+    myCart.map((cart) => {
       if (cart.checked) {
         totalCount += Number(cart.count);
         totalAmount += Number(cart.Item.price) * Number(cart.count);
@@ -60,7 +67,7 @@ const Cart = () => {
       totalPrice = totalAmount + deliveryCharge;
     });
 
-    if (user.Carts.length && checkedCount === user.Carts.length) {
+    if (myCart.length === checkedCount) {
       allChecked = true;
     }
   }
@@ -69,6 +76,25 @@ const Cart = () => {
   const dispatch = useDispatch();
   const onChangeAllChecked = (e) => {
     dispatch(allCheckRequestAction({ checked: e.target.checked }));
+  };
+
+  // 선택구매 클릭
+  const onClickPayment = () => {
+    const data = [];
+    if (myCart.length) {
+      myCart.map((cart) => {
+        if (cart.checked) {
+          data.push({
+            itemId: cart.Item.item_id,
+            count: cart.count,
+            price: cart.Item.price,
+          });
+        }
+      });
+    }
+    console.log(data);
+    dispatch(addOrderRequestAction(data));
+    Router.push('/payment');
   };
 
   return (
@@ -89,7 +115,7 @@ const Cart = () => {
           <Tr>
             <Th w="64px">
               <Checkbox
-                isDisabled={!user?.Carts.length}
+                isDisabled={!myCart.length}
                 onChange={onChangeAllChecked}
                 isChecked={allChecked}
               />
@@ -105,8 +131,8 @@ const Cart = () => {
             <Th w="64px" textAlign="center"></Th>
           </Tr>
         </Thead>
-        {user?.Carts.length ? (
-          user.Carts.map((cart) => <CartList key={cart.item_id} cart={cart} />)
+        {myCart.length ? (
+          myCart.map((cart) => <CartList key={cart.cart_id} cart={cart} />)
         ) : (
           <Tbody>
             <Tr h="200px">
@@ -159,11 +185,9 @@ const Cart = () => {
         colorScheme="blue"
         spacing="3"
       >
-        <Link href="/payment">
-          <Button w="150px" disabled={!user?.Carts}>
-            선택구매
-          </Button>
-        </Link>
+        <Button w="150px" onClick={onClickPayment} disabled={!myCart.length}>
+          선택구매
+        </Button>
       </ButtonGroup>
     </AppLayout>
   );
@@ -178,6 +202,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
     }
     context.store.dispatch(initializeSequenceRequestAction());
     context.store.dispatch(loadMyInfoRequest());
+    context.store.dispatch(loadMyCartRequestAction());
     context.store.dispatch(END);
     await context.store.sagaTask.toPromise();
   }
