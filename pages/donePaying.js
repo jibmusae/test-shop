@@ -1,11 +1,10 @@
 import React from 'react';
-import Link from 'next/link';
-import { Box, Button, Flex, Heading, Text } from '@chakra-ui/react';
+import { Box, Flex, Heading, Text } from '@chakra-ui/react';
+import AppLayout from '../components/AppLayout';
 
-export default function DonePaying(props) {
-  const { orderDate, orderId } = props;
+const DonePaying = () => {
   return (
-    <>
+    <AppLayout>
       <Heading
         as="h1"
         size="lg"
@@ -21,10 +20,12 @@ export default function DonePaying(props) {
           주문이 완료되었습니다.
         </Heading>
         <Flex flexDirection="column" alignItems="center">
-          <Text my="0.5rem">주문일 : {orderDate}</Text>
-          <Text>주문번호 : {orderId}</Text>
+          <Text my="0.5rem">주문일 : </Text>
+          <Text>주문번호 : </Text>
         </Flex>
       </Box>
-    </>
+    </AppLayout>
   );
-}
+};
+
+export default DonePaying;

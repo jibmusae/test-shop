@@ -92,7 +92,6 @@ const Cart = () => {
         }
       });
     }
-    console.log(data);
     dispatch(addOrderRequestAction(data));
     Router.push('/payment');
   };
@@ -185,7 +184,7 @@ const Cart = () => {
         colorScheme="blue"
         spacing="3"
       >
-        <Button w="150px" onClick={onClickPayment} disabled={!myCart.length}>
+        <Button w="150px" onClick={onClickPayment} disabled={!checkedCount}>
           선택구매
         </Button>
       </ButtonGroup>

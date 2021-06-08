@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Router from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
+import { END } from '@redux-saga/core';
+import wrapper from '../store/configureStore';
+import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -30,6 +33,8 @@ import PostCode from '../components/PostCode';
 import OrderList from '../components/OrderList';
 import Modal from '../components/Modal';
 import FormInput from '../components/FormInput';
+import { loadMyInfoRequest } from '../reducers/user';
+import { loadOrdersRequestAction } from '../reducers/order';
 
 const profileSchema = yup.object().shape({
   corporateName: yup
@@ -66,7 +71,7 @@ const profileSchema = yup.object().shape({
     .max(13, '휴대폰 번호는 하이픈 포함 최소 12자, 최대 13자로 입력해주세요'),
 });
 
-export default function profile() {
+const Profile = () => {
   // 개인정보 상태관리
   const { user } = useSelector((state) => state.user);
   const { mainOrders } = useSelector((state) => state.order);
@@ -154,7 +159,7 @@ export default function profile() {
             <Heading as="h1" size="md">
               주문조회
             </Heading>
-            {mainOrders.length !== 0 ? (
+            {mainOrders.length ? (
               mainOrders.map((order) => (
                 <OrderList key={order.id} order={order} />
               ))
@@ -343,4 +348,20 @@ export default function profile() {
       </Tabs>
     </AppLayout>
   );
-}
+};
+
+export const getServerSideProps = wrapper.getServerSideProps(
+  async (context) => {
+    const cookie = context.req ? context.req.headers.cookie : '';
+    axios.defaults.headers.Cookie = '';
+    if (context.req && cookie) {
+      axios.defaults.headers.Cookie = cookie;
+    }
+    context.store.dispatch(loadMyInfoRequest());
+    context.store.dispatch(loadOrdersRequestAction());
+    context.store.dispatch(END);
+    await context.store.sagaTask.toPromise();
+  }
+);
+
+export default Profile;

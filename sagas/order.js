@@ -10,6 +10,9 @@ import {
   ADD_ORDER_REQUEST,
   ADD_ORDER_SUCCESS,
   ADD_ORDER_FAILURE,
+  PAYMENT_REQUEST,
+  PAYMENT_SUCCESS,
+  PAYMENT_FAILURE,
 } from '../reducers/order';
 
 // 시퀀스 초기화
@@ -68,6 +71,25 @@ function* addOrder(action) {
   }
 }
 
+// 결제
+function paymentAPI() {
+  return axios.patch('/order/payment');
+}
+function* payment(action) {
+  try {
+    const result = yield call(paymentAPI, action.data);
+    yield put({
+      type: PAYMENT_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    yield put({
+      type: PAYMENT_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
 // 리퀘스트
 function* watchInitializeSequence() {
   yield takeLatest(INITIALIZE_SEQUENCE_REQUEST, initializeSequence);
@@ -78,11 +100,15 @@ function* watchLoadOrders() {
 function* watchAddOrder() {
   yield takeLatest(ADD_ORDER_REQUEST, addOrder);
 }
+function* watchPayment() {
+  yield takeLatest(PAYMENT_REQUEST, payment);
+}
 
 export default function* userSaga() {
   yield all([
     fork(watchInitializeSequence),
     fork(watchLoadOrders),
     fork(watchAddOrder),
+    fork(watchPayment),
   ]);
 }
