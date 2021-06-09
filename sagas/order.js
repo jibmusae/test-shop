@@ -13,6 +13,9 @@ import {
   PAYMENT_REQUEST,
   PAYMENT_SUCCESS,
   PAYMENT_FAILURE,
+  UPDATE_STATUS_REQUEST,
+  UPDATE_STATUS_SUCCESS,
+  UPDATE_STATUS_FAILURE,
 } from '../reducers/order';
 
 // 시퀀스 초기화
@@ -90,6 +93,25 @@ function* payment(action) {
   }
 }
 
+// 스테이터스 변경
+function updateStatusAPI() {
+  return axios.patch('/order/status');
+}
+function* updateStatus(action) {
+  try {
+    const result = yield call(updateStatusAPI, action.data);
+    yield put({
+      type: UPDATE_STATUS_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    yield put({
+      type: UPDATE_STATUS_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
 // 리퀘스트
 function* watchInitializeSequence() {
   yield takeLatest(INITIALIZE_SEQUENCE_REQUEST, initializeSequence);
@@ -103,6 +125,9 @@ function* watchAddOrder() {
 function* watchPayment() {
   yield takeLatest(PAYMENT_REQUEST, payment);
 }
+function* watchUpdateStatus() {
+  yield takeLatest(UPDATE_STATUS_REQUEST, updateStatus);
+}
 
 export default function* userSaga() {
   yield all([
@@ -110,5 +135,6 @@ export default function* userSaga() {
     fork(watchLoadOrders),
     fork(watchAddOrder),
     fork(watchPayment),
+    fork(watchUpdateStatus),
   ]);
 }

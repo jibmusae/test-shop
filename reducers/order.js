@@ -14,6 +14,9 @@ export const initialState = {
   paymentLoading: false,
   paymentDone: false,
   paymentError: null,
+  updateStatusLoading: false,
+  updateStatusDone: false,
+  updateStatusError: null,
   mainOrders: [],
   thisOrder: [],
 };
@@ -31,6 +34,9 @@ export const ADD_ORDER_FAILURE = 'ADD_ORDER_FAILURE';
 export const PAYMENT_REQUEST = 'PAYMENT_REQUEST';
 export const PAYMENT_SUCCESS = 'PAYMENT_SUCCESS';
 export const PAYMENT_FAILURE = 'PAYMENT_FAILURE';
+export const UPDATE_STATUS_REQUEST = 'UPDATE_STATUS_REQUEST';
+export const UPDATE_STATUS_SUCCESS = 'UPDATE_STATUS_SUCCESS';
+export const UPDATE_STATUS_FAILURE = 'UPDATE_STATUS_FAILURE';
 
 // 시퀀스 초기화 액션
 export const initializeSequenceRequestAction = () => ({
@@ -51,6 +57,12 @@ export const addOrderRequestAction = (data) => ({
 // 결제 액션
 export const paymentRequestAction = () => ({
   type: PAYMENT_REQUEST,
+});
+
+// 스테이터스 변경 액션
+export const updateStatusRequestAction = (data) => ({
+  type: UPDATE_STATUS_REQUEST,
+  data,
 });
 
 const reducer = (state = initialState, action) => {
@@ -115,6 +127,21 @@ const reducer = (state = initialState, action) => {
       case PAYMENT_FAILURE:
         draft.paymentLoading = false;
         draft.paymentError = action.error;
+        break;
+      // 스테이터스 변경
+      case UPDATE_STATUS_REQUEST:
+        draft.updateStatusLoading = true;
+        draft.updateStatusDone = false;
+        draft.updateStatusError = null;
+        break;
+      case UPDATE_STATUS_SUCCESS:
+        draft.updateStatusLoading = false;
+        draft.updateStatusDone = true;
+        draft.mainOrders = action.data;
+        break;
+      case UPDATE_STATUS_FAILURE:
+        draft.updateStatusLoading = false;
+        draft.updateStatusError = action.error;
         break;
       default:
         break;

@@ -23,6 +23,7 @@ import { loadMyInfoRequest } from '../reducers/user';
 import {
   loadOrdersRequestAction,
   paymentRequestAction,
+  updateStatusRequestAction,
 } from '../reducers/order';
 
 const Payment = () => {
@@ -73,16 +74,18 @@ const Payment = () => {
         buyer_tel: user?.tel,
         buyer_addr: `${user?.address} ${user?.address_detail}`,
         buyer_postcode: user?.zip_code,
-        m_redirect_url: '/donePaying',
       },
       (rsp) => {
         let msg = '';
         if (rsp.success) {
           msg = '결제가 완료되었습니다.';
-          msg += '\n고유ID : ' + rsp.imp_uid;
-          msg += '\n상점 거래ID : ' + rsp.merchant_uid;
-          msg += '\n결제 금액 : ' + rsp.paid_amount;
-          msg += '\n카드 승인번호 : ' + rsp.apply_num;
+          // msg += '\n고유ID : ' + rsp.imp_uid;
+          // msg += '\n상점 거래ID : ' + rsp.merchant_uid;
+          // msg += '\n결제 금액 : ' + rsp.paid_amount;
+          // msg += '\n카드 승인번호 : ' + rsp.apply_num;
+
+          // 검증
+          dispatch(updateStatusRequestAction({ status: 1 }));
         } else {
           msg = '결제에 실패하였습니다.';
           msg += '\n에러내용 : ' + rsp.error_msg;
